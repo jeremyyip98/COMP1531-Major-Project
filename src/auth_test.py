@@ -1,10 +1,9 @@
 from auth import auth_register, auth_login, auth_logout
+import helper_functions
 import pytest
 from error import InputError
 
-# Helper function to register a valid user
-def register_valid_user():
-    return auth_register("test@gmail.com", "Password", "First", "Last")
+# Uses register_valid_user function which returns the u_id and token
 
 # Checks that registration works
 # Maybe this should check that something is returned
