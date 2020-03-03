@@ -10,36 +10,51 @@ def test_channel_create():
     user1 = auth_register('name@mail.com', 'password', 'Jim', 'Smith')
     with pytest.raises(InputError) as e:
         channels_create(user1['token'], 'a' * 21, True)
-
-def test_channel_list():
-#test if the channel list returns id 1 and the name 'my channel'
-    user1 = auth_register('name@mail.com', 'password', 'Jim', 'Smith')
-    channel1 = channels_create(user1['token'], 'My Channel', True)
-    channelList = channels_list(user1['token'])
-    assert channelList['channel_id'] == channel1['channel_id']
-    assert channelList['name'] == 'My Channel'
-
-def test_channel_list_all():
-#same as channel_list but add one more channel
-    user1 = auth_register('name@mail.com', 'password', 'Jim', 'Smith')
+    #test if it returns the right ID
     channel1 = channels_create(user1['token'], 'My Channel', True)
     channelList = channels_listall(user1['token'])
-    assert channelList['channel_id'] == channel1['channel_id']
-    assert channelList['name'] == 'My Channel'
+    assert channel1['channel_id'] == channelList['channels'][0]['channel_id']
+
+def test_channel_list():
+#should only show the channels the user given is in 
+    user1 = auth_register('name@mail.com', 'password', 'Jim', 'Smith')
+    user2 = auth_register('name2@mail.com', 'password1', 'Tim', 'Lift')
+    channel1 = channels_create(user1['token'], 'My Channel', True)
+    channel2 = channels_create(user2['token'], 'Second Channel', False)
+    channelList = channels_list(user1['token'])
+    
+    assert channelList['channels'][0]['channel_id'] == channel1['channel_id']
+    assert channelList['channels'][1]['channel_id'] != channel2['channel_id']
+#check if channel1 is a dict or the u_id that it says it returns
+    details = channel_details(user1['token'], channel1['channel_id'])
+    assert details['name'] = channelList['channels'][0]['name']
+
+def test_channel_listall():
+#when called the channel list all should list all channels including id and name regardless
+#if the user is in the channel or not (assuming thats what specs says)
+    user1 = auth_register('name@mail.com', 'password', 'Jim', 'Smith')
+    user2 = auth_register('name2@mail.com', 'password1', 'Tim', 'Lift')
+    channel1 = channels_create(user1['token'], 'My Channel', True)
+    channel2 = channels_create(user2['token'],'Second Channel', False)
+    channelList = channels_listall(user1['token'])
+
+    assert channelList['channels'][0]['channel_id'] == channel1['channel_id']
+    assert channelList['channels'][1]['channel_id'] == channel2['channel_id']
+
 
 def test_channel_addowner():
     #assume user1 is owner of channel when he makes the channel
     user1 = auth_register('name@mail.com', 'password', 'Jim', 'Smith')
-    user2 = auth_register('anme2@mail.com', 'password1', 'Tim', 'Lift')
+    user2 = auth_register('name2@mail.com', 'password1', 'Tim', 'Lift')
     channel1 = channels_create(user1['token'], 'My Channel', True)
 
     #test if the channel adds user1 again it gives InputError
     with pytest.raises(InputError) as e:
         channel_addowner(user1['token'], channel1['channel_id'], user1['u_id'])
     
-    #test if the channel tries to add channel_id 2 (invalid id)
+    #test if the channel tries to add channel_id 10231 (invalid id)
     with pytest.raises(InputError) as e:
-        channel_addowner(user1['token'], 2, user1['u_id'])
+        channel_addowner(user1['token'], 10231, user1['u_id'])
     
     #invites user2 to channel
     channel_invite(user1['token'],channel1['channel_id'], user2['u_id'])
@@ -53,7 +68,12 @@ def test_channel_addowner():
 
     details = channel_details(user2['u_id'], channel1['channel_id'])
     #assert that user 2 is in owners
-    assert user2['u_id'] in details['owner_members']
+    user2_profile == user_profile(user2['token'], user2['u_id'])
+    assert details['owner_members'][1]['name_first'] == user2_profile['user']['name_first']
+
+def test_channel_details():
+    
+    
 
 
 
