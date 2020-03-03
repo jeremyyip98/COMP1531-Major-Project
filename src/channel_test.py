@@ -24,7 +24,7 @@ def test_channel_list():
     channelList = channels_list(user1['token'])
     
     assert channelList['channels'][0]['channel_id'] == channel1['channel_id']
-    assert channelList['channels'][1]['channel_id'] != channel2['channel_id']
+    assert len(channelList['channels']) == 1
 #check if channel1 is a dict or the u_id that it says it returns
     details = channel_details(user1['token'], channel1['channel_id'])
     assert details['name'] = channelList['channels'][0]['name']
