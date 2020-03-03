@@ -9,8 +9,13 @@ from error import InputError
 
 def test_user_profile_valid():
     results = auth_register("test@gmail.com", "Password", "First", "Last")
-    user_profile(results["token"], results["u_id"])
-
+    profile = user_profile(results["token"], results["u_id"])
+    assert profile["u_id"] == results["u_id"]
+    assert profile["email"] == "test@gmail.com"
+    assert profile["name_first"] == "First"
+    assert profile["name_last"] == "Last"
+    assert profile["handle_str"] == "firstlast"
+    
 # User with u_id has to be a valid user
 def test_user_profile_invalid_user():
     results = auth_register("test@gmail.com", "Password", "First", "Last")
