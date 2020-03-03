@@ -4,6 +4,8 @@ from auth import auth_logout
 import pytest
 from error import InputError
 
+# Test
+
 # Checks that register works
 def test_register_valid():
     auth_register("test@gmail.com", "Password", "First", "Last")
