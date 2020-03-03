@@ -30,7 +30,7 @@ def test_channel_list_all():
 def test_channel_addowner():
     #assume user1 is owner of channel when he makes the channel
     user1 = auth_register('name@mail.com', 'password', 'Jim', 'Smith')
-    user2 = auth_register('anme2@mail.com', 'password1', 'Jim', 'Lift')
+    user2 = auth_register('anme2@mail.com', 'password1', 'Tim', 'Lift')
     channel1 = channels_create(user1['token'], 'My Channel', True)
 
     #test if the channel adds user1 again it gives InputError
@@ -53,7 +53,7 @@ def test_channel_addowner():
 
     details = channel_details(user2['u_id'], channel1['channel_id'])
     #assert that user 2 is in owners
-    assert 'user2' in details['owner_members']:
+    assert user2['u_id'] in details['owner_members']:
 
 
 
