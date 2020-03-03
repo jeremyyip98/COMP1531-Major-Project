@@ -53,7 +53,9 @@ def test_channel_addowner():
 
     details = channel_details(user2['u_id'], channel1['channel_id'])
     #assert that user 2 is in owners
-    assert user2['u_id'] in details['owner_members']:
+    assert user2['u_id'] in details['owner_members']
+
+
 
 
 
