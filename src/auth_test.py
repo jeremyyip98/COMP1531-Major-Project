@@ -50,9 +50,8 @@ def test_register_too_long_last_name():
 # Successful login
 def test_login_valid_details():
     register_valid_user()
-    details1 = auth_login("test@gmail.com", "Password")
-    details2 = auth_login("test@gmail.com", "Password")
-    assert details1["u_id"] == details1["u_id"]
+    auth_login("test@gmail.com", "Password")
+
 
 # Logging in with unregistered email
 def test_login_invalid_email():
