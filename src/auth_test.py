@@ -1,9 +1,9 @@
 from auth import auth_register, auth_login, auth_logout
-import helper_functions
+from helper_functions import register_valid_user
 import pytest
 from error import InputError
 
-# Uses register_valid_user function which returns the u_id and token
+# Uses register_valid_user function which returns the u_id and
 
 # Checks that registration works
 # Maybe this should check that something is returned
