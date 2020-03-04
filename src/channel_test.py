@@ -79,19 +79,6 @@ def test_channel_invite_errors():
     with pytest.raises(AccessError) as e:
          channel_invite(user['token'], channel['channel_id'], user2['u_id'])
 
-def test_channel_invite_normal():
-### test if user can be invited to channel
-    channel_invite(user['token'], channel['channel_id'], user['u_id'])
-    # check if user is a member of the channel
-    user_channels = channels_list(user['token'])
-    assert user_channels['channel_id'] == channel['channel_id']
-    
-### check whether user can now invite user2 to the channel
-    channel_invite(user['token'], channel['channel_id'], user2['u_id'])
-    # check if user is a member of the channel
-    user2_channels = channels_list(user2['token'])
-    assert user2_channels['channel_id'] == channel['channel_id']
-    
 
 
 
