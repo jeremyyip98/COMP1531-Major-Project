@@ -9,3 +9,5 @@
 #assume that when you add someone to a channel they are already apart of would raise an input error like add_owner
 
 #assume a channel can have 0 members 
+
+#assume all user made are not admins

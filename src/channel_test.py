@@ -148,6 +148,9 @@ def test_channel_invite_errors():
 #raises input error when the person added is already in channel
     with pytest.raises(InputError) as e:
         channel_invite(user['token'], channel['channel_id'], user2['u_id'])
+#make sure the number of memeber stays at 3
+    channel_invite(user3['token'], channel['channel_id'], user3['u_id'])
+    assert len(details['all_members']) == 3
 
 def test_channel_leave():
     user = auth_register('name@mail.com', 'password', 'John', 'Doe')
@@ -168,3 +171,15 @@ def test_channel_leave():
     assert len(details['all_members']) == 1
     channel_leave(user['token'], channel['channel_id'])
     assert len(details['all_members']) == 0
+
+def test_channel_join():
+    user = auth_register('name@mail.com', 'password', 'John', 'Doe')
+    user2 = auth_register('name2@mail.com', 'passw0rd', 'Ben', 'Ny')
+    channel = channels_create(user['token'], 'valid_channel', False)
+#test input error when the channel id is invalid
+    with pytest.raises(InputError) as e:
+        channel_join(user['token'], channel['channel_id'] + 10)
+#test access error when the channel is private and user2 is not admin
+    with pytest.raises(AccessError) as e:
+        channel_join(user2['token'], channel['channel_id'])
+        
