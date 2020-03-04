@@ -79,6 +79,9 @@ def test_channel_invite_errors():
     with pytest.raises(AccessError) as e:
          channel_invite(user['token'], channel['channel_id'], user2['u_id'])
 
+#Test that the function works
+    
+
 
 
 
