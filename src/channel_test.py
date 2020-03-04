@@ -122,12 +122,19 @@ def test_channel_invite_errors():
         
 ### test when a non-member of channel invites another user
     user2 = auth.register('name2@mail.com', 'passw0rd', 'Ben', 'Ny')
+    user3 = auth.register('name3@mail.com', 'password1', 'Tim', 'He')
     with pytest.raises(AccessError) as e:
-         channel_invite(user['token'], channel['channel_id'], user2['u_id'])
+         channel_invite(user2['token'], channel['channel_id'], user2['u_id'])
 
 #Test that the function works
-    
+    details = channel_details(user['token'], channel['channel_id'])
+    assert len(details['all_members']) == 1
 
+    channel_invite(user['token'], channel['channel_id'], user2['u_id'])
+    assert len(details['all_members']) == 2
+    
+    channel_invite(user3['token'], channel['channel_id'], user3['u_id'])
+    assert len(details['all_members']) == 3
 
 
 
