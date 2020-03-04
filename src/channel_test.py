@@ -27,7 +27,7 @@ def test_channel_list():
     assert len(channelList['channels']) == 1
 #check if channel1 is a dict or the u_id that it says it returns
     details = channel_details(user1['token'], channel1['channel_id'])
-    assert details['name'] = channelList['channels'][0]['name']
+    assert details['name'] == channelList['channels'][0]['name']
 
 def test_channel_listall():
 #when called the channel list all should list all channels including id and name regardless
