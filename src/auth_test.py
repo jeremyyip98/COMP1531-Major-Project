@@ -1,13 +1,14 @@
-from auth import auth_register
-from auth import auth_login
-from auth import auth_logout
+from auth import auth_register, auth_login, auth_logout
+from helper_functions import register_valid_user
 import pytest
 from error import InputError
 
-# Checks that register works
-def test_register_valid():
-    auth_register("test@gmail.com", "Password", "First", "Last")
+# Uses register_valid_user function which returns the u_id and
 
+# Checks that registration works
+# Maybe this should check that something is returned
+def test_register_valid():
+    register_valid_user()
 # Email is not a valid address
 def test_register_invalid_email():    
     with pytest.raises(InputError) as e:
@@ -25,7 +26,7 @@ def test_register_invalid_password():
         auth_register("test@gmail.com", "F"*51, "First", "Last")
 
 def test_register_already_registered_email():
-    auth_register("test@gmail.com", "Password", "First", "Last")
+    register_valid_user()
     with pytest.raises(InputError) as e:
         auth_register("test@gmail.com", "Password1", "First1", "Last1")
 
@@ -48,10 +49,9 @@ def test_register_too_long_last_name():
 
 # Successful login
 def test_login_valid_details():
-    auth_register("test@gmail.com", "Password", "First", "Last")
-    details1 = auth_login("test@gmail.com", "Password")
-    details2 = auth_login("test@gmail.com", "Password")
-    assert details1["u_id"] == details1["u_id"]
+    register_valid_user()
+    auth_login("test@gmail.com", "Password")
+
 
 # Logging in with unregistered email
 def test_login_invalid_email():
@@ -60,13 +60,13 @@ def test_login_invalid_email():
 
 # Logging in with the wrong password and right password for a registered account
 def test_login_wrong_password():
-    auth_register("test@gmail.com", "Password", "First", "Last")
+    register_valid_user()
     with pytest.raises(InputError) as e:
         auth_login("test@gmail.com", "WrongPassword")
 
 # Log out a valid user with a valid token
 def test_logout_valid_token():
-    auth_register("test@gmail.com", "Password", "First", "Last")
+    register_valid_user()
     details = auth_login("test@gmail.com", "Password")
     assert auth_logout(details["token"])["is_success"] == True
 
@@ -78,14 +78,14 @@ def test_logout_invalid_token():
 # Attempts to log out a valid user who is not logged in
 # Should return false
 def test_logout_logged_out_user():
-    details = auth_register("test@gmail.com", "Password", "First", "Last")
+    details = register_valid_user()
     def test_logout_invalid_token():
      assert auth_logout(details["token"])["is_success"] == False
 
 # Successful login -- Checks that user_id is correctly maintained
 # Uses logout function
 def test_login_valid_details():
-    auth_register("test@gmail.com", "Password", "First", "Last")
+    register_valid_user()
     details1 = auth_login("test@gmail.com", "Password")
     auth_logout(details1["token"])
     details2 = auth_login("test@gmail.com", "Password")
