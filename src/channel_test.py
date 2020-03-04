@@ -2,6 +2,7 @@ from error import AccessError, InputError
 from auth import auth_register
 from channels import *
 from channel import *
+from user import user_profile
 import pytest
 
 
@@ -25,9 +26,17 @@ def test_channel_list():
     
     assert channelList['channels'][0]['channel_id'] == channel1['channel_id']
     assert len(channelList['channels']) == 1
-#check if channel1 is a dict or the u_id that it says it returns
+
     details = channel_details(user1['token'], channel1['channel_id'])
     assert details['name'] == channelList['channels'][0]['name']
+
+    channelList2 = channels_list(user2['token'])
+    
+    assert channelList2['channels'][0]['channel_id'] == channel2['channel_id']
+    assert len(channelList2['channels']) == 1
+
+    details = channel_details(user2['token'], channel2['channel_id'])
+    assert details['name'] == channelList2['channels'][0]['name']
 
 def test_channel_listall():
 #when called the channel list all should list all channels including id and name regardless
@@ -52,9 +61,9 @@ def test_channel_addowner():
     with pytest.raises(InputError) as e:
         channel_addowner(user1['token'], channel1['channel_id'], user1['u_id'])
     
-    #test if the channel tries to add channel_id 10231 (invalid id)
+    #test if the channel tries to add channel_id invalid id
     with pytest.raises(InputError) as e:
-        channel_addowner(user1['token'], 10231, user1['u_id'])
+        channel_addowner(user1['token'], channel1['channel_id'], user1['u_id'])
     
     #invites user2 to channel
     channel_invite(user1['token'],channel1['channel_id'], user2['u_id'])
@@ -68,7 +77,7 @@ def test_channel_addowner():
 
     details = channel_details(user2['u_id'], channel1['channel_id'])
     #assert that user 2 is in owners
-    user2_profile == user_profile(user2['token'], user2['u_id'])
+    user2_profile = user_profile(user2['token'], user2['u_id'])
     assert details['owner_members'][1]['name_first'] == user2_profile['user']['name_first']
 
 def test_channel_remove_owner():
@@ -76,10 +85,11 @@ def test_channel_remove_owner():
     user1 = auth_register('name@mail.com', 'password', 'Jim', 'Smith')
     user2 = auth_register('name2@mail.com', 'password1', 'Tim', 'Lift')
     channel1 = channels_create(user1['token'], 'My Channel', True)
+    details = channel_details(user1['u_id'], channel1['channel_id'])
 
-    #test invalid id channel channel_id 10231 
+    #test invalid id channel
     with pytest.raises(InputError) as e:
-        channel_removeowner(user1['token'], 10231, user1['u_id'])
+        channel_removeowner(user1['token'], channel1['channel_id'] + 10, user1['u_id'])
     #test remove owner when user2 is not owner
     with pytest.raises(InputError) as e:
         channel_removeowner(user1['token'], channel1['channel_id'], user2['u_id'])
@@ -89,10 +99,10 @@ def test_channel_remove_owner():
 
     channel_addowner(user1['token'], channel1['channel_id'], user2['u_id'])
     #checking that the owners are user1 and user2
-    user1_profile == user_profile(user1['token'], user1['u_id'])
+    user1_profile = user_profile(user1['token'], user1['u_id'])
     assert details['owner_members'][0]['name_first'] == user1_profile['user']['name_first']
 
-    user2_profile == user_profile(user2['token'], user2['u_id'])
+    user2_profile = user_profile(user2['token'], user2['u_id'])
     assert details['owner_members'][1]['name_first'] == user2_profile['user']['name_first']
     assert len(details['owner_member']) == 2
 
@@ -102,7 +112,7 @@ def test_channel_remove_owner():
 
 
 def test_channel_invite_errors():
-    user = auth.register('name@mail.com', 'password', 'John', 'Doe')
+    user = auth_register('name@mail.com', 'password', 'John', 'Doe')
     channel = channels_create(user['token'], 'valid_channel', True)
     
 ### test when inviting user to a channel with invalid channel_id - gives InputError
@@ -121,8 +131,8 @@ def test_channel_invite_errors():
         channel_invite(user['token'], channel['channel_id'], user['u_id'] + 10)
         
 ### test when a non-member of channel invites another user
-    user2 = auth.register('name2@mail.com', 'passw0rd', 'Ben', 'Ny')
-    user3 = auth.register('name3@mail.com', 'password1', 'Tim', 'He')
+    user2 = auth_register('name2@mail.com', 'passw0rd', 'Ben', 'Ny')
+    user3 = auth_register('name3@mail.com', 'password1', 'Tim', 'He')
     with pytest.raises(AccessError) as e:
          channel_invite(user2['token'], channel['channel_id'], user2['u_id'])
 
@@ -135,13 +145,26 @@ def test_channel_invite_errors():
     
     channel_invite(user3['token'], channel['channel_id'], user3['u_id'])
     assert len(details['all_members']) == 3
+#raises input error when the person added is already in channel
+    with pytest.raises(InputError) as e:
+        channel_invite(user['token'], channel['channel_id'], user2['u_id'])
 
+def test_channel_leave():
+    user = auth_register('name@mail.com', 'password', 'John', 'Doe')
+    channel = channels_create(user['token'], 'valid_channel', True)
+    user2 = auth_register('name2@mail.com', 'passw0rd', 'Ben', 'Ny')
+    #test inputerror with an invalid channel_id
+    with pytest.raises(InputError) as e:
+        channel_leave(user['token'], channel['channel_id'] + 10)
+    #test inputerror wit invalid channel_id again
+    with pytest.raises(InputError) as e:
+        channel_leave(user['token'], channel['channel_id'] + 1)
+    #test Access error when user is not memeber of channel
+    with pytest.raises(AccessError) as e:
+        channel_leave(user2['token'], channel['channel_id'])
 
-
-
-    
-
-    
-
-        
-    
+    details = channel_details(user['token'], channel['channel_id'])
+    #make sure the only memeber is the person who created it 
+    assert len(details['all_members']) == 1
+    channel_leave(user['token'], channel['channel_id'])
+    assert len(details['all_members']) == 0
