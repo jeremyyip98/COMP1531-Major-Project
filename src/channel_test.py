@@ -99,6 +99,9 @@ def test_channel_invite_normal():
     user2_channels = channels_list(user2['token'])
     assert user2_channels['channel_id'] == channel['channel_id']
 
+#Test that the function works
+    
+
 
 ### test channel_details function ###
 def test_channel_details_errors():
