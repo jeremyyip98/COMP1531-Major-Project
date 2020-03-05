@@ -14,6 +14,3 @@ def register_another_valid_user():
 def create_valid_channel(channel_name, is_public):
     details = register_valid_user()
     return (channels_create(details["token"], channel_name, is_public), details) 
-
-
-
