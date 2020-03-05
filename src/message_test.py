@@ -7,12 +7,24 @@ from error import InputError
 from error import AccessError
 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'' register_valid_user(), register_another_valid_user()
+'' The helper functions which generates two different users
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+# Helper function to register a valid user and return u_id and token
+def register_valid_user():
+    return auth_register("test@gmail.com", "Password", "First", "Last")
+
+# Helper function to register another valid user with different email and return u_id and token
+def register_another_valid_user():
+    return auth_register("notjoined@gmail.com", "Password", "First", "Last")
+
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '' test_send_exceed_characters(), test_has_not_joined_channel()
 '' The test functions for the message_send function in message.py
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # If message is more than 1000 characters, InputError
 def test_send_exceed_characters():
-    results = auth_register("test@gmail.com", "Password", "First", "Last")  # Generate a token
+    results = register_valid_user()  # Generate a token
 
     channelInfo = channels_create(results['token'], 'Cool Kids', False)     # Create a channel and store the channel ID
     with pytest.raises(InputError) as e:
@@ -20,8 +32,8 @@ def test_send_exceed_characters():
 
 # If the authorised user has not joined the channel they are trying to post to, Access Error
 def test_has_not_joined_channel(): 
-    joined = auth_register("test@gmail.com", "Password", "First", "Last")   # Generate a token that is going to be used
-    not_joined = auth_register("notjoined@gmail.com", "Password", "First", "Last")  # Generate a token that is not going to be used
+    joined = register_valid_user()   # Generate a token that is going to be used
+    not_joined = register_another_valid_user()  # Generate a token that is not going to be used
 
     channelInfo = channels_create(joined['token'], 'Cool Kids', False)  # Create a channel and store the channel ID
     channel_join(joined['token'], channelInfo)                          # Given the stored channel ID, add the user to that channel
@@ -35,7 +47,7 @@ def test_has_not_joined_channel():
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # If the message (based on ID) no longer exists, InputError
 def test_remove_not_exists():
-    results = auth_register("test@gmail.com", "Password", "First", "Last")  # Generate a token
+    results = register_valid_user()  # Generate a token
 
     channelInfo = channels_create(results['token'], 'Cool Kids', False)     # Create a channel and store the channel ID
     channel_join(results['token'], channelInfo)                             # Given the stored channel ID, add the user to that channel
@@ -47,17 +59,17 @@ def test_remove_not_exists():
 
 # If the authorised user is not the one who sent the message, and not an admin/owner of the channel, Access Error
 def test_remove_invalid_user():
-    results = auth_register("test@gmail.com", "Password", "First", "Last")  # Generate a token
-    invalid = auth_register("invalid@gmail.com", "Password", "First", "Last")   # Generate a token
+    results = register_valid_user()  # Generate a token
+    not_owner = register_another_valid_user()   # Generate a token
 
     channelInfo = channels_create(results['token'], 'Cool Kids', False)     # Create a channel and store the channel ID
     channel_join(results['token'], channelInfo)                             # Given the stored channel ID, add the user to that channel
-    channel_join(invalid['token'], channelInfo)                             # Add another user to the channel
+    channel_join(not_owner['token'], channelInfo)                             # Add another user to the channel
     channel_addowner(results['token'], channelInfo, results['u_id'])        # Make user of "results" an owner of this channel
 
     messageInfo = message_send(results['token'], channelInfo['channel_id'], 'abc')  # Send a message to the stored channel ID and store the message ID
     with pytest.raises(AccessError) as e:
-        message_remove(invalid['token'], messageInfo)   # Remove a message that was not sent by the given authorised user here
+        message_remove(not_owner['token'], messageInfo) # Remove a message that was not sent by the given authorised user here
                                                         # In other words, user of "results" is the user who sent the message, but user of "invalid" is trying to remove the message instead
                                                         # Moreover, user of "invalid" is not an owner of this channel
 
@@ -67,16 +79,16 @@ def test_remove_invalid_user():
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # If the authorised user is not the one who sent the message, and not an admin/owner of the channel, Access Error
 def test_edit_invalid_user():
-    results = auth_register("test@gmail.com", "Password", "First", "Last")  # Generate a token
-    invalid = auth_register("invalid@gmail.com", "Password", "First", "Last")   # Generate a token
+    results = register_valid_user()  # Generate a token
+    not_owner = register_another_valid_user()   # Generate a token
 
     channelInfo = channels_create(results['token'], 'Cool Kids', False)     # Create a channel and store the channel ID
     channel_join(results['token'], channelInfo)                             # Given the stored channel ID, add the user to that channel
-    channel_join(invalid['token'], channelInfo)                             # Add another user to the channel
+    channel_join(not_owner['token'], channelInfo)                             # Add another user to the channel
     channel_addowner(results['token'], channelInfo, results['u_id'])        # Make user of "results" an owner of this channel
 
     messageInfo = message_send(results['token'], channelInfo['channel_id'], 'abc')  # Send a message to the stored channel ID and store the message ID
     with pytest.raises(AccessError) as e:
-        message_edit(invalid['token'], messageInfo, 'abcdefg')      # Edit a message that was not sent by the given authorised user here
+        message_edit(not_owner['token'], messageInfo, 'abcdefg')    # Edit a message that was not sent by the given authorised user here
                                                                     # In other words, user of "results" is the user that sent the message, but user of "invalid" is trying to ediot the message instead
                                                                     # Moreover, user of "invalid" is not an owner of this channel
