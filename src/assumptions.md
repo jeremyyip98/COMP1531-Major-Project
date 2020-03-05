@@ -16,4 +16,10 @@
 
 #assume channel_invite InputError: "channel_id does not refer to a valid channel that the authorised user is part of." refers to the channel having an invalid channel_id AND the AccessError: "the authorised user is not already a member of the channel" as being when the authorised user is not a member of the channel but invites another user to the channel
 
-Assumes that maximum password length is 50 characters
+Assumed that maximum password length is 50 characters
+
+Assumed that "hopefullythisisnotavalidtoken" is not a valid token
+
+^^^^^^^^^
+This is a plaintext gile and doesnt need hashes
+
