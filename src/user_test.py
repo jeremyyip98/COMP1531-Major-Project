@@ -27,9 +27,17 @@ def test_user_profile_invalid_user():
 # We now assume that user_profile works
 
 # Both name_first and name_list need to be strings between 1 and 50 characters in length
+# We assume that u_id, email and handle_str are not affected
 def test_user_profile_setname_valid():
     results = register_valid_user()
     user_profile_setname(results["token"], "Newfirst", "Newlast")
+    profile = user_profile(results["token"], results["u_id"])
+    assert profile["u_id"] == results["u_id"]
+    assert profile["email"] == "test@gmail.com"
+    assert profile["name_first"] == "Newfirst"
+    assert profile["name_last"] == "Newlast"
+    assert profile["handle_str"] == "firstlast"
+
 
 # Here, the new name_first is too short
 def test_user_profile_setname_first_name_too_short():
@@ -56,9 +64,16 @@ def test_user_profile_setname_last_name_too_long():
         user_profile_setname(results["token"], "NewFirst", "b"*51)
 
 # The new email has to be valid and cannot be already used by another user
+# We assume that u_id, name_first, name_last and handle_str are not affected
 def test_user_profile_setemail_valid():
     results = register_valid_user()
     user_profile_setemail(results["token"], "newtest@gmail.com")
+    profile = user_profile(results["token"], results["u_id"])
+    assert profile["u_id"] == results["u_id"]
+    assert profile["email"] == "newtest@gmail.com"
+    assert profile["name_first"] == "First"
+    assert profile["name_last"] == "Last"
+    assert profile["handle_str"] == "firstlast"
 
 # Here, the new email is invalid
 def test_user_profile_setemail_invalid():
@@ -75,9 +90,16 @@ def test_user_profile_setemail_email_already_used():
         user_profile_setemail(results["token"], profile2["email"])
 
 # handle_str must be between 3 and 20 characters and cannot be already used by another user
+# We assume that u_id, email, name_first and name_last are not affected
 def test_user_profile_sethandle_valid():
     results = register_valid_user()
     user_profile_sethandle(results["token"], "newhandle")
+    profile = user_profile(results["token"], results["u_id"])
+    assert profile["u_id"] == results["u_id"]
+    assert profile["email"] == "test@gmail.com"
+    assert profile["name_first"] == "First"
+    assert profile["name_last"] == "Last"
+    assert profile["handle_str"] == "newhandle"
 
 #Here, the new handle_str is too short
 def test_user_profile_sethandle_handle_too_short():
