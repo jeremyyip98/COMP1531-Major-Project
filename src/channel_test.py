@@ -256,8 +256,8 @@ def test_channel_join():
     channel_join(user['u_id'], channel2['u_id'])
     assert len(details['all_members']) == 2
     
-
-def test_channel_messages():
+### Testing the errors in channel_messages ###
+def test_channel_messages_errors():
     user = auth_register('name@mail.com', 'password', 'John', 'Doe')
     #   creates channel and assumes user is now owner
     channel = channels_create(user['token'], 'valid_channel', True)
@@ -288,3 +288,33 @@ def test_channel_messages():
         channel_messages(user2['token'], channel['channel_id'], total_messages-1)
     with pytest.raises(AccessError) as e:
         channel_messages(user3['token'], channel['channel_id'], total_messages-1)
+        
+### Test the normal functioning of channel_messages ###     
+def test_channel_messages_normal():
+    user = auth_register('name@mail.com', 'password', 'John', 'Doe')
+    #   creates channel and assumes user is now owner
+    channel = channels_create(user['token'], 'valid_channel', True)
+    
+    #   send 124 messages into channel
+    for i in range(124):
+        message_send(user['token'], channel['channel_id'], f'abcde{i}')
+    
+    #   check if channel_messages are correct in these channel as well as 'start' and 'end' points
+    message0 = channel_messages(user['token'], channel['channel_id'], 0)
+    for i in range(50):
+        assert message0['message'][i]['message'] == f'abcde{i}'
+    assert message0['start'] == 0
+    assert message0['end'] == 50
+        
+    message1 = channel_messages(user['token'], channel['channel_id'], 50)
+    for i in range(50, 100):
+        assert message1['message'][i]['message'] == f'abcde{i}'
+    assert message0['start'] == 50
+    assert message0['end'] == 100
+    
+    #   check when function reaches end of messages
+    message2 = channel_messages(user['token'], channel['channel_id'], 100)
+    for i in range(100, 124):
+        assert message1['message'][i]['message'] == f'abcde{i}'
+    assert message0['start'] == 100
+    assert message0['end'] == -1
