@@ -186,5 +186,5 @@ def test_channel_join():
     channel2 = channels_create(user2['token'], 'Public Channel', True)
     details = channel_details(user2['token'], channel2['channel_id'])
     assert len(details['all_members']) == 1
-    channel_join(user1['u_id'], channel2['u_id'])
+    channel_join(user['u_id'], channel2['u_id'])
     assert len(details['all_members']) == 2
