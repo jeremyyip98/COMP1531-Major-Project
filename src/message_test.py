@@ -47,8 +47,10 @@ def test_send_correct_channel():
     channelInfo = channels_create(results['token'], 'Cool Kids', False)     # Create a channel and store the channel ID
     message_send(results['token'], channelInfo['channel_id'], 'abc')   # Send a message
 
-    channelMessage = channel_messages(results['token'], channelInfo['channel_id'], 0)   # Store the most recent message in the channel
-    assert channelMessage['messages.message'] == 'abc'
+    output = channel_messages(results['token'], channelInfo['channel_id'], 0)   # Store the most recent message in the channel
+    channelMessage = output.get('message')  # Get the message from the list of dictionary
+
+    assert channelMessage == 'abc'
 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '' test_remove_not_exists, test_remove_invalid_user(), test_remove_confirm()
@@ -93,8 +95,10 @@ def test_remove_confirm():
     messageInfo2 = message_send(results['token'], channelInfo['channel_id'], 'hellomate')  # Send another message
     message_remove(results['token'], messageInfo2) # Remove the recent messsage
 
-    channelMessage = channel_messages(results['token'], channelInfo['channel_id'], 0)   # Store the most recent message in the channel
-    assert channelMessage['messages.message'] == 'abc'
+    output = channel_messages(results['token'], channelInfo['channel_id'], 0)   # Store the most recent message in the channel
+    channelMessage = output.get('message') # Get the message from the list of dictionary
+
+    assert channelMessage == 'abc'
 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '' test_edit_invalid_user(), test_edit_confirm()
@@ -127,5 +131,7 @@ def test_edit_confirm():
     messageInfo = message_send(results['token'], channelInfo['channel_id'], 'abc')  # Send a message to the stored channel ID and store the message ID
     message_edit(results['token'], messageInfo, 'abcdefg')    # Edit a message
 
-    channelMessage = channel_messages(results['token'], channelInfo['channel_id'], 0)   # Store the most recent message in the channel
+    output = channel_messages(results['token'], channelInfo['channel_id'], 0)   # Store the most recent message in the channel
+    channelMessage = output.get('message') # Get the message from the list of dictionary
+    
     assert channelMessage == 'abcdefg'
