@@ -8,7 +8,6 @@ def register_valid_user():
 
 # Helper function to register another valid user and return u_id and token
 # This is used to test input errors where a particular value (e.g. email) is already being used by another user
- Helper function to register another valid user and return u_id and token
 def register_another_valid_user():
     return auth_register("anothertest@gmail.com", "Anotherpassword", "Anotherfirst", "Anotherlast")
 
