@@ -6,6 +6,8 @@ from message import message_send
 def register_valid_user():
     return auth_register("test@gmail.com", "Password", "First", "Last")
 
+def register_another_valid_user():
+    return auth_register("anothertest@gmail.com", "Anotherpassword", "Anotherfirst", "Anotherlast")
 
 def create_valid_channel(channel_name, is_public):
     details = register_valid_user()
