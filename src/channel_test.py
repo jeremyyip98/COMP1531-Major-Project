@@ -159,7 +159,7 @@ def test_channel_invite_errors():
         
     # test if function gives AccessError when invalid token passed
     with pytest.raises(AccessError) as e:
-        channel_invite('hopefullythisisnotavalidtoken', channel['channel_id', user['u_id'])
+        channel_invite('hopefullythisisnotavalidtoken', channel['channel_id'], user['u_id'])
          
 ### Test for normal activity of channel_invite function ###
 def test_channel_invite_normal():
@@ -290,13 +290,13 @@ def test_channel_messages_errors():
         
     #   send 10 messages to channel
     for i in range(10):
-        message_send((user['token'], channel['channel_id'], f'abcde{i}')
+        message_send(user['token'], channel['channel_id'], f'abcde{i}')
         
     #   check if start is greater than total messages
     total_messages = 10
     with pytest.raises(InputError) as e:
         channel_messages(user['token'], channel['channel_id'], total_messages + 1)
-    with pytest.raises(InputError) as e;
+    with pytest.raises(InputError) as e:
         channel_messages(user['token'], channel['channel_id'], total_messages + 10)
     
     #   test when authorised user is not part of the channel - AccessError
