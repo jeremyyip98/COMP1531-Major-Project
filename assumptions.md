@@ -24,7 +24,7 @@
 
 - Assume that logging out with an invalid token throws access error instead of "is_success" = True
 
-- Assume that logging out a logged out user with a valid token returns "is_success" = True
+- Assume that logging out a logged out user with a valid token returns "is_success" = False
 
 
 ---
