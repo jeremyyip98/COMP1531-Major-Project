@@ -90,7 +90,7 @@ def test_user_profile_setemail_valid():
 def test_user_profile_setemail_invalid_token():
     results = register_valid_user()
     with pytest.raises(AccessError) as e:
-        user_profile_email("hopefullythisisnotavalidtoken", "newtest@gmail.com")
+        user_profile_setemail("hopefullythisisnotavalidtoken", "newtest@gmail.com")
 
 # Here, the new email is invalid
 def test_user_profile_setemail_invalid():
