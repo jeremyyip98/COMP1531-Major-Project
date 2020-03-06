@@ -7,6 +7,9 @@ import pytest
 
 
 def test_channel_create():
+    #test invalid token
+    with pytest.raises(AccessError) as e:
+        channels_create('hopefullythisnotavalidtoken', 'a', True)
 #test if there is an input error when character string is greater than 20
     user1 = auth_register('name@mail.com', 'password', 'Jim', 'Smith')
         
@@ -18,7 +21,6 @@ def test_channel_create():
     assert channel1['channel_id'] == channelList['channels'][0]['channel_id']
 
 def test_channel_list():
-
 #should only show the channels the user given is in 
     user1 = auth_register('name@mail.com', 'password', 'Jim', 'Smith')
     user2 = auth_register('name2@mail.com', 'password1', 'Tim', 'Lift')
@@ -43,6 +45,9 @@ def test_channel_list():
     
 
 def test_channel_listall():
+    #test if invalid token is given gives access error
+    with pytest.raises(AccessError) as e:
+        channels_listall('hopefullythisnotavalidtoken')
 #when called the channel list all should list all channels including id and name regardless
 #if the user is in the channel or not (assuming thats what specs says)
     user1 = auth_register('name@mail.com', 'password', 'Jim', 'Smith')
@@ -61,6 +66,9 @@ def test_channel_addowner():
     user1 = auth_register('name@mail.com', 'password', 'Jim', 'Smith')
     user2 = auth_register('name2@mail.com', 'password1', 'Tim', 'Lift')
     channel1 = channels_create(user1['token'], 'My Channel', True)
+    #test if invalid token is given gives access error
+    with pytest.raises(AccessError) as e:
+        channel_addowner('hopefullythisnotavalidtoken', channel1['channel_id'], user1['u_id'])
 
     #test if the channel adds user1 again it gives InputError
     with pytest.raises(InputError) as e:
@@ -93,6 +101,9 @@ def test_channel_remove_owner():
     channel1 = channels_create(user1['token'], 'My Channel', True)
     details = channel_details(user1['u_id'], channel1['channel_id'])
 
+    #test if invalid token is given gives access error
+    with pytest.raises(AccessError) as e:
+        channel_removeowner('hopefullythisnotavalidtoken', channel1['channel_id'], user1['u_id'])
     #test invalid id channel
     with pytest.raises(InputError) as e:
         channel_removeowner(user1['token'], channel1['channel_id'] + 10, user1['u_id'])
@@ -161,14 +172,14 @@ def test_channel_invite_normal():
     
     #   make sure user is part of channel
     user_channels = channels_list(user['token'])
-    assert user_channels['channel_id'] == channel['channel_id']
+    assert user_channels['channels'][0]['channel_id'] == channel['channel_id']
     
     #   check whether user can now invite user2 to the channel
     user2 = auth_register('name2@mail.com', 'passw0rd', 'Ben', 'Ny')
     channel_invite(user['token'], channel['channel_id'], user2['u_id'])
     #   check if user is a member of the channel
     user2_channels = channels_list(user2['token'])
-    assert user2_channels['channel_id'] == channel['channel_id']
+    assert user2_channels['channels'][0]['channel_id'] == channel['channel_id']
 
 
 ### test error cases in channel_details function ###
@@ -212,7 +223,7 @@ def test_channel_details_normal():
     
 #   test for channel with only one member
     #   Invite user2 to the channel
-    user2 = auth.register('name2@mail.com', 'passw0rd', 'Ben', 'Ny')
+    user2 = auth_register('name2@mail.com', 'passw0rd', 'Ben', 'Ny')
     channel_invite(user['token'], channel['channel_id'], user2['u_id'])
     #   run channel_details on two members
     details = channel_details(user['token'], channel['channel_id'])
@@ -230,6 +241,9 @@ def test_channel_leave():
     user = auth_register('name@mail.com', 'password', 'John', 'Doe')
     channel = channels_create(user['token'], 'valid_channel', True)
     user2 = auth_register('name2@mail.com', 'passw0rd', 'Ben', 'Ny')
+    #test if invalid token is given gives access error
+    with pytest.raises(AccessError) as e:
+        channel_leave('hopefullythisnotavalidtoken', channel['channel_id'])
     #test inputerror with an invalid channel_id
     with pytest.raises(InputError) as e:
         channel_leave(user['token'], channel['channel_id'] + 10)
@@ -250,6 +264,9 @@ def test_channel_join():
     user = auth_register('name@mail.com', 'password', 'John', 'Doe')
     user2 = auth_register('name2@mail.com', 'passw0rd', 'Ben', 'Ny')
     channel = channels_create(user['token'], 'valid_channel', False)
+    #test if invalid token is given gives access error
+    with pytest.raises(AccessError) as e:
+        channel_join('hopefullythisnotavalidtoken', channel['channel_id'])
 #test input error when the channel id is invalid
     with pytest.raises(InputError) as e:
         channel_join(user['token'], channel['channel_id'] + 10)
