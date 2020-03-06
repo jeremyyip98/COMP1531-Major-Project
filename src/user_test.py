@@ -136,7 +136,7 @@ def test_user_profile_sethandle_handle_too_long():
 def test_user_profile_sethandle_handle_already_used():
     results = register_valid_user()
     results2 = register_another_valid_user()
-    profile2 = user_profile(results2["token"], results2["u_id"])
+    profile2 = user_profile(results2["token"], results2["u_id"])["user"]
     with pytest.raises(InputError) as e:
         user_profile_sethandle(results["token"], profile2["handle_str"])
         
