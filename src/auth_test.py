@@ -73,7 +73,9 @@ def test_logout_valid_token():
 # Logs out an invalid token
 # Assumes that it is not a valid token
 def test_logout_invalid_token():
-     assert auth_logout("hopefullythisisnotavalidtoken")["is_success"] == False
+     with pytest.raises(AccessError) as e:
+        auth_logout("hopefullythisisnotavalidtoken")
+
 
 # Attempts to log out a valid user who is not logged in
 # Should return false
