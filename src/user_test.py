@@ -2,7 +2,7 @@ import pytest
 from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle
 from auth import auth_register
 from helper_functions import register_valid_user, register_another_valid_user
-from error import InputError
+from error import InputError, AccessError
 
 
 # We assume that auth_register works
@@ -16,6 +16,12 @@ def test_user_profile_valid():
     assert profile["name_first"] == "First"
     assert profile["name_last"] == "Last"
     assert profile["handle_str"] == "firstlast"
+
+# We raise an access error since we passed in an invalid token
+def test_user_profile_invalid_token():
+    results = register_valid_user()
+    with pytest.raises(AccessError) as e:
+        user_profile("hopefullythisisnotavalidtoken", results["u_id"])
 
 # User with u_id has to be a valid user
 # We raise an input error since the u_id is invalid
@@ -38,6 +44,11 @@ def test_user_profile_setname_valid():
     assert profile["name_last"] == "Newlast"
     assert profile["handle_str"] == "firstlast"
 
+# We raise an access error since we passed in an invalid token
+def test_user_profile_setname_invalid_token():
+    results = register_valid_user()
+    with pytest.raises(AccessError) as e:
+        user_profile_setname("hopefullythisisnotavalidtoken", "Newfirst", "Newlast")
 
 # Here, the new name_first is too short
 def test_user_profile_setname_first_name_too_short():
@@ -75,6 +86,12 @@ def test_user_profile_setemail_valid():
     assert profile["name_last"] == "Last"
     assert profile["handle_str"] == "firstlast"
 
+# We raise an access error since we passed in an invalid token
+def test_user_profile_setemail_invalid_token():
+    results = register_valid_user()
+    with pytest.raises(AccessError) as e:
+        user_profile_setemail("hopefullythisisnotavalidtoken", "newtest@gmail.com")
+
 # Here, the new email is invalid
 def test_user_profile_setemail_invalid():
     results = register_valid_user()
@@ -100,6 +117,12 @@ def test_user_profile_sethandle_valid():
     assert profile["name_first"] == "First"
     assert profile["name_last"] == "Last"
     assert profile["handle_str"] == "newhandle"
+
+# We raise an access error since we passed in an invalid token
+def test_user_profile_sethandle_invalid_token():
+    results = register_valid_user()
+    with pytest.raises(AccessError) as e:
+        user_profile_sethandle("hopefullythisisnotavalidtoken", "newhandle")
 
 #Here, the new handle_str is too short
 def test_user_profile_sethandle_handle_too_short():
