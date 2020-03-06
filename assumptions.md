@@ -1,5 +1,5 @@
-
 ### Assumptions
+
 - Assume the person who creates the channel is the owner of the channel
 
 - Assume first person who joins channel/creates channel is owner of channel.
@@ -22,6 +22,7 @@
 
 - Assumed that "hopefullythisisnotavalidtoken" is not a valid token
 
+- Assume register and login functions are always valid
 
 ---
 
