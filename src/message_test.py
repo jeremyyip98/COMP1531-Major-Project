@@ -3,20 +3,9 @@ from message import message_send, message_remove, message_edit
 from auth import auth_register, auth_login, auth_logout
 from channels import channels_create
 from channel import channel_join, channel_addowner, channel_messages
+from helper_functions import register_valid_user, register_another_valid_user
 from error import InputError
 from error import AccessError
-
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'' register_valid_user(), register_another_valid_user()
-'' The helper functions which generates two different users
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-# Helper function to register a valid user and return u_id and token
-def register_valid_user():
-    return auth_register("test@gmail.com", "Password", "First", "Last")
-
-# Helper function to register another valid user with different email and return u_id and token
-def register_another_valid_user():
-    return auth_register("notjoined@gmail.com", "Password", "First", "Last")
 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '' test_send_exceed_characters(), test_send_not_joined_channel(), test_send_correct_channel()
