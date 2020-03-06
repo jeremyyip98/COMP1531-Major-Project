@@ -3,7 +3,11 @@ from auth import auth_register
 from helper_functions import register_valid_user, create_valid_channel
 from message import message_send
 import pytest
-from error import InputError
+from error import InputError, AccessError
+
+def test_users_all_invalid_token():
+    with pytest.raises(AccessError) as e:
+        users_all('hopefullythisisnotavalidtoken')
 
 def test_users_all_one_user():
     details = register_valid_user()
@@ -27,6 +31,10 @@ def send_test_message(message, channel_name):
     return message_details, details
 
 # Assumes messages are in some sort of order when multiple results
+
+def test_search_invalid_token():
+    with pytest.raises(AccessError) as e:
+        search('hopefullythisisnotavalidtoken', "irrelevantsearchterm")
 
 def test_search_one_channel():
     # This registers a user, creates a channel and sends the message and returns the message 
