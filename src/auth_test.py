@@ -79,7 +79,7 @@ def test_logout_invalid_token():
 # Should return false
 def test_logout_logged_out_user():
     details = register_valid_user()
-    test_logout_invalid_token()
+    auth_logout(details["token"])
     assert auth_logout(details["token"])["is_success"] == False
 
 # Successful login -- Checks that user_id is correctly maintained
