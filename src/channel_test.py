@@ -9,6 +9,7 @@ import pytest
 def test_channel_create():
 #test if there is an input error when character string is greater than 20
     user1 = auth_register('name@mail.com', 'password', 'Jim', 'Smith')
+        
     with pytest.raises(InputError) as e:
         channels_create(user1['token'], 'a' * 21, True)
     #test if it returns the right ID
@@ -17,9 +18,11 @@ def test_channel_create():
     assert channel1['channel_id'] == channelList['channels'][0]['channel_id']
 
 def test_channel_list():
+
 #should only show the channels the user given is in 
     user1 = auth_register('name@mail.com', 'password', 'Jim', 'Smith')
     user2 = auth_register('name2@mail.com', 'password1', 'Tim', 'Lift')
+    
     channel1 = channels_create(user1['token'], 'My Channel', True)
     channel2 = channels_create(user2['token'], 'Second Channel', False)
     channelList = channels_list(user1['token'])
@@ -37,6 +40,7 @@ def test_channel_list():
 
     details = channel_details(user2['token'], channel2['channel_id'])
     assert details['name'] == channelList2['channels'][0]['name']
+    
 
 def test_channel_listall():
 #when called the channel list all should list all channels including id and name regardless
@@ -49,6 +53,7 @@ def test_channel_listall():
 
     assert channelList['channels'][0]['channel_id'] == channel1['channel_id']
     assert channelList['channels'][1]['channel_id'] == channel2['channel_id']
+    
 
 
 def test_channel_addowner():
@@ -79,6 +84,7 @@ def test_channel_addowner():
     #assert that user 2 is in owners
     user2_profile = user_profile(user2['token'], user2['u_id'])
     assert details['owner_members'][1]['name_first'] == user2_profile['user']['name_first']
+    
 
 def test_channel_remove_owner():
     #assume user1 is owner of channel when he makes the channel
@@ -110,12 +116,14 @@ def test_channel_remove_owner():
     #check that after removing the person the second 
     assert len(details['owner_members']) == 1
 
-
+    # test if function gives AccessError when invalid token passed
+    with pytest.raises(AccessError) as e:
+        channel_create('hopefullythisisnotavalidtoken', 'a', True)
 
 ### Tests the channel_invite() function for errors ###
 def test_channel_invite_errors():
     user = auth_register('name@mail.com', 'password', 'John', 'Doe')
-    #   creates channel and assumes user is now owner
+        
     channel = channels_create(user['token'], 'valid_channel', True)
     
     #   test when inviting user to a channel with INVALID CHANNEL_ID - gives InputError where u_id is valid
@@ -141,11 +149,14 @@ def test_channel_invite_errors():
     #   test when a member of channel invites themselves - InputError
     with pytest.raises(InputError) as e:
         channel_invite(user['token'], channel['channel_id'], user['u_id'])
+        
+    # test if function gives AccessError when invalid token passed
+    with pytest.raises(AccessError) as e:
+        channel_invite('hopefullythisisnotavalidtoken', channel['channel_id', user['u_id'])
          
 ### Test for normal activity of channel_invite function ###
 def test_channel_invite_normal():
     user = auth_register('name@mail.com', 'password', 'John', 'Doe')
-    #   creates channel and assumes user is now owner
     channel = channels_create(user['token'], 'valid_channel', True)
     
     #   make sure user is part of channel
@@ -163,7 +174,6 @@ def test_channel_invite_normal():
 ### test error cases in channel_details function ###
 def test_channel_details_errors():
     user = auth_register('name@mail.com', 'password', 'John', 'Doe')
-    #   creates channel and assumes user is now owner
     channel = channels_create(user['token'], 'valid_channel', True)
     
     #   test when authorised user is not part of the channel - AccessError
@@ -180,11 +190,14 @@ def test_channel_details_errors():
     with pytest.raises(InputError) as e:
         channel_details(user['token'], channel['channel_id'] + 10)
         
+    # test if function gives AccessError when invalid token passed
+    with pytest.raises(AccessError) as e:
+        channel_invite('hopefullythisisnotavalidtoken', channel['channel_id'])
+        
         
 ### test for normal function of channel_details ###
 def test_channel_details_normal():
     user = auth_register('name@mail.com', 'password', 'John', 'Doe')
-    #   creates channel and assumes user is now owner
     channel = channels_create(user['token'], 'valid_channel', True)
     
     #   run channel_details
@@ -289,11 +302,19 @@ def test_channel_messages_errors():
     with pytest.raises(AccessError) as e:
         channel_messages(user3['token'], channel['channel_id'], total_messages-1)
         
+    # test if function gives AccessError when invalid token passed
+    with pytest.raises(AccessError) as e:
+        channel_invite('hopefullythisisnotavalidtoken', channel['channel_id'], 0)
+        
 ### Test the normal functioning of channel_messages ###     
 def test_channel_messages_normal():
     user = auth_register('name@mail.com', 'password', 'John', 'Doe')
     #   creates channel and assumes user is now owner
     channel = channels_create(user['token'], 'valid_channel', True)
+    
+    #   test when no current messages in the channel
+    message = channel_messages(user['token'], channel['channel_id'], 0)  
+    assert message['messages'][0]['message'] == ''
     
     #   send 124 messages into channel
     for i in range(124):
@@ -302,19 +323,19 @@ def test_channel_messages_normal():
     #   check if channel_messages are correct in these channel as well as 'start' and 'end' points
     message0 = channel_messages(user['token'], channel['channel_id'], 0)
     for i in range(50):
-        assert message0['message'][i]['message'] == f'abcde{i}'
+        assert message0['messages'][i]['message'] == f'abcde{i}'
     assert message0['start'] == 0
     assert message0['end'] == 50
         
     message1 = channel_messages(user['token'], channel['channel_id'], 50)
     for i in range(50, 100):
-        assert message1['message'][i]['message'] == f'abcde{i}'
+        assert message1['messages'][i]['message'] == f'abcde{i}'
     assert message0['start'] == 50
     assert message0['end'] == 100
     
     #   check when function reaches end of messages
     message2 = channel_messages(user['token'], channel['channel_id'], 100)
     for i in range(100, 124):
-        assert message1['message'][i]['message'] == f'abcde{i}'
+        assert message1['messages'][i]['message'] == f'abcde{i}'
     assert message0['start'] == 100
     assert message0['end'] == -1
