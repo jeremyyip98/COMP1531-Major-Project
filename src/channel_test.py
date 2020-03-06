@@ -10,11 +10,11 @@ def test_channel_create():
     #test invalid token
     with pytest.raises(AccessError) as e:
         channels_create('hopefullythisnotavalidtoken', 'a', True)
-#test if there is an input error when character string is greater than 20
+    #test if there is an input error when character string is greater than 20
     user1 = auth_register('name@mail.com', 'password', 'Jim', 'Smith')
     with pytest.raises(InputError) as e:
         channels_create(user1['token'], 'a' * 21, True)
-    #test if it returns the right ID
+    #test if it returns the right ID and the channel is in the channel list
     channel1 = channels_create(user1['token'], 'My Channel', True)
     channelList = channels_listall(user1['token'])
     assert channel1['channel_id'] == channelList['channels'][0]['channel_id']
@@ -23,21 +23,21 @@ def test_channel_list():
     #test invalid token
     with pytest.raises(AccessError) as e:
         channels_list('hopefullythisnotavalidtoken')
-#should only show the channels the user given is in 
+    #create users
     user1 = auth_register('name@mail.com', 'password', 'Jim', 'Smith')
     user2 = auth_register('name2@mail.com', 'password1', 'Tim', 'Lift')
     channel1 = channels_create(user1['token'], 'My Channel', True)
     channel2 = channels_create(user2['token'], 'Second Channel', False)
     channelList = channels_list(user1['token'])
-    
+    #should only show the channels the user given is in 
     assert channelList['channels'][0]['channel_id'] == channel1['channel_id']
     assert len(channelList['channels']) == 1
-
+    #ensure the name of channel is the name given
     details = channel_details(user1['token'], channel1['channel_id'])
     assert details['name'] == channelList['channels'][0]['name']
 
     channelList2 = channels_list(user2['token'])
-    
+    #ensure there is only one channel listed for user2
     assert channelList2['channels'][0]['channel_id'] == channel2['channel_id']
     assert len(channelList2['channels']) == 1
 
@@ -55,7 +55,7 @@ def test_channel_listall():
     channel1 = channels_create(user1['token'], 'My Channel', True)
     channel2 = channels_create(user2['token'],'Second Channel', False)
     channelList = channels_listall(user1['token'])
-
+    #make sure it list all the channel regardless if the user is in it or not
     assert channelList['channels'][0]['channel_id'] == channel1['channel_id']
     assert channelList['channels'][1]['channel_id'] == channel2['channel_id']
 
@@ -187,13 +187,8 @@ def test_channel_details_errors():
     with pytest.raises(InputError) as e:
         channel_details(user2['token'], channel['channel_id'])
     with pytest.raises(InputError) as e:
-<<<<<<< HEAD
-        channel_details(user['token'], channel['channel_id'])
-=======
-        channel_details(user3['token'], channel['channel_id'])
-      
+        channel_details(user3['token'], channel['channel_id']) 
     #   test when checking channel with INVALID CHANNEL_ID - InputError
->>>>>>> 9534a5c6f56ce1831500e0cb5d15809c40f0451e
     with pytest.raises(InputError) as e:
         channel_details(user['token'], channel['channel_id'] + 1)
     with pytest.raises(InputError) as e:
