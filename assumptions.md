@@ -22,7 +22,7 @@
 
 - Assumed that "hopefullythisisnotavalidtoken" is not a valid token
 
-- Assume register and login functions are always valid
+- Assume register and login functions always return a valid token
 
 ---
 
