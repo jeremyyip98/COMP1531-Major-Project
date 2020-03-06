@@ -315,6 +315,8 @@ def test_channel_messages_normal():
     #   test when no current messages in the channel
     message = channel_messages(user['token'], channel['channel_id'], 0)  
     assert message['messages'][0]['message'] == ''
+    assert message['start'] == 0
+    assert message['end'] == -1
     
     #   send 124 messages into channel
     for i in range(124):
