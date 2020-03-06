@@ -4,7 +4,6 @@ from auth import auth_register
 from helper_functions import register_valid_user, register_another_valid_user
 from error import InputError, AccessError
 
-
 # We assume that auth_register works
 
 # For a valid user, the returned profile should match with the details of the user
