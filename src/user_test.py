@@ -99,7 +99,7 @@ def test_user_profile_setemail_invalid():
 def test_user_profile_setemail_email_already_used():
     results = register_valid_user()
     results2 = register_another_valid_user()
-    profile2 = user_profile(results2["token"], results2["u_id"])
+    profile2 = user_profile(results2["token"], results2["u_id"])["user"]
     with pytest.raises(InputError) as e:
         user_profile_setemail(results["token"], profile2["email"])
 
