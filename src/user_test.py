@@ -9,7 +9,7 @@ from error import InputError, AccessError
 # For a valid user, the returned profile should match with the details of the user
 def test_user_profile_valid():
     results = register_valid_user()
-    profile = user_profile(results["token"], results["u_id"])
+    profile = user_profile(results["token"], results["u_id"])["user"]
     assert profile["u_id"] == results["u_id"]
     assert profile["email"] == "test@gmail.com"
     assert profile["name_first"] == "First"
@@ -36,7 +36,7 @@ def test_user_profile_invalid_user():
 def test_user_profile_setname_valid():
     results = register_valid_user()
     user_profile_setname(results["token"], "Newfirst", "Newlast")
-    profile = user_profile(results["token"], results["u_id"])
+    profile = user_profile(results["token"], results["u_id"])["user"]
     assert profile["u_id"] == results["u_id"]
     assert profile["email"] == "test@gmail.com"
     assert profile["name_first"] == "Newfirst"
@@ -45,7 +45,6 @@ def test_user_profile_setname_valid():
 
 # We raise an access error since we passed in an invalid token
 def test_user_profile_setname_invalid_token():
-    results = register_valid_user()
     with pytest.raises(AccessError) as e:
         user_profile_setname("hopefullythisisnotavalidtoken", "Newfirst", "Newlast")
 
@@ -78,7 +77,7 @@ def test_user_profile_setname_last_name_too_long():
 def test_user_profile_setemail_valid():
     results = register_valid_user()
     user_profile_setemail(results["token"], "newtest@gmail.com")
-    profile = user_profile(results["token"], results["u_id"])
+    profile = user_profile(results["token"], results["u_id"])["user"]
     assert profile["u_id"] == results["u_id"]
     assert profile["email"] == "newtest@gmail.com"
     assert profile["name_first"] == "First"
@@ -87,7 +86,6 @@ def test_user_profile_setemail_valid():
 
 # We raise an access error since we passed in an invalid token
 def test_user_profile_setemail_invalid_token():
-    results = register_valid_user()
     with pytest.raises(AccessError) as e:
         user_profile_setemail("hopefullythisisnotavalidtoken", "newtest@gmail.com")
 
@@ -110,7 +108,7 @@ def test_user_profile_setemail_email_already_used():
 def test_user_profile_sethandle_valid():
     results = register_valid_user()
     user_profile_sethandle(results["token"], "newhandle")
-    profile = user_profile(results["token"], results["u_id"])
+    profile = user_profile(results["token"], results["u_id"])["user"]
     assert profile["u_id"] == results["u_id"]
     assert profile["email"] == "test@gmail.com"
     assert profile["name_first"] == "First"
@@ -119,7 +117,6 @@ def test_user_profile_sethandle_valid():
 
 # We raise an access error since we passed in an invalid token
 def test_user_profile_sethandle_invalid_token():
-    results = register_valid_user()
     with pytest.raises(AccessError) as e:
         user_profile_sethandle("hopefullythisisnotavalidtoken", "newhandle")
 
@@ -142,3 +139,4 @@ def test_user_profile_sethandle_handle_already_used():
     profile2 = user_profile(results2["token"], results2["u_id"])
     with pytest.raises(InputError) as e:
         user_profile_sethandle(results["token"], profile2["handle_str"])
+        
