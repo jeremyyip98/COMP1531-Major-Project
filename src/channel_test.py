@@ -20,9 +20,6 @@ def test_channel_create():
     assert channel1['channel_id'] == channelList['channels'][0]['channel_id']
 
 def test_channel_list():
-    #test invalid token
-    with pytest.raises(AccessError) as e:
-        channels_list('hopefullythisnotavalidtoken')
 #should only show the channels the user given is in 
     user1 = auth_register('name@mail.com', 'password', 'Jim', 'Smith')
     user2 = auth_register('name2@mail.com', 'password1', 'Tim', 'Lift')
@@ -183,12 +180,19 @@ def test_channel_details_errors():
     #   test when authorised user is not part of the channel - AccessError
     user2 = auth_register('name2@mail.com', 'passw0rd', 'Ben', 'Ny')
     user3 = auth_register('name3@mail.com', 'password1', 'Tim', 'He')
-    with pytest.raises(InputError) as e:
+    with pytest.raises(AccessError) as e:
         channel_details(user2['token'], channel['channel_id'])
+<<<<<<< src/channel_test.py
+    with pytest.raises(AccessError) as e:
+        channel_details(user3['token'], channel['channel_id'])
+      
+    #   test when checking channel with INVALID CHANNEL_ID - InputError
+=======
 =======
         channel_details(user3['token'], channel['channel_id'])
       
 >>>>>>> 9534a5c6f56ce1831500e0cb5d15809c40f0451e
+>>>>>>> src/channel_test.py
     with pytest.raises(InputError) as e:
         channel_details(user['token'], channel['channel_id'] + 1)
     with pytest.raises(InputError) as e:
@@ -204,33 +208,31 @@ def test_channel_details_normal():
     user = auth_register('name@mail.com', 'password', 'John', 'Doe')
     channel = channels_create(user['token'], 'valid_channel', True)
     
+#   test for channel with only one member
     #   run channel_details
     details = channel_details(user['token'], channel['channel_id'])
-    
     #   make sure channel details is the same as actual details
     assert details['name'] == 'valid_channel'
-    
-    #   assuming the first person added becomes the owner
     owner = {'u_id': user['u_id'], 'name_first': 'John', 'name_last': 'Doe'}
     assert details['owner_members'] == owner
-    
     #   same as 'owner_members' as the only member is the owner
     assert details['all_members'] == owner
     
+<<<<<<< src/channel_test.py
+#   test for channel with only one member
+    #   Invite user2 to the channel
+=======
     user2 = auth.register('name2@mail.com', 'passw0rd', 'Ben', 'Ny')
+>>>>>>> src/channel_test.py
     user2 = auth_register('name2@mail.com', 'passw0rd', 'Ben', 'Ny')
     channel_invite(user['token'], channel['channel_id'], user2['u_id'])
-
     #   run channel_details on two members
     details = channel_details(user['token'], channel['channel_id'])
-    
     #   make sure channel details is the same as actual details
     assert details['name'] == 'valid_channel'
-    
     #   assuming the first person added becomes the owner
     owner = {'u_id': user['u_id'], 'name_first': 'John', 'name_last': 'Doe'}
     assert details['owner_members'] == owner
-    
     #   now we have two members but only one owner
     member1 = {'u_id': user2['u_id'], 'name_first': 'Ben', 'name_last': 'Ny'}
     member_list = [owner, member1]
