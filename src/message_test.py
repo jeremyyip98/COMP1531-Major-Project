@@ -48,7 +48,12 @@ def test_send_correct_channel():
     message_send(results['token'], channelInfo['channel_id'], 'abc')   # Send a message
 
     output = channel_messages(results['token'], channelInfo['channel_id'], 0)   # Store the most recent message in the channel
-    channelMessage = output.get('message')  # Get the message from the list of dictionary
+    channelList = output.get('messages')                        # Get the list "messages" from the dictionary "output"
+    channelDict = channelList[0]                                # Get the first index in the list, which is a dictionary
+    channelMessage = channelDict.get('message')                 # Get the key "message" from the dictionary
+    
+                                                                # Above code could be implented in another way: 
+                                                                # channelMessage = output.get('messages')[0].get('message')   
 
     assert channelMessage == 'abc'
 
@@ -96,8 +101,10 @@ def test_remove_confirm():
     message_remove(results['token'], messageInfo2) # Remove the recent messsage
 
     output = channel_messages(results['token'], channelInfo['channel_id'], 0)   # Store the most recent message in the channel
-    channelMessage = output.get('message') # Get the message from the list of dictionary
-
+    channelList = output.get('messages')                        # Get the list "messages" from the dictionary "output"
+    channelDict = channelList[0]                                # Get the first index in the list, which is a dictionary
+    channelMessage = channelDict.get('message')                 # Get the key "message" from the dictionary
+    
     assert channelMessage == 'abc'
 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -132,6 +139,8 @@ def test_edit_confirm():
     message_edit(results['token'], messageInfo, 'abcdefg')    # Edit a message
 
     output = channel_messages(results['token'], channelInfo['channel_id'], 0)   # Store the most recent message in the channel
-    channelMessage = output.get('message') # Get the message from the list of dictionary
-    
+    channelList = output.get('messages')                        # Get the list "messages" from the dictionary "output"
+    channelDict = channelList[0]                                # Get the first index in the list, which is a dictionary
+    channelMessage = channelDict.get('message')                 # Get the key "message" from the dictionary
+     
     assert channelMessage == 'abcdefg'
