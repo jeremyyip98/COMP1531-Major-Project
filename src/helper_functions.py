@@ -11,6 +11,10 @@ def register_valid_user():
 def register_another_valid_user():
     return auth_register("anothertest@gmail.com", "Anotherpassword", "Anotherfirst", "Anotherlast")
 
-def create_valid_channel(channel_name, is_public):
-    details = register_valid_user()
-    return (channels_create(details["token"], channel_name, is_public), details) 
+# Registers a choice of two different users, creates a channel and returns details
+def create_valid_channel(channel_name, different_user):
+    if different_user == False:
+        details = register_valid_user()
+    elif different_user == True:
+        details = register_another_valid_user()
+    return channels_create(details["token"], channel_name, True), details
