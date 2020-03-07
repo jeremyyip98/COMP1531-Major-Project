@@ -1,14 +1,14 @@
 from auth import auth_register, auth_login, auth_logout
 from helper_functions import register_valid_user
 import pytest
-from error import InputError
+from error import InputError, AccessError
 
 # Uses register_valid_user function which returns the u_id and
 
 # Checks that registration works
-# Maybe this should check that something is returned
 def test_register_valid():
     register_valid_user()
+
 # Email is not a valid address
 def test_register_invalid_email():    
     with pytest.raises(InputError) as e:
