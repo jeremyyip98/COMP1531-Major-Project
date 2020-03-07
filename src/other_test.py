@@ -1,6 +1,6 @@
 from other import users_all, search
 from auth import auth_register
-from helper_functions import register_valid_user, create_valid_channel
+from helper_functions import register_valid_user, create_valid_channel, register_another_valid_user
 from message import message_send
 import pytest
 from error import InputError, AccessError
@@ -19,10 +19,10 @@ def test_users_all_one_user():
 # Testing users all with two users
 def test_users_all_two_users():
     details = register_valid_user()
-    auth_register("another@gmail.com", "Password", "Second", "Last1")
+    register_another_valid_user()
     users = users_all(details["token"])
     assert users["users"][0]["name_first"] == "First" 
-    assert users["users"][1]["name_first"] == "Second"
+    assert users["users"][1]["name_first"] == "Anotherfirst"
     
 """
 Test for each entry in the dictionary
@@ -34,6 +34,10 @@ def send_test_message(message, channel_name, different_user):
     return message_details, details, channel_id
 
 # Assumes messages are in some sort of order when multiple results
+def test_search_invalid_token():
+    with pytest.raises(AccessError) as e:
+        search('hopefullythisisnotavalidtoken', "irrelevantsearchterm")
+
 def test_search_invalid_token():
     with pytest.raises(AccessError) as e:
         search('hopefullythisisnotavalidtoken', "irrelevantsearchterm")

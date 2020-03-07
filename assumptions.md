@@ -1,8 +1,4 @@
-
 ### Assumptions
-- Assume the person who creates the channel is the owner of the channel
-
-- Assume first person who joins channel/creates channel is owner of channel.
 
 - Assume that when called channel_list_all should list all channels including id and name regardless if the user is in the channel or not, compared to channel list which only list the channels the user is in.
 
@@ -21,6 +17,14 @@
 - Assumed that maximum password length is 50 characters
 
 - Assumed that "hopefullythisisnotavalidtoken" is not a valid token
+
+- Assume register and login functions always return a valid token
+
+- Assume that users_all lists users in order of when they registered 
+
+- Assume that logging out with an invalid token throws access error instead of "is_success" = True
+
+- Assume that logging out a logged out user with a valid token returns "is_success" = False
 
 
 ---

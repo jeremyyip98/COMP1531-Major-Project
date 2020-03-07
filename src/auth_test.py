@@ -21,7 +21,7 @@ def test_register_invalid_password():
 
 # Password is too long
 # Assumes maximum password is 50
-def test_register_invalid_password():
+def test_register_too_long_password():
     with pytest.raises(InputError) as e:
         auth_register("test@gmail.com", "F"*51, "First", "Last")
 
@@ -73,14 +73,16 @@ def test_logout_valid_token():
 # Logs out an invalid token
 # Assumes that it is not a valid token
 def test_logout_invalid_token():
-     assert auth_logout("hopefullythisisnotavalidtoken")["is_success"] == False
+     with pytest.raises(AccessError) as e:
+        auth_logout("hopefullythisisnotavalidtoken")
+
 
 # Attempts to log out a valid user who is not logged in
 # Should return false
 def test_logout_logged_out_user():
     details = register_valid_user()
-    def test_logout_invalid_token():
-     assert auth_logout(details["token"])["is_success"] == False
+    auth_logout(details["token"])
+    assert auth_logout(details["token"])["is_success"] == False
 
 # Successful login -- Checks that user_id is correctly maintained
 # Uses logout function
