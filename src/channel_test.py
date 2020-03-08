@@ -135,10 +135,6 @@ def test_channel_remove_owner():
     #check that after removing the user2 as owner there is only one owner
     assert len(details['owner_members']) == 1
 
-    # test if function gives AccessError when invalid token passed
-    with pytest.raises(AccessError) as e:
-        channels_create('hopefullythisisnotavalidtoken', 'a', True)
-
 ### Tests the channel_invite() function for errors ###
 def test_channel_invite_errors():
     user = auth_register('name@mail.com', 'password', 'John', 'Doe')
