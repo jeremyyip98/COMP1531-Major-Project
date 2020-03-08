@@ -3,7 +3,6 @@ from auth import auth_register
 from user import user_profile
 from channels import channels_list, channels_listall, channels_create
 from channel import channel_addowner, channel_removeowner, channel_invite, channel_details, channel_join, channel_leave, channel_messages
-from messages import message_send
 import pytest
 
 
@@ -11,7 +10,7 @@ def test_channels_create():
     #test invalid token
     with pytest.raises(AccessError) as e:
         channels_create('hopefullythisnotavalidtoken', 'a', True)
-#test if there is an input error when character string is greater than 20
+    #test if there is an input error when character string is greater than 20
     user1 = auth_register('name@mail.com', 'password', 'Jim', 'Smith')
     with pytest.raises(InputError) as e:
         channels_create(user1['token'], 'a' * 21, True)
@@ -21,25 +20,31 @@ def test_channels_create():
     assert channel1['channel_id'] == channelList['channels'][0]['channel_id']
 
 def test_channel_list():
-#should only show the channels the user given is in 
+    #should only show the channels the user given is in 
     user1 = auth_register('name@mail.com', 'password', 'Jim', 'Smith')
     user2 = auth_register('name2@mail.com', 'password1', 'Tim', 'Lift')
     
     channel1 = channels_create(user1['token'], 'My Channel', True)
     channel2 = channels_create(user2['token'], 'Second Channel', False)
+    #test invalid token
+    with pytest.raises(AccessError) as e:
+        channels_list('hopefullythisnotavalidtoken')
+    #create chanel_list
     channelList = channels_list(user1['token'])
-    
+    #make sure there is only one channel
     assert channelList['channels'][0]['channel_id'] == channel1['channel_id']
     assert len(channelList['channels']) == 1
-
+    
+    #check info is right
     details = channel_details(user1['token'], channel1['channel_id'])
     assert details['name'] == channelList['channels'][0]['name']
-
+    
+    #make second channellist to test if it only shows for user2
     channelList2 = channels_list(user2['token'])
     
     assert channelList2['channels'][0]['channel_id'] == channel2['channel_id']
     assert len(channelList2['channels']) == 1
-
+    #make sure all the details are right
     details = channel_details(user2['token'], channel2['channel_id'])
     assert details['name'] == channelList2['channels'][0]['name']
     
@@ -47,14 +52,16 @@ def test_channel_listall():
     #check if inputed invalid token
     with pytest.raises(AccessError) as e:
         channels_listall('hopefullythisnotavalidtoken')
-#when called the channel list all should list all channels including id and name regardless
-#if the user is in the channel or not (assuming thats what specs says)
+    #when called the channel list all should list all channels including id 
+    #and name regardless
+    #if the user is in the channel or not (assuming thats what specs says)
     user1 = auth_register('name@mail.com', 'password', 'Jim', 'Smith')
     user2 = auth_register('name2@mail.com', 'password1', 'Tim', 'Lift')
     channel1 = channels_create(user1['token'], 'My Channel', True)
     channel2 = channels_create(user2['token'],'Second Channel', False)
     channelList = channels_listall(user1['token'])
-    #make sure it shows both channels
+    #make sure it shows both channels for one user even if user is not in
+    #the channel
     assert channelList['channels'][0]['channel_id'] == channel1['channel_id']
     assert channelList['channels'][1]['channel_id'] == channel2['channel_id']
     
@@ -89,7 +96,7 @@ def test_channel_addowner():
     channel_addowner(user1['token'], channel1['channel_id'], user2['u_id'])
 
     details = channel_details(user2['u_id'], channel1['channel_id'])
-    #assert that user 2 is in owners
+    #assert that user 2 is in owners through the details function
     user2_profile = user_profile(user2['token'], user2['u_id'])
     assert details['owner_members'][1]['name_first'] == user2_profile['user']['name_first']
     
@@ -100,6 +107,7 @@ def test_channel_remove_owner():
     user2 = auth_register('name2@mail.com', 'password1', 'Tim', 'Lift')
     channel1 = channels_create(user1['token'], 'My Channel', True)
     details = channel_details(user1['u_id'], channel1['channel_id'])
+    
     #Test that when inputed invalid token access error is raised
     with pytest.raises(AccessError) as e:
         channel_removeowner('hopefullythisnotavalidtoken', channel1['channel_id'], user1['u_id'])
@@ -123,7 +131,7 @@ def test_channel_remove_owner():
     assert len(details['owner_member']) == 2
 
     channel_removeowner(user2['token'], channel1['channel_id'], user2['user_id'])
-    #check that after removing the person the second 
+    #check that after removing the user2 as owner there is only one owner
     assert len(details['owner_members']) == 1
 
     # test if function gives AccessError when invalid token passed
@@ -176,7 +184,7 @@ def test_channel_invite_normal():
     user2 = auth_register('name2@mail.com', 'passw0rd', 'Ben', 'Ny')
     channel_invite(user['token'], channel['channel_id'], user2['u_id'])
     #   check if user is a member of the channel
-    user2_channels = channels_list(user2['token'])
+    assert user2_channels['channel_id'] == channel['channel_id']
     assert user2_channels['channels'][0]['channel_id'] == channel['channel_id']
 
 
@@ -245,7 +253,7 @@ def test_channel_leave():
     #test inputerror with an invalid channel_id
     with pytest.raises(InputError) as e:
         channel_leave(user['token'], channel['channel_id'] + 10)
-    #test inputerror wit invalid channel_id again
+    #test inputerror with invalid channel_id again
     with pytest.raises(InputError) as e:
         channel_leave(user['token'], channel['channel_id'] + 1)
     #test Access error when user is not memeber of channel
@@ -262,19 +270,24 @@ def test_channel_join():
     user = auth_register('name@mail.com', 'password', 'John', 'Doe')
     user2 = auth_register('name2@mail.com', 'passw0rd', 'Ben', 'Ny')
     channel = channels_create(user['token'], 'valid_channel', False)
+    
     #Test that when inputed invalid token access error is raised
     with pytest.raises(AccessError) as e:
         channel_join('hopefullythisnotavalidtoken', channel['channel_id'])
-#test input error when the channel id is invalid
+    
+    #test input error when the channel id is invalid
     with pytest.raises(InputError) as e:
         channel_join(user['token'], channel['channel_id'] + 10)
-#test access error when the channel is private and user2 is not admin
+    
+    #test access error when the channel is private and user2 is not admin
     with pytest.raises(AccessError) as e:
         channel_join(user2['token'], channel['channel_id'])
-    #test join of a publuc channel
+    
+    #test join of a public channel
     channel2 = channels_create(user2['token'], 'Public Channel', True)
     details = channel_details(user2['token'], channel2['channel_id'])
     assert len(details['all_members']) == 1
+    #test there are now 2 people in the channel
     channel_join(user['u_id'], channel2['u_id'])
     assert len(details['all_members']) == 2
     
