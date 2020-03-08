@@ -1,8 +1,8 @@
 from error import AccessError, InputError
 from auth import auth_register
-from channels import *
-from channel import *
 from user import user_profile
+from channels import channels_list, channels_listall, channels_create
+from channel import channel_addowner, channel_removeowner, channel_invite, channel_details, channel_join, channel_leave, channel_messages
 import pytest
 
 
@@ -134,34 +134,33 @@ def test_channel_remove_owner():
 ### Tests the channel_invite() function for errors ###
 def test_channel_invite_errors():
     user = auth_register('name@mail.com', 'password', 'John', 'Doe')
-        
     channel = channels_create(user['token'], 'valid_channel', True)
     
-    #   test when inviting user to a channel with INVALID CHANNEL_ID - gives InputError where u_id is valid
+#   test when inviting user to a channel with invalid channel_id - gives InputError (where u_id is valid)
     with pytest.raises(InputError) as e:
         channel_invite(user['token'], channel['channel_id'] + 1, user['u_id'])
     #   testing same issue with a separate but invalid channel_id
     with pytest.raises(InputError) as e:
         channel_invite(user['token'], channel['channel_id'] + 10, user['u_id'])
         
-    #   test when inviting an INVALID u_id - gives InputError
+#   test when inviting an INVALID u_id - gives InputError
     with pytest.raises(InputError) as e:
         channel_invite(user['token'], channel['channel_id'], user['u_id'] + 1)
     #   testing same issue with a separate but invalid u_id
     with pytest.raises(InputError) as e:
         channel_invite(user['token'], channel['channel_id'], user['u_id'] + 10)
 
-    #   test when a non-member of channel invites another user - AccessError
+#   test when a non-member of channel invites another user - AccessError
     user2 = auth_register('name2@mail.com', 'passw0rd', 'Ben', 'Ny')
     user3 = auth_register('name3@mail.com', 'password1', 'Tim', 'He')
     with pytest.raises(AccessError) as e:
          channel_invite(user2['token'], channel['channel_id'], user3['u_id'])
     
-    #   test when a member of channel invites themselves - InputError
+#   test when a member of channel invites themselves - InputError
     with pytest.raises(InputError) as e:
         channel_invite(user['token'], channel['channel_id'], user['u_id'])
         
-    # test if function gives AccessError when invalid token passed
+# test if function gives AccessError when invalid token passed
     with pytest.raises(AccessError) as e:
         channel_invite('hopefullythisisnotavalidtoken', channel['channel_id'], user['u_id'])
          
@@ -187,7 +186,7 @@ def test_channel_details_errors():
     user = auth_register('name@mail.com', 'password', 'John', 'Doe')
     channel = channels_create(user['token'], 'valid_channel', True)
     
-    #   test when authorised user is not part of the channel - AccessError
+#   test when authorised user is not part of the channel - AccessError
     user2 = auth_register('name2@mail.com', 'passw0rd', 'Ben', 'Ny')
     user3 = auth_register('name3@mail.com', 'password1', 'Tim', 'He')
     with pytest.raises(AccessError) as e:
@@ -195,13 +194,13 @@ def test_channel_details_errors():
     with pytest.raises(AccessError) as e:
         channel_details(user3['token'], channel['channel_id'])
       
-    #   test when checking channel with INVALID CHANNEL_ID - InputError
+#   test when checking channel with invalid_channel_id - InputError
     with pytest.raises(InputError) as e:
         channel_details(user['token'], channel['channel_id'] + 1)
     with pytest.raises(InputError) as e:
         channel_details(user['token'], channel['channel_id'] + 10)
         
-    # test if function gives AccessError when invalid token passed
+# test if function gives AccessError when invalid token passed
     with pytest.raises(AccessError) as e:
         channel_invite('hopefullythisisnotavalidtoken', channel['channel_id'])
         
@@ -286,6 +285,13 @@ def test_channel_messages_errors():
     #   creates channel and assumes user is now owner
     channel = channels_create(user['token'], 'valid_channel', True)
     
+    #   test when there is no messages - assume AccessError
+    with pytest.raises(AccessError) as e:
+        channel_messages(user['token'], channel['channel_id'], 0)
+        
+    #   send a message
+    message_send(user['token'], channel['channel_id'], "abcde")
+    
     #   test when checking channel with INVALID CHANNEL_ID - InputError
     with pytest.raises(InputError) as e:
         channel_messages(user['token'], channel['channel_id'] + 1, 0)
@@ -294,12 +300,12 @@ def test_channel_messages_errors():
     with pytest.raises(InputError) as e:
         channel_messages(user['token'], channel['channel_id'] -10, 0)
         
-    #   send 10 messages to channel
-    for i in range(10):
-        message_send(user['token'], channel['channel_id'], f'abcde{i}')
+    #   send 9 messages to channel
+    for i in range(1, 10):
+        message_send(user['token'], channel['channel_id'], "abcde")
         
     #   check if start is greater than total messages
-    total_messages = 10
+    total_messages = 10 # 9 messages + first one
     with pytest.raises(InputError) as e:
         channel_messages(user['token'], channel['channel_id'], total_messages + 1)
     with pytest.raises(InputError) as e:
@@ -322,12 +328,6 @@ def test_channel_messages_normal():
     user = auth_register('name@mail.com', 'password', 'John', 'Doe')
     #   creates channel and assumes user is now owner
     channel = channels_create(user['token'], 'valid_channel', True)
-    
-    #   test when no current messages in the channel
-    message = channel_messages(user['token'], channel['channel_id'], 0)  
-    assert message['messages'][0]['message'] == ''
-    assert message['start'] == 0
-    assert message['end'] == -1
     
     #   send 124 messages into channel
     for i in range(124):
