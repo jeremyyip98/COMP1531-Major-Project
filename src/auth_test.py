@@ -47,10 +47,11 @@ def test_register_too_long_last_name():
         auth_register("test@gmail.com", "Password", "First", "L" * 51)
 
 
-# Successful login
+# Testing successful login
 def test_login_valid_details():
-    register_valid_user()
-    auth_login("test@gmail.com", "Password")
+    details1 = register_valid_user()
+    details2 = auth_login("test@gmail.com", "Password")
+    assert details1 == details2
 
 
 # Logging in with unregistered email
@@ -78,11 +79,15 @@ def test_logout_invalid_token():
 
 
 # Attempts to log out a valid user who is not logged in
-# Should return false
+# Assume that this should return false
 def test_logout_logged_out_user():
     details = register_valid_user()
     auth_logout(details["token"])
     assert auth_logout(details["token"])["is_success"] == False
+
+
+
+
 
 # Successful login -- Checks that user_id is correctly maintained
 # Uses logout function
