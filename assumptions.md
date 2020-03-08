@@ -1,9 +1,5 @@
 ### Assumptions
 
-- Assume the person who creates the channel is the owner of the channel
-
-- Assume first person who joins channel/creates channel is owner of channel.
-
 - Assume that when called channel_list_all should list all channels including id and name regardless if the user is in the channel or not, compared to channel list which only list the channels the user is in.
 
 - Assume that owners are also in the member list
@@ -25,7 +21,14 @@
 - Assume register and login functions always return a valid token
 
 - Assume when channel_messages is run on empty list results in AccessError
----
+ 
+- Assume that users_all lists users in order of when they registered 
+
+- Assume that logging out with an invalid token throws access error instead of "is_success" = True
+
+- Assume that logging out a logged out user with a valid token returns "is_success" = False
+
+
 
 ![alt text](https://m.media-amazon.com/images/M/MV5BOTFmYTc3ZWEtNTYxNi00OTA4LTk2NjEtNTI2MTJlNzkyMDdlXkEyXkFqcGdeQWpybA@@._V1_UX477_CR0,0,477,268_AL_.jpg)
             *Not our image*   
