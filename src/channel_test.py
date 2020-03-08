@@ -3,6 +3,7 @@ from auth import auth_register
 from user import user_profile
 from channels import channels_list, channels_listall, channels_create
 from channel import channel_addowner, channel_removeowner, channel_invite, channel_details, channel_join, channel_leave, channel_messages
+from messages import message_send
 import pytest
 
 
