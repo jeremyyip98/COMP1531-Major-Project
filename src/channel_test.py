@@ -185,7 +185,7 @@ def test_channel_invite_normal():
     user2 = auth_register('name2@mail.com', 'passw0rd', 'Ben', 'Ny')
     channel_invite(user['token'], channel['channel_id'], user2['u_id'])
     #   check if user is a member of the channel
-    assert user2_channels['channel_id'] == channel['channel_id']
+    user2_channels = channels_list(user2['token'])
     assert user2_channels['channels'][0]['channel_id'] == channel['channel_id']
 
 
