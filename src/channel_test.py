@@ -6,7 +6,7 @@ from channel import channel_addowner, channel_removeowner, channel_invite, chann
 import pytest
 
 
-def test_channel_create():
+def test_channels_create():
     #test invalid token
     with pytest.raises(AccessError) as e:
         channels_create('hopefullythisnotavalidtoken', 'a', True)
@@ -63,6 +63,8 @@ def test_channel_addowner():
     #assume user1 is owner of channel when he makes the channel
     user1 = auth_register('name@mail.com', 'password', 'Jim', 'Smith')
     user2 = auth_register('name2@mail.com', 'password1', 'Tim', 'Lift')
+    channel1 = channels_create(user1['token'], 'My Channel', True)
+    
     #check that when inputed wrong token gives access error
     with pytest.raises(AccessError) as e:
         channel_addowner('hopefullythisnotavalidtoken', channel1['channel_id'], user1['u_id'])
@@ -125,7 +127,7 @@ def test_channel_remove_owner():
 
     # test if function gives AccessError when invalid token passed
     with pytest.raises(AccessError) as e:
-        channel_create('hopefullythisisnotavalidtoken', 'a', True)
+        channels_create('hopefullythisisnotavalidtoken', 'a', True)
 
 ### Tests the channel_invite() function for errors ###
 def test_channel_invite_errors():
@@ -166,7 +168,7 @@ def test_channel_invite_normal():
     channel = channels_create(user['token'], 'valid_channel', True)
     
     #   make sure user is part of channel
-    assert user_channels['channel_id'] == channel['channel_id']
+    user_channels = channels_list(user['token'])
     assert user_channels['channels'][0]['channel_id'] == channel['channel_id']
     
     #   check whether user can now invite user2 to the channel
@@ -258,6 +260,7 @@ def test_channel_leave():
 def test_channel_join():
     user = auth_register('name@mail.com', 'password', 'John', 'Doe')
     user2 = auth_register('name2@mail.com', 'passw0rd', 'Ben', 'Ny')
+    channel = channels_create(user['token'], 'valid_channel', False)
     #Test that when inputed invalid token access error is raised
     with pytest.raises(AccessError) as e:
         channel_join('hopefullythisnotavalidtoken', channel['channel_id'])
