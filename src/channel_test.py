@@ -3,6 +3,7 @@ from auth import auth_register
 from user import user_profile
 from channels import channels_list, channels_listall, channels_create
 from channel import channel_addowner, channel_removeowner, channel_invite, channel_details, channel_join, channel_leave, channel_messages
+from messages import message_send
 import pytest
 
 
@@ -175,7 +176,7 @@ def test_channel_invite_normal():
     user2 = auth_register('name2@mail.com', 'passw0rd', 'Ben', 'Ny')
     channel_invite(user['token'], channel['channel_id'], user2['u_id'])
     #   check if user is a member of the channel
-    assert user2_channels['channel_id'] == channel['channel_id']
+    user2_channels = channels_list(user2['token'])
     assert user2_channels['channels'][0]['channel_id'] == channel['channel_id']
 
 
