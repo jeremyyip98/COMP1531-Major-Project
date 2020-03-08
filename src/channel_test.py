@@ -6,7 +6,7 @@ from channel import channel_addowner, channel_removeowner, channel_invite, chann
 import pytest
 
 
-def test_channel_create():
+def test_channels_create():
     #test invalid token
     with pytest.raises(AccessError) as e:
         channels_create('hopefullythisnotavalidtoken', 'a', True)
@@ -129,7 +129,7 @@ def test_channel_remove_owner():
 
     # test if function gives AccessError when invalid token passed
     with pytest.raises(AccessError) as e:
-        channel_create('hopefullythisisnotavalidtoken', 'a', True)
+        channels_create('hopefullythisisnotavalidtoken', 'a', True)
 
 ### Tests the channel_invite() function for errors ###
 def test_channel_invite_errors():
