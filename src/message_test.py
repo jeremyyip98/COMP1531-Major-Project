@@ -3,25 +3,15 @@ from message import message_send, message_remove, message_edit
 from auth import auth_register, auth_login, auth_logout
 from channels import channels_create
 from channel import channel_join, channel_addowner, channel_messages
+from helper_functions import register_valid_user, register_another_valid_user
 from error import InputError
 from error import AccessError
 
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'' register_valid_user(), register_another_valid_user()
-'' The helper functions which generates two different users
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-# Helper function to register a valid user and return u_id and token
-def register_valid_user():
-    return auth_register("test@gmail.com", "Password", "First", "Last")
-
-# Helper function to register another valid user with different email and return u_id and token
-def register_another_valid_user():
-    return auth_register("notjoined@gmail.com", "Password", "First", "Last")
-
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'' test_send_exceed_characters(), test_send_not_joined_channel(), test_send_correct_channel()
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'' test_send_exceed_characters(), test_send_not_joined_channel(), test_send_correct_channel(),
+'' test_send_invalid_token()
 '' The test functions for the message_send function in message.py
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # If message is more than 1000 characters, InputError
 def test_send_exceed_characters():
     results = register_valid_user()  # Generate a token
@@ -48,14 +38,26 @@ def test_send_correct_channel():
     message_send(results['token'], channelInfo['channel_id'], 'abc')   # Send a message
 
     output = channel_messages(results['token'], channelInfo['channel_id'], 0)   # Store the most recent message in the channel
-    channelMessage = output.get('message')  # Get the message from the list of dictionary
+    channelList = output.get('messages')                        # Get the list "messages" from the dictionary "output"
+    channelDict = channelList[0]                                # Get the first index in the list, which is a dictionary
+    channelMessage = channelDict.get('message')                 # Get the key "message" from the dictionary
+    
+                                                                # Above code could be implented in another way: 
+                                                                # channelMessage = output.get('messages')[0].get('message')   
 
     assert channelMessage == 'abc'
 
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'' test_remove_not_exists, test_remove_invalid_user(), test_remove_confirm()
+# Check if it's an invalid token
+def test_send_invalid_token():
+    results = register_valid_user()  # Generate a token
+    channelInfo = channels_create(results['token'], 'Cool Kids', False)     # Create a channel and store the channel ID
+    with pytest.raises(AccessError) as e:
+        message_send('hopefullythisisnotavalidtoken', channelInfo['channel_id'], 'abc')
+
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'' test_remove_not_exists, test_remove_invalid_user(), test_remove_confirm(), test_remove_invalid_token()
 '' The test functions for the message_remove function in message.py
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # If the message (based on ID) no longer exists, InputError
 def test_remove_not_exists():
     results = register_valid_user()  # Generate a token
@@ -75,7 +77,7 @@ def test_remove_invalid_user():
 
     channelInfo = channels_create(results['token'], 'Cool Kids', False)     # Create a channel and store the channel ID
     channel_join(results['token'], channelInfo)                             # Given the stored channel ID, add the user to that channel
-    channel_join(not_owner['token'], channelInfo)                             # Add another user to the channel
+    channel_join(not_owner['token'], channelInfo)                           # Add another user to the channel
     channel_addowner(results['token'], channelInfo, results['u_id'])        # Make user of "results" an owner of this channel
 
     messageInfo = message_send(results['token'], channelInfo['channel_id'], 'abc')  # Send a message to the stored channel ID and store the message ID
@@ -96,14 +98,27 @@ def test_remove_confirm():
     message_remove(results['token'], messageInfo2) # Remove the recent messsage
 
     output = channel_messages(results['token'], channelInfo['channel_id'], 0)   # Store the most recent message in the channel
-    channelMessage = output.get('message') # Get the message from the list of dictionary
-
+    channelList = output.get('messages')                        # Get the list "messages" from the dictionary "output"
+    channelDict = channelList[0]                                # Get the first index in the list, which is a dictionary
+    channelMessage = channelDict.get('message')                 # Get the key "message" from the dictionary
+    
     assert channelMessage == 'abc'
 
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'' test_edit_invalid_user(), test_edit_confirm()
+# Check if it's an invalid token
+def test_remove_invalid_token():
+    results = register_valid_user()  # Generate a token
+    channelInfo = channels_create(results['token'], 'Cool Kids', False)     # Create a channel and store the channel ID
+    channel_join(results['token'], channelInfo)                             # Given the stored channel ID, add the user to that channel
+
+    messageInfo = message_send(results['token'], channelInfo['channel_id'], 'abc')  # Send a message to the stored channel ID and store the message ID
+    with pytest.raises(AccessError) as e:
+        message_remove('hopefullythisisnotavalidtoken', messageInfo)
+
+
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'' test_edit_invalid_user(), test_edit_confirm(), test_edit_invalid_token()
 '' The test functions for the message_edit function in message.py
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # If the authorised user is not the one who sent the message, and not an admin/owner of the channel, Access Error
 def test_edit_invalid_user():
     results = register_valid_user()  # Generate a token
@@ -132,6 +147,19 @@ def test_edit_confirm():
     message_edit(results['token'], messageInfo, 'abcdefg')    # Edit a message
 
     output = channel_messages(results['token'], channelInfo['channel_id'], 0)   # Store the most recent message in the channel
-    channelMessage = output.get('message') # Get the message from the list of dictionary
-    
+    channelList = output.get('messages')                        # Get the list "messages" from the dictionary "output"
+    channelDict = channelList[0]                                # Get the first index in the list, which is a dictionary
+    channelMessage = channelDict.get('message')                 # Get the key "message" from the dictionary
+     
     assert channelMessage == 'abcdefg'
+
+# Check if it's an invalid token
+def test_edit_invalid_token():
+    results = register_valid_user()  # Generate a token
+    channelInfo = channels_create(results['token'], 'Cool Kids', False)     # Create a channel and store the channel ID
+    channel_join(results['token'], channelInfo)                             # Given the stored channel ID, add the user to that channel
+
+    messageInfo = message_send(results['token'], channelInfo['channel_id'], 'abc')  # Send a message to the stored channel ID and store the message ID
+    with pytest.raises(AccessError) as e:
+        message_edit('hopefullythisisnotavalidtoken', messageInfo, 'abcdefg')
+
