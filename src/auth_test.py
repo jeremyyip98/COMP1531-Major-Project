@@ -1,5 +1,6 @@
 from auth import auth_register, auth_login, auth_logout
 from helper_functions import register_valid_user
+from user import user_profile
 import pytest
 from error import InputError, AccessError
 
