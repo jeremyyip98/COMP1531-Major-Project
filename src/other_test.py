@@ -14,7 +14,11 @@ def test_users_all_invalid_token():
 def test_users_all_one_user():
     details = register_valid_user()
     users = users_all(details["token"])
+    assert users["users"][0]["u_id"] == details["u_id"]
     assert users["users"][0]["name_first"] == "First" 
+    assert users["users"][0]["name_last"] == "Last" 
+    assert users["users"][0]["email"] == "test@gmail.com" 
+    assert users["users"][0]["handle_str"] == "firstlast" 
 
 # Testing users all with two users
 def test_users_all_two_users():
@@ -24,9 +28,9 @@ def test_users_all_two_users():
     assert users["users"][0]["name_first"] == "First" 
     assert users["users"][1]["name_first"] == "Anotherfirst"
     
-"""
-Test for each entry in the dictionary
-"""
+
+
+
 # Helper function which creates a user, channel and then sends a message to it
 def send_test_message(message, channel_name, different_user):
     channel_id, details = create_valid_channel(channel_name, different_user)
