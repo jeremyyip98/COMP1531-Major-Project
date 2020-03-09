@@ -46,6 +46,18 @@ def test_register_too_long_last_name():
     with pytest.raises(InputError) as e:
         auth_register("test@gmail.com", "Password", "First", "L" * 51)
 
+# The tests involving handles assume that user_profile works correctly
+
+# Tests that a handle is correctly concatenated
+def test_register_handle_correct():
+    details = register_valid_user()
+    assert user_profile(details["token"], details["u_id"])["handle_str"] == "firstlast"
+
+# Tests that if first and last name concatenation is more than 20 characters it is cut off at 20 correctly
+def test_register_long_handle_concatenation():
+    details = auth_register("test@gmail.com", "Password", "VeryLongFirst", "VeryLonglast")
+    assert user_profile(details["token"], details["u_id"])["handle_str"] == "verylongfirstverylon"
+
 
 # Testing successful login
 def test_login_valid_details():
