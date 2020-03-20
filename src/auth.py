@@ -3,13 +3,15 @@ import hashlib
 import secrets
 
 # Set for testing purposes
+global u_id_counter
 u_id_counter = 1
 
+# Should this be added to server? Made global?
 registered_users_store = {
-                            'users' : 
+                            'registered_users' : 
                                 [
                                     {
-                                    
+                                        'email' : ''
                                     }    
                                 ],
                             'hashes': 
@@ -44,17 +46,16 @@ def generate_u_id():
 def auth_register(email, password, name_first, name_last):
     if not valid_email(email):
          raise InputError(description='Invalid Email address')
-    elif len(password) < 6 or len(password > 50):
+    elif len(password) < 6 or len(password) > 50:
         raise InputError(description='Password must be between 6 and 50 characters')
     elif len(name_first) < 1 or len(name_first) > 50:
         raise InputError(description='First name must be between 1 and 50 characters')
     elif len(name_first) < 1 or len(name_first) > 50:
         raise InputError(description='Last name must be between 1 and 50 characters')
-    elif any(d['email'] == email for d in registered_users_store['registered_users']['users']):
+    elif any(d['email'] == email for d in registered_users_store['registered_users']):
         raise InputError(description='Email is already in use')
     else:
         user = {
-                # User id is made from email ascii values which 
                 'u_id' : generate_u_id(),
                 'email' : email,
                 'name_first' : name_first,
@@ -62,6 +63,7 @@ def auth_register(email, password, name_first, name_last):
                 'password' : encrypt(password),
                 'handle_str' : make_handle(name_first, name_last)
                 }
+        # Will probably implement jwt
         token = secrets.token_urlsafe(15)
         login_info = {
                      'email' : email,
@@ -80,3 +82,4 @@ def auth_login(email, password):
 
 def auth_logout(token):
     return {'is_success':2}
+
