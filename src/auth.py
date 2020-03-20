@@ -81,6 +81,3 @@ def auth_login(email, password):
 def auth_logout(token):
     return {'is_success':2}
 
-print(auth_register("test@gmail.com", "Password", "First", "Last"))
-
-print(registered_users_store['registered_users'][1])
