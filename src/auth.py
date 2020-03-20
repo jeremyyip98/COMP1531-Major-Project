@@ -1,23 +1,20 @@
 import re
 import hashlib
 import secrets
+from database import u_ids
 
-# Set for testing purposes
-global u_id_counter
-u_id_counter = 1
 
 # Should this be added to server? Made global?
 registered_users_store = {
+  
                             'registered_users' : 
                                 [
-                                    {
-                                        'email' : ''
+                                    {                   
                                     }    
                                 ],
                             'hashes': 
                                 [
                                     {
-
                                     }
                                 ]
                         }
@@ -29,6 +26,11 @@ def valid_email(email):
     else:
         return False  
 
+def generate_u_id():
+    u_id = max(u_ids)
+    u_ids.append(u_id)
+    return u_id
+
 def make_handle(first, last):
     first = (first.lower())
     last = last.lower()
@@ -36,11 +38,6 @@ def make_handle(first, last):
 
 def encrypt(password):
     return hashlib.sha256(password.encode()).hexdigest()
-
-def generate_u_id():
-    u_id = u_id_counter
-    u_id_counter += 1
-    return u_id
 
 
 def auth_register(email, password, name_first, name_last):
@@ -52,8 +49,9 @@ def auth_register(email, password, name_first, name_last):
         raise InputError(description='First name must be between 1 and 50 characters')
     elif len(name_first) < 1 or len(name_first) > 50:
         raise InputError(description='Last name must be between 1 and 50 characters')
-    elif any(d['email'] == email for d in registered_users_store['registered_users']):
-        raise InputError(description='Email is already in use')
+    elif len(registered_users_store['registered_users']) == 0:
+        if any(d['email'] == email for d in registered_users_store['registered_users']):
+            raise InputError(description='Email is already in use')
     else:
         user = {
                 'u_id' : generate_u_id(),
@@ -71,8 +69,8 @@ def auth_register(email, password, name_first, name_last):
                      'token' : token       
                     }
         
-        registered_users_store['registered_users']['users'].append(user)
-        registered_users_store['registered_users']['hashes'].append(login_info)
+        registered_users_store['registered_users'].append(user)
+        registered_users_store['hashes'].append(login_info)
         return token
 
 
@@ -83,3 +81,6 @@ def auth_login(email, password):
 def auth_logout(token):
     return {'is_success':2}
 
+print(auth_register("test@gmail.com", "Password", "First", "Last"))
+
+print(registered_users_store['registered_users'][1])
