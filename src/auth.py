@@ -6,12 +6,12 @@ import database
 
 def valid_email(email):
     regex = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
-    if(re.search(regex,email)):
+    if re.search(regex,email):
         return True
     else:
         return False  
 
-def generate_u_id():
+def generate_u_id():s
     u_id = max(database.u_ids)
     u_id += 1
     database.u_ids.append(u_id)
@@ -80,4 +80,4 @@ def auth_logout(token):
 
 
 if __name__ == "__main__":
-    print(auth_register("test@gmail.com", "Password", "First", "Last"))
+    pass
