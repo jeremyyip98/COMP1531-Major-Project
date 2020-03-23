@@ -43,8 +43,10 @@ def check_joined_channel(token, channel_id):
     """This function check has the authorised user joined the channel or not
     return true or false"""
     joined = False
-    for dict_item in channels_list(token):      # channels_list() return a list of all channels (a list of dictionaries) that the authorised user is part of
-                                                # Hence loop through the dictionaries
+
+    # channels_list() return a list of all channels (a list of dictionaries)
+    # that the authorised user is part of, hence loop through the dictionaries
+    for dict_item in channels_list(token):
         for key in dict_item:                   # Loop through the key in the dictionaries
             if key[channel_id] == channel_id:   # If the given channel_id exists
                 joined = True
@@ -108,9 +110,10 @@ def react_create(react_id, u_id, message_id):
                 react['u_ids'].append(u_id)
             # If the authorised user is reacting to his/her own message
             if dict_message['u_id'] == u_id:
-                react['is_this_user_reacted'] = False    # No need to loop through the list of dict, since the spec
-                                                        # has specified that the only valid React ID the front end has is 1
-                                                        # Which there should be only 1 React Id in every messages
+                react['is_this_user_reacted'] = False
+                # No need to loop through the list of dict, since the spec
+                # has specified that the only valid React ID the front end has is 1
+                # Which there should be only 1 React Id in every messages
 
 # Helper function for message_unreact()
 def react_remove(react_id, u_id, message_id):
@@ -128,9 +131,10 @@ def react_remove(react_id, u_id, message_id):
                 react['u_ids'].remove(u_id)
             # If the authorised user is removing the reacte to his/her own message
             if dict_message['u_id'] == u_id:
-                react['is_this_user_reacted'] = False    # No need to loop through the list of dict, since the spec
-                                                        # has specified that the only valid React ID the front end has is 1
-                                                        # Which there should be only 1 React Id in every messages
+                react['is_this_user_reacted'] = False
+                # No need to loop through the list of dict, since the spec
+                # has specified that the only valid React ID the front end has is 1
+                # Which there should be only 1 React Id in every messages
 
 # Helper function for check_owner(), message_pin() and messagge_unpin()
 def get_channel_id(message_id):
@@ -224,7 +228,8 @@ def message_sendlater(token, channel_id, message, time_sent):
     and return the message_id"""
     joined = check_joined_channel(token, channel_id)
 
-    if not any(dict['channel_id'] == channel_id for dict in channels_listall(token)):   # if channel_id is not a valid channel
+    # if channel_id is not a valid channel
+    if not any(dict['channel_id'] == channel_id for dict in channels_listall(token)):
         raise InputError('Channel ID has to be a valid channel')
     if len(message) > 1000:
         raise InputError('Message must be less than or equal 1000 characters')
@@ -287,7 +292,7 @@ def message_pin(token, message_id):
     channel_id = get_channel_id(message_id)
     joined = check_joined_channel(token, channel_id)
     if joined is False:
-        raise AccessError('Authorised user is not a member of the channel that the message is within')
+        raise AccessError('Authorised user is not a member of the channel')
 
     pin_add(message_id)
 
@@ -310,7 +315,7 @@ def message_unpin(token, message_id):
     channel_id = get_channel_id(message_id)
     joined = check_joined_channel(token, channel_id)
     if joined is False:
-        raise AccessError('Authorised user is not a member of the channel that the message is within')
+        raise AccessError('Authorised user is not a member of the channel')
 
     pin_remove(message_id)
 
@@ -328,7 +333,7 @@ def message_remove(token, message_id):
     # Currently only checked is the user an owner of the channel
     # Haven't include the case when user is an owner of slackr (Don't know where to get this info.)
     if is_user_sent is False or is_owner is False:
-        raise AccessError('The authorised user is not the one who sent the message, nor the owner of channel or slackr')
+        raise AccessError('The authorised user is not the one who sent the message, nor an owner.')
 
     message = get_message()
     for dict_message in message:
@@ -340,3 +345,23 @@ def message_edit(token, message_id, message):
     """This function given a message, update it's text with new text.
     If the new message is an empty string, the message is deleted.
     And return nothing"""
+    valid_message = check_valid_message(get_u_id(token), message_id)
+
+    if valid_message is False:
+        raise InputError('Message_id no longer exist')
+
+    is_user_sent = is_user_sent_message(token, message_id)
+    is_owner = check_owner(token, message_id)
+
+    # Currently only checked is the user an owner of the channel
+    # Haven't include the case when user is an owner of slackr (Don't know where to get this info.)
+    if is_user_sent is False or is_owner is False:
+        raise AccessError('The authorised user is not the one who sent the message, nor an owner')
+
+    message = get_message()
+    for dict_message in message:
+        if dict_message['message_id'] == message_id:
+            if not message_id:  # If it's an empty string
+                message_remove(token, message_id)
+            else:
+                dict_message['message'] = message
