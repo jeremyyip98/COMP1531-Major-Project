@@ -9,9 +9,9 @@ def valid_email(email):
     if re.search(regex,email):
         return True
     else:
-        return False  
+        return False
 
-def generate_u_id():s
+def generate_u_id():
     u_id = max(database.u_ids)
     u_id += 1
     database.u_ids.append(u_id)
@@ -56,7 +56,7 @@ def auth_register(email, password, name_first, name_last):
                 }
         # Will probably implement jwt
         database.registered_users_store['registered_users'].append(user)
-        return {u_id, token}
+        return u_id, token
 
 
 def auth_login(email, password):
@@ -65,18 +65,21 @@ def auth_login(email, password):
     elif not search_for_email(email):
         raise InputError(description='Email is not registered to any user')
     for d in database.registered_users_store['registered_users']:
-        if d['email'] == email:  
+        if d['email'] == email:
             if d['hash'] == encrypt(password):
-                return {d['u_id'], d['token']}
+                return d['u_id'], d['token']
             else:
                 raise InputError(description='Incorrect Password')
 
 
- 
-
 def auth_logout(token):
-    # HOW DO I WANT LOGGING OUT TO WORK
-    return {'is_success':2}
+    is_valid = database.search_database(token)
+    if is_valid == False:
+        return False
+    else:
+        database.search_database(token)['token'] = False
+        return True
+
 
 
 if __name__ == "__main__":
