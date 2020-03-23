@@ -6,7 +6,7 @@ Written by: Yip Jeremy Chung Lum, z5098112
 from datetime import datetime
 from database import get_message, get_u_id
 from channels import  channels_list, channels_listall
-from channel import channel_detail
+from channel import channel_details
 from error import InputError, AccessError
 
 ##############################################################
@@ -14,7 +14,7 @@ from error import InputError, AccessError
 ##############################################################
 # Helper function for message_send() and message_sendlater()
 def message_create(channel_id, u_id, message, time):
-    """This function create a message and returns it"""
+    """This function create a message and return it"""
     message = get_message()
     if not message:    # If messages is empty
         message_id = 0
@@ -41,7 +41,7 @@ def message_create(channel_id, u_id, message, time):
 # Helper function for message_send() and message_sendlater()
 def check_joined_channel(token, channel_id):
     """This function check has the authorised user joined the channel or not
-    returns true or false"""
+    return true or false"""
     joined = False
     for dict_item in channels_list(token):      # channels_list() return a list of all channels (a list of dictionaries) that the authorised user is part of
                                                 # Hence loop through the dictionaries
@@ -57,8 +57,8 @@ def check_same_react_id(react, react_id, u_id):
     joined = False
     for dict_item in react:
         if react_id == dict_item['react_id']:
-            for id in dict_item['u_ids']:
-                if u_id == id:
+            for id_list in dict_item['u_ids']:
+                if u_id == id_list:
                     joined = True
                     break
     return joined
@@ -66,7 +66,7 @@ def check_same_react_id(react, react_id, u_id):
 # Helper function for message_react() and message_unreact()
 def check_valid_message(u_id, message_id):
     """This function check is the message_id valid or not
-    returns true or false"""
+    return true or false"""
     message = get_message()
     valid_message = False
 
@@ -94,7 +94,7 @@ def check_message_contains_react(message_id, react_id):
 
 # Helper function for message_react()
 def react_create(react_id, u_id, message_id):
-    """This functions create a react and returns nothing"""
+    """This functions create a react and return nothing"""
     message = get_message()
     # Loop through the list until it reaches the correct message
     for dict_message in message:
@@ -114,7 +114,7 @@ def react_create(react_id, u_id, message_id):
 
 # Helper function for message_unreact()
 def react_remove(react_id, u_id, message_id):
-    """This functions remove a react and returns nothing"""
+    """This functions remove a react and return nothing"""
     message = get_message()
     # Loop through the list until it reaches the correct message
     for dict_message in message:
@@ -132,15 +132,67 @@ def react_remove(react_id, u_id, message_id):
                                                         # has specified that the only valid React ID the front end has is 1
                                                         # Which there should be only 1 React Id in every messages
 
-def check_owner(token, channel_id):
-    
+# Helper function for check_owner(), message_pin() and messagge_unpin()
+def get_channel_id(message_id):
+    """This function given message_id, search through message,
+    and return the channel_id corresponding to the message_id"""
+    message = get_message()
 
+    for dict_message in message:
+        if message_id == dict_message['message_id']:
+            channel_id = dict_message['channel_id']
+    return channel_id
+
+# Helper function for message_pin() and message_unpin()
+def check_owner(token, message_id):
+    """This function check is the authorised user an owner or not,
+    return true or false"""
+    is_owner = False
+    u_id = get_u_id(token)
+    channel_id = get_channel_id(message_id)
+    owners_list = channel_details(token, channel_id)
+
+    for dict_owner in owners_list:
+        if u_id == dict_owner['u_id']:
+            is_owner = True
+            break
+    return is_owner
+
+# Helper function for message_pin() and message_unpin()
+def check_pinned(message_id):
+    """This function check is Message with ID message_id already pinned or not,
+    return true or false"""
+    message = get_message()
+    pinned = False
+
+    for dict_message in message:
+        if message_id == dict_message['message_id']:
+            if dict_message['is_pinned'] is True:
+                pinned = True
+                break
+    return pinned
+# Helper function for message_pin()
+def pin_add(message_id):
+    """This function pin a message and return nothing"""
+    message = get_message()
+    for dict_message in message:
+        if message_id == dict_message['message_id']:
+            dict_message['is_pinned'] = True
+
+# Helper function for message_unpin()
+def pin_remove(message_id):
+    """This function unpin a message and return nothing"""
+    message = get_message()
+    for dict_message in message:
+        if message_id == dict_message['message_id']:
+            dict_message['is_pinned'] = False
 
 ##############################################################
 # Functions of HTTP Routes of Message
 ##############################################################
 def message_send(token, channel_id, message):
-    """This function send a message from authorised_user to the channel specified by channel_id"""
+    """This function send a message from authorised_user to the channel specified by channel_id
+    and return the message_id"""
     joined = check_joined_channel(token, channel_id)
 
     if len(message) > 1000:
@@ -152,7 +204,9 @@ def message_send(token, channel_id, message):
     return message[-1]['message_id']
 
 def message_sendlater(token, channel_id, message, time_sent):
-    """This function send a message from authorised_user to the channel specified by channel_id automatically at a specified time in the future"""
+    """This function send a message from authorised_user to the channel specified by
+    channel_id automatically at a specified time in the future,
+    and return the message_id"""
     joined = check_joined_channel(token, channel_id)
 
     if not any(dict['channel_id'] == channel_id for dict in channels_listall(token)):   # if channel_id is not a valid channel
@@ -169,13 +223,14 @@ def message_sendlater(token, channel_id, message, time_sent):
 
 def message_react(token, message_id, react_id):
     """This function given a message within a channel the authorised user is part of,
-    add a "react" to that particular message"""
+    add a "react" to that particular message and return nothing"""
     valid_message = check_valid_message(get_u_id(token), message_id)
 
     if valid_message is False:
         raise InputError('Message_id has to be a valid message')
     if react_id != 1:
         raise InputError('React_id has to be a valid react ID')
+
     joined = check_message_contains_react(message_id, react_id)
     if joined is True:
         raise InputError('Message already contains the given react_id')
@@ -184,13 +239,14 @@ def message_react(token, message_id, react_id):
 
 def message_unreact(token, message_id, react_id):
     """This function given a message within a channel the authorised user is part of,
-    remove a "react" to that particular message"""
+    remove a "react" to that particular message and return nothing"""
     valid_message = check_valid_message(get_u_id(token), message_id)
 
     if valid_message is False:
         raise InputError('Message_id has to be a valid message')
     if react_id != 1:
         raise InputError('React_id has to be a valid react ID')
+
     joined = check_message_contains_react(message_id, react_id)
     if joined is False:
         raise InputError('Message does not contains the given react_id')
@@ -198,15 +254,50 @@ def message_unreact(token, message_id, react_id):
     react_remove(react_id, get_u_id(token), message_id)
 
 def message_pin(token, message_id):
-    """This function given a message within a channel, mark it as "pinned" to be given
-    special display treatment by the frontend"""
+    """This function given a message within a channel, mark it as "pinned",
+    and return nothing"""
     valid_message = check_valid_message(get_u_id(token), message_id)
 
     if valid_message is False:
         raise InputError('Message_id has to be a valid message')
 
+    is_owner = check_owner(token, message_id)
+    if is_owner is False:
+        raise InputError('The authorised user has to be an owner')
+
+    is_pinned = check_pinned(message_id)
+    if is_pinned is True:
+        raise InputError('The message is already pinned')
+
+    channel_id = get_channel_id(message_id)
+    joined = check_joined_channel(token, channel_id)
+    if joined is False:
+        raise AccessError('Authorised user is not a member of the channel that the message is within')
+
+    pin_add(message_id)
+
 def message_unpin(token, message_id):
-    pass
+    """This function given a message within a channel, remove it's mark as "pinned",
+    and return nothing"""
+    valid_message = check_valid_message(get_u_id(token), message_id)
+
+    if valid_message is False:
+        raise InputError('Message_id has to be a valid message')
+
+    is_owner = check_owner(token, message_id)
+    if is_owner is False:
+        raise InputError('The authorised user has to be an owner')
+
+    is_pinned = check_pinned(message_id)
+    if is_pinned is False:
+        raise InputError('The message is already unpinned')
+
+    channel_id = get_channel_id(message_id)
+    joined = check_joined_channel(token, channel_id)
+    if joined is False:
+        raise AccessError('Authorised user is not a member of the channel that the message is within')
+
+    pin_remove(message_id)
 
 def message_remove(token, message_id):
     pass
