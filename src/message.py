@@ -5,9 +5,8 @@ Written by: Yip Jeremy Chung Lum, z5098112
 """
 from datetime import datetime
 from database import get_message, get_u_id
-from auth import auth_register, auth_login, auth_logout
-from channels import channels_create, channels_list, channels_listall
-from channel import channel_join, channel_addowner, channel_messages
+from channels import  channels_list, channels_listall
+from channel import channel_detail
 from error import InputError, AccessError
 
 ##############################################################
@@ -133,6 +132,10 @@ def react_remove(react_id, u_id, message_id):
                                                         # has specified that the only valid React ID the front end has is 1
                                                         # Which there should be only 1 React Id in every messages
 
+def check_owner(token, channel_id):
+    
+
+
 ##############################################################
 # Functions of HTTP Routes of Message
 ##############################################################
@@ -195,7 +198,12 @@ def message_unreact(token, message_id, react_id):
     react_remove(react_id, get_u_id(token), message_id)
 
 def message_pin(token, message_id):
-    pass
+    """This function given a message within a channel, mark it as "pinned" to be given
+    special display treatment by the frontend"""
+    valid_message = check_valid_message(get_u_id(token), message_id)
+
+    if valid_message is False:
+        raise InputError('Message_id has to be a valid message')
 
 def message_unpin(token, message_id):
     pass
