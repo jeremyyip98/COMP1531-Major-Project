@@ -4,8 +4,7 @@ message.py
 Written by: Yip Jeremy Chung Lum, z5098112
 """
 from datetime import datetime
-from copy import copy
-from database import get_message, get_react
+from database import get_message
 from auth import auth_register, auth_login, auth_logout
 from channels import channels_create, channels_list, channels_listall
 from channel import channel_join, channel_addowner, channel_messages
