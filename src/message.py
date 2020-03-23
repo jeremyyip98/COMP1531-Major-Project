@@ -10,7 +10,10 @@ from channels import channels_create, channels_list, channels_listall
 from channel import channel_join, channel_addowner, channel_messages
 from error import InputError, AccessError
 
-
+##############################################################
+# Helper functions for the functions of HTTP Routes of Message
+##############################################################
+# Helper function for message_send() and message_sendlater()
 def message_create(channel_id, u_id, message, time):
     """This function create a message and returns it"""
     message = get_message()
@@ -36,7 +39,7 @@ def message_create(channel_id, u_id, message, time):
     message.append(dictionary)
     return message
 
-# Helper function for message_send and message_sendlater
+# Helper function for message_send() and message_sendlater()
 def check_joined_channel(token, channel_id):
     """This function check has the authorised user joined the channel or not
     returns true or false"""
@@ -49,7 +52,19 @@ def check_joined_channel(token, channel_id):
                 break
     return joined
 
-# Helper function for check_react and check_unreact
+# Helper function for react_create and react_remove
+def check_same_react_id(react, react_id, u_id):
+    """This function check has the user already been reacted with the same react_id before"""
+    joined = False
+    for dict_item in react:
+        if react_id == dict_item['react_id']:
+            for id in dict_item['u_ids']:
+                if u_id == id:
+                    joined = True
+                    break
+    return joined
+
+# Helper function for message_react() and message_unreact()
 def check_valid_message(u_id, message_id):
     """This function check is the message_id valid or not
     returns true or false"""
@@ -63,17 +78,7 @@ def check_valid_message(u_id, message_id):
                 break
     return valid_message
 
-def check_same_react_id(react, react_id, u_id):
-    """This function check has the user already been reacted with the same react_id before"""
-    joined = False
-    for dict_item in react:
-        if react_id == dict_item['react_id']:
-            for id in dict_item['u_ids']:
-                if u_id == id:
-                    joined = True
-                    break
-    return joined
-
+# Helper function for message_react and message_unreact
 def check_message_contains_react(message_id, react_id):
     """This function check has message_id already contains an active React
     with ID react_id and return true or false"""
@@ -88,6 +93,7 @@ def check_message_contains_react(message_id, react_id):
                     break
     return joined
 
+# Helper function for message_react()
 def react_create(react_id, u_id, message_id):
     """This functions create a react and returns nothing"""
     message = get_message()
@@ -107,6 +113,7 @@ def react_create(react_id, u_id, message_id):
                                                         # has specified that the only valid React ID the front end has is 1
                                                         # Which there should be only 1 React Id in every messages
 
+# Helper function for message_unreact()
 def react_remove(react_id, u_id, message_id):
     """This functions remove a react and returns nothing"""
     message = get_message()
@@ -125,6 +132,10 @@ def react_remove(react_id, u_id, message_id):
                 react['is_this_user_reacted'] = False    # No need to loop through the list of dict, since the spec
                                                         # has specified that the only valid React ID the front end has is 1
                                                         # Which there should be only 1 React Id in every messages
+
+##############################################################
+# Functions of HTTP Routes of Message
+##############################################################
 def message_send(token, channel_id, message):
     """This function send a message from authorised_user to the channel specified by channel_id"""
     joined = check_joined_channel(token, channel_id)
