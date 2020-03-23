@@ -12,6 +12,8 @@ def restore_database():
 
                         }
 
+
+
 u_ids = [0]
 
 registered_users_store = {
@@ -57,7 +59,7 @@ def search_database(token):
       if user['token'] == token:
         return user
     return False
-
+    
 def reset_message():
     """This function reset the message and returns nothing"""
     global message_list
