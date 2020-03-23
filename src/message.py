@@ -47,6 +47,20 @@ def check_same_react_id(react, react_id, u_id):
                     break
     return joined
 
+def check_message_contains_react(message_id, react_id):
+    """This function check if message_id already contains an active React
+    with ID react_id and return true or false"""
+    message = get_message()
+    for dict_message in message:
+        if message_id == dict_message['message_id']:
+            react = dict_message['reacts']
+            joined = False
+            for dict_item in react:
+                if react_id == dict_item['react_id']:
+                    joined = True
+                    break
+    return joined
+
 def react_create(react_id, u_id, message_id):
     """This functions create a react and returns nothing"""
     message = get_message()
@@ -133,12 +147,14 @@ def message_react(token, message_id, react_id):
             if message_id == dict_item['message_id']:
                 valid_message = True
                 break
-
+    
     if valid_message is False:
         raise InputError('Message_id has to be a valid message')
     if react_id != 1:
         raise InputError('React_id has to be a valid react ID')
-    # There should be one more error check, waiting for the update in spec by Instructors
+    joined = check_message_contains_react(message_id, react_id)
+    if joined is True:
+        raise InputError('Message already contains the given react_id')
 
     react_create(react_id, get_u_id(token), message_id) # Assume get_u_id(token) has already been implemented in datebase.py
 
@@ -158,7 +174,9 @@ def message_unreact(token, message_id, react_id):
         raise InputError('Message_id has to be a valid message')
     if react_id != 1:
         raise InputError('React_id has to be a valid react ID')
-    # There should be one more error check, waiting for the update in spec by Instructors
+    joined = check_message_contains_react(message_id, react_id)
+    if joined is False:
+        raise InputError('Message does not contains the given react_id')
 
     react_remove(react_id, get_u_id(token), message_id) # Assume get_u_id(token) has already been implemented in datebase.py
 
