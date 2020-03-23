@@ -4,7 +4,7 @@ message.py
 Written by: Yip Jeremy Chung Lum, z5098112
 """
 from datetime import datetime
-from database import get_message
+from database import get_message, get_u_id
 from auth import auth_register, auth_login, auth_logout
 from channels import channels_create, channels_list, channels_listall
 from channel import channel_join, channel_addowner, channel_messages
@@ -36,8 +36,35 @@ def message_create(channel_id, u_id, message, time):
     message.append(dictionary)
     return message
 
+# Helper function for message_send and message_sendlater
+def check_joined_channel(token, channel_id):
+    """This function check has the authorised user joined the channel or not
+    returns true or false"""
+    joined = False
+    for dict_item in channels_list(token):      # channels_list() return a list of all channels (a list of dictionaries) that the authorised user is part of
+                                                # Hence loop through the dictionaries
+        for key in dict_item:                   # Loop through the key in the dictionaries
+            if channel_id == key[channel_id]:   # If the given channel_id exists
+                joined = True
+                break
+    return joined
+
+# Helper function for check_react and check_unreact
+def check_valid_message(u_id, message_id):
+    """This function check is the message_id valid or not
+    returns true or false"""
+    message = get_message()
+    valid_message = False
+
+    for dict_item in message:
+        if u_id == dict_item['u_id']:
+            if message_id == dict_item['message_id']:
+                valid_message = True
+                break
+    return valid_message
+
 def check_same_react_id(react, react_id, u_id):
-    """This function check if the user has already been reacted with the same react_id before"""
+    """This function check has the user already been reacted with the same react_id before"""
     joined = False
     for dict_item in react:
         if react_id == dict_item['react_id']:
@@ -48,7 +75,7 @@ def check_same_react_id(react, react_id, u_id):
     return joined
 
 def check_message_contains_react(message_id, react_id):
-    """This function check if message_id already contains an active React
+    """This function check has message_id already contains an active React
     with ID react_id and return true or false"""
     message = get_message()
     for dict_message in message:
@@ -100,30 +127,20 @@ def react_remove(react_id, u_id, message_id):
                                                         # Which there should be only 1 React Id in every messages
 def message_send(token, channel_id, message):
     """This function send a message from authorised_user to the channel specified by channel_id"""
-    joined = False
-    for dict_item in channels_list(token):      # channels_list() return a list of all channels (a list of dictionaries) that the authorised user is part of
-                                                # Hence loop through the dictionaries
-        for key in dict_item:                   # Loop through the key in the dictionaries
-            if channel_id == key[channel_id]:   # If the given channel_id exists
-                joined = True
-                break
+    joined = check_joined_channel(token, channel_id)
+
     if len(message) > 1000:
         raise InputError('Message must be less than or equal 1000 characters')
     if joined is False:
         raise AccessError('Authorised user has not joined the channel')
 
-    message = message_create(channel_id, get_u_id(token), message, datetime.now()) # Assume get_u_id(token) has already been implemented in datebase.py
+    message = message_create(channel_id, get_u_id(token), message, datetime.now())
     return message[-1]['message_id']
 
 def message_sendlater(token, channel_id, message, time_sent):
     """This function send a message from authorised_user to the channel specified by channel_id automatically at a specified time in the future"""
-    joined = False
-    for dict_item in channels_list(token):      # channels_list() return a list of all channels (a list of dictionaries) that the authorised user is part of
-                                                # Hence loop through the dictionaries
-        for key in dict_item:                   # Loop through the key in the dictionaries
-            if channel_id == key[channel_id]:   # If the given channel_id exists
-                joined = True
-                break
+    joined = check_joined_channel(token, channel_id)
+
     if not any(dict['channel_id'] == channel_id for dict in channels_listall(token)):   # if channel_id is not a valid channel
         raise InputError('Channel ID has to be a valid channel')
     if len(message) > 1000:
@@ -133,21 +150,14 @@ def message_sendlater(token, channel_id, message, time_sent):
     if joined is False:
         raise AccessError('Authorised user has not joined the channel')
 
-    message = message_create(channel_id, get_u_id(token), message, time_sent) # Assume get_u_id(token) has already been implemented in datebase.py
+    message = message_create(channel_id, get_u_id(token), message, time_sent)
     return message[-1]['message_id']
 
 def message_react(token, message_id, react_id):
     """This function given a message within a channel the authorised user is part of,
     add a "react" to that particular message"""
-    message = get_message()
-    valid_message = False
+    valid_message = check_valid_message(get_u_id(token), message_id)
 
-    for dict_item in message:
-        if get_u_id(token) == dict_item['u_id']:    # Assume get_u_id(token) has already been implemented in datebase.py
-            if message_id == dict_item['message_id']:
-                valid_message = True
-                break
-    
     if valid_message is False:
         raise InputError('Message_id has to be a valid message')
     if react_id != 1:
@@ -156,19 +166,12 @@ def message_react(token, message_id, react_id):
     if joined is True:
         raise InputError('Message already contains the given react_id')
 
-    react_create(react_id, get_u_id(token), message_id) # Assume get_u_id(token) has already been implemented in datebase.py
+    react_create(react_id, get_u_id(token), message_id)
 
 def message_unreact(token, message_id, react_id):
     """This function given a message within a channel the authorised user is part of,
     remove a "react" to that particular message"""
-    message = get_message()
-    valid_message = False
-
-    for dict_item in message:
-        if get_u_id(token) == dict_item['u_id']:    # Assume get_u_id(token) has already been implemented in datebase.py
-            if message_id == dict_item['message_id']:
-                valid_message = True
-                break
+    valid_message = check_valid_message(get_u_id(token), message_id)
 
     if valid_message is False:
         raise InputError('Message_id has to be a valid message')
@@ -178,7 +181,7 @@ def message_unreact(token, message_id, react_id):
     if joined is False:
         raise InputError('Message does not contains the given react_id')
 
-    react_remove(react_id, get_u_id(token), message_id) # Assume get_u_id(token) has already been implemented in datebase.py
+    react_remove(react_id, get_u_id(token), message_id)
 
 def message_pin(token, message_id):
     pass
