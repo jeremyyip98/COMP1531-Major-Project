@@ -46,7 +46,7 @@ list_of_channels = {
                               # }
                             ]
 }
-def restore_channel_databse():
+def restore_channel_database():
     """reseting the channel database to clear it"""
     global list_of_channels
     list_of_channels.clear()
