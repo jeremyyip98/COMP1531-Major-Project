@@ -1,4 +1,4 @@
-"""imports pytest for testing purpose"""
+"""imports pytest  and other functions for testing purpose"""
 import pytest
 
 from error import AccessError, InputError
@@ -33,7 +33,7 @@ def test_channel_list_access_error():
     with pytest.raises(AccessError) as err:
         channels_list('hopefullythisnotavalidtoken')
 def test_channel_list_normal():
-    """test that list only has one channel for both user even if the channel is public"""
+    """test that list only has one channel for both user even if the channel1 is public"""
     user1 = auth_register('name@mail.com', 'password', 'Jim', 'Smith')
     channel1 = channels_create(user1['token'], 'My Channel', True)
     #create chanel_list
@@ -54,7 +54,7 @@ def test_channel_list_normal():
     assert len(channel_list2['channels']) == 1
     #make sure all the details are right
     details = channel_details(user2['token'], channel2['channel_id'])
-    assert details['name'] == channel_list2['channels'][0]['name']    
+    assert details['name'] == channel_list2['channels'][0]['name']
 def test_channel_listall_access_error():
     """check if inputed invalid token gives errors"""
     with pytest.raises(AccessError) as err:
