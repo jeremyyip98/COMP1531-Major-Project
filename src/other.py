@@ -4,7 +4,7 @@ from database import check_token, get_all_users
 
 def users_all(token):
     check_token(token)
-    return {'users' : get_all_users()}
+    return {get_all_users()}
 
 def search():
     pass
