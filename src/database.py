@@ -60,6 +60,7 @@ def get_email(token):
 def get_formatted_user(token):
     """ Returns a user dictionary in the spec format """
     user = search_database(token)
+    formatted_user = {}
     formatted_user['u_id'] = user['u_id']
     formatted_user['email'] = user['email']    
     formatted_user['name_first'] = user['name_first']  
