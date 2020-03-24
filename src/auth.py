@@ -56,7 +56,7 @@ def auth_register(email, password, name_first, name_last):
                 }
         # Will probably implement jwt
         database.registered_users_store['registered_users'].append(user)
-        return u_id, token
+        return {'u_id' : u_id, 'token' : token}
 
 
 def auth_login(email, password):
@@ -67,7 +67,7 @@ def auth_login(email, password):
     for d in database.registered_users_store['registered_users']:
         if d['email'] == email:
             if d['hash'] == encrypt(password):
-                return d['u_id'], d['token']
+                return {'u_id' : d['u_id'], 'token' :d ['token']}
             else:
                 raise InputError(description='Incorrect Password')
 
