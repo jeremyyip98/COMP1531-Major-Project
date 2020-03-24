@@ -4,7 +4,7 @@ message.py
 Written by: Yip Jeremy Chung Lum, z5098112
 """
 from datetime import datetime
-from database import get_message, get_u_id
+from database import get_message, get_u_id, get_channel
 from channels import  channels_list, channels_listall
 from channel import channel_details
 from error import InputError, AccessError
@@ -23,7 +23,6 @@ def message_create(channel_id, u_id, message, time):
         message_id = most_recent_message['message_id'] + 1
 
     dictionary = {
-        "channel_id" : channel_id,
         "message_id" : message_id,
         "u_id" : u_id,
         "message" : message,
@@ -36,7 +35,28 @@ def message_create(channel_id, u_id, message, time):
         "is_pinned" : False     # When the message is creating, no one should be able to pin it
     }
     message.append(dictionary)
+
+    # Add the message to it's corresponding channel
+    channel_add(channel_id, message_id)
+
     return message
+
+# Helper function for message_create() and get_channel_id()
+def channel_add(channel_id, message_id):
+    """This function store a list of dictionaries containing
+    the channel_id with it's corresponding message_ids and return it"""
+    channel = get_channel()
+    if not channel: # If the channel is empty
+        dictionary = {
+            "channel_id" : channel_id,
+            "channel_messages" : [message_id]
+        }
+        channel.append(dictionary)
+    else:
+        for dict_channel in channel:
+            if dict_channel['channel_id'] == channel_id:
+                dict_channel['channel_messages'].append(message_id)
+    return channel
 
 # Helper function for message_send() and message_sendlater()
 def check_joined_channel(token, channel_id):
@@ -140,11 +160,12 @@ def react_remove(react_id, u_id, message_id):
 def get_channel_id(message_id):
     """This function given message_id, search through message,
     and return the channel_id corresponding to the message_id"""
-    message = get_message()
+    channel = get_channel()
 
-    for dict_message in message:
-        if dict_message['message_id'] == message_id:
-            channel_id = dict_message['channel_id']
+    for dict_channel in channel:
+        if message_id in dict_channel['channel_messages']:
+            channel_id = dict_channel['channel_id']
+
     return channel_id
 
 # Helper function for message_pin() and message_unpin()
