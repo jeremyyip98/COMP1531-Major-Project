@@ -32,6 +32,31 @@ registered_users_store = {
 
                         }
 
+channel_ids = [0]
+
+list_of_channels = {
+                            'channels' :
+                            [
+                              #{
+                              #'channel_id' : channel_id,
+                              #'channel_name' : channel_name
+                              #'is_public' : boolean
+                              #'owner_members' : [owners]
+                              #'all_members : [all_members]
+                              # }
+                            ]
+}
+def restore_channel_databse():
+    """reseting the channel database to clear it"""
+    global list_of_channels
+    list_of_channels.clear()
+    list_of_channels = {
+        'channels' :
+        [
+            #{
+            # }
+        ]
+}
 message_list = [{
     # channel_id (int) (extra element that is not mentioned in spec)
     # message_id (int)
