@@ -14,9 +14,8 @@ def test_register_valid():
 
 
 
-
 # Email is not a valid address
-def test_register_invalid_email():    
+def test_register_invalid_email(): 
     with pytest.raises(InputError) as e:
         auth_register("Invalid_Email", "Password", "First", "Last")    
 
@@ -90,26 +89,28 @@ def test_login_wrong_password():
     with pytest.raises(InputError) as e:
         auth_login("test@gmail.com", "WrongPassword")
 
-"""
+
 # Log out a valid user with a valid token
 def test_logout_valid_token():
+    restore_database()
     register_valid_user()
     details = auth_login("test@gmail.com", "Password")
-    assert auth_logout(details["token"])["is_success"] == True
+    assert auth_logout(details[1]) == True
 
 # Logs out an invalid token
 # Assumes that it is not a valid token
 def test_logout_invalid_token():
-     with pytest.raises(AccessError) as e:
-        auth_logout("hopefullythisisnotavalidtoken")
-
+    restore_database()
+    details = register_valid_user()
+    assert auth_logout('hopefullythisisnotavalidtoken') == False
 
 # Attempts to log out a valid user who is not logged in
 # Assume that this should return false
 def test_logout_logged_out_user():
+    restore_database()
     details = register_valid_user()
-    auth_logout(details["token"])
-    assert auth_logout(details["token"])["is_success"] == False
+    auth_logout(details[1])
+    assert auth_logout(details[1]) == False
 
 
 
@@ -117,11 +118,10 @@ def test_logout_logged_out_user():
 
 # Successful login -- Checks that user_id is correctly maintained
 # Uses logout function
-def test_login_valid_details():
+def test_logout_valid_details():
+    restore_database()
     register_valid_user()
     details1 = auth_login("test@gmail.com", "Password")
-    auth_logout(details1["token"])
+    auth_logout(details1[1])
     details2 = auth_login("test@gmail.com", "Password")
-    assert details1["u_id"] == details1["u_id"]
-
-"""
+    assert details1 == details1
