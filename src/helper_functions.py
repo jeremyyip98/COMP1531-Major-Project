@@ -11,6 +11,7 @@ def register_valid_user():
 def register_another_valid_user():
     return auth_register("anothertest@gmail.com", "Anotherpassword", "Anotherfirst", "Anotherlast")
 
+
 # Registers a choice of two different users, creates a channel and returns details
 def create_valid_channel(channel_name, different_user):
     if different_user == False:
