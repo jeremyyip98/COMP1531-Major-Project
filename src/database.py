@@ -25,7 +25,8 @@ registered_users_store = {
                                   # 'name_last' : Last,
                                   # 'hash' : encrypted password,
                                   # 'token' : token,
-                                  # 'handle_str' :firstlast             
+                                  # 'handle_str' :firstlast
+                                  # 'permission_id': 1/2             
                                   #  }    
                                 ]
 
@@ -82,6 +83,9 @@ def check_token(token):
 def get_u_id(token):
     """ Takes token and returns the u_id of user token belongs to"""
     return search_database(token)['u_id']
+
+def get_permission(token):
+    return search_database(token)['permission_id']
 
 def get_email(token):
     """ Takes token and returns the email of user token belongs to"""
