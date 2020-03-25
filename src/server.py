@@ -43,7 +43,7 @@ def http_register():
         payload['name_last'])
     return dumps(details)
 
-APP.route("/auth/login", methods=['POST'])
+@APP.route("/auth/login", methods=['POST'])
 def http_login():
     payload = request.get_json()
     details = auth.auth_login(
@@ -51,6 +51,11 @@ def http_login():
         payload['password'])
     return dumps(details)
 
+@APP.route("/auth/logout", methods=['POST'])
+def http_logout():
+    payload = request.get_json()
+    is_success = {"is_sucess" : auth.auth_logout(payload['token'])}
+    return dumps(is_success)
 
 if __name__ == "__main__":
     APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080), debug=True)
