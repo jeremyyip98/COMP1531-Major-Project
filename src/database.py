@@ -26,7 +26,8 @@ registered_users_store = {
                                   # 'name_last' : name_last,
                                   # 'hash' : hash,
                                   # 'token' : token,
-                                  # 'handle_str' :firstlast             
+                                  # 'handle_str' :firstlast
+                                  # 'permission_id': 1/2             
                                   #  }    
                                 ]
 
@@ -75,6 +76,9 @@ def check_token(token):
 
 def get_u_id(token):
     return search_database(token)['u_id']
+
+def get_permission(token):
+    return search_database(token)['permission_id']
 
 def get_email(token):
     return search_database(token)['email']

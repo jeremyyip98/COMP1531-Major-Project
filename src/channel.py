@@ -87,6 +87,7 @@ def channel_add_owner(token, channel_id, u_id):
     else:
         user = is_valid
         for chan in list_of_channels['channels']:
+            #found channel
             if chan['channel_id'] == channel_id:
                 #checking if the user given is already a owner or if the user adding is not an owner
                 if u_id in chan['owner_members']:
