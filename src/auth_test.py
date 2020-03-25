@@ -95,7 +95,7 @@ def test_logout_valid_token():
     restore_database()
     register_valid_user()
     details = auth_login("test@gmail.com", "Password")
-    assert auth_logout(details[1]) == True
+    assert auth_logout(details['token']) == True
 
 # Logs out an invalid token
 # Assumes that it is not a valid token
@@ -109,8 +109,8 @@ def test_logout_invalid_token():
 def test_logout_logged_out_user():
     restore_database()
     details = register_valid_user()
-    auth_logout(details[1])
-    assert auth_logout(details[1]) == False
+    auth_logout(details['token'])
+    assert auth_logout(details['token']) == False
 
 
 
@@ -122,6 +122,6 @@ def test_logout_valid_details():
     restore_database()
     register_valid_user()
     details1 = auth_login("test@gmail.com", "Password")
-    auth_logout(details1[1])
+    auth_logout(details1['token'])
     details2 = auth_login("test@gmail.com", "Password")
     assert details1 == details1
