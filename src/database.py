@@ -25,7 +25,8 @@ registered_users_store = {
                                   # 'name_last' : Last,
                                   # 'hash' : encrypted password,
                                   # 'token' : token,
-                                  # 'handle_str' :firstlast             
+                                  # 'handle_str' :firstlast
+                                  # 'permission_id': 1/2             
                                   #  }    
                                 ]
 
@@ -57,13 +58,18 @@ def restore_channel_databse():
         ]
 }
 message_list = [{
-    # channel_id (int) (extra element that is not mentioned in spec)
     # message_id (int)
     # u_id (int)
     # message (string)
     # time_created (integer (unix timestamp))
     # reacts (list of dictionaries)
-    # is_pinned (Boolean?)
+    # is_pinned (Boolean)
+}]
+
+# Extra datatype that is not mentioned in the spec
+channel_list = [{
+    # channel_id (int)
+    # channel_messages (list of message_id (int))
 }]
 
 def check_token(token):
@@ -77,6 +83,9 @@ def check_token(token):
 def get_u_id(token):
     """ Takes token and returns the u_id of user token belongs to"""
     return search_database(token)['u_id']
+
+def get_permission(token):
+    return search_database(token)['permission_id']
 
 def get_email(token):
     """ Takes token and returns the email of user token belongs to"""
@@ -177,3 +186,9 @@ def check_handle_str_already_used(handle_str):
         if user['handle_str'] == handle_str:
             return True
     return False
+    
+def get_channel():
+    """This function create a relationship between channel and message,
+    and returns a list of dictionaries that contain it"""
+    global channel_list
+    return channel_list

@@ -30,6 +30,8 @@
 
 - Assume that the correct concatenation when registering a user with first name "First" and last name "Last" is "firstlast"
 
+-Assume that if you join a channel you are already in raises an InputError
+
 
 
 ![alt text](https://m.media-amazon.com/images/M/MV5BOTFmYTc3ZWEtNTYxNi00OTA4LTk2NjEtNTI2MTJlNzkyMDdlXkEyXkFqcGdeQWpybA@@._V1_UX477_CR0,0,477,268_AL_.jpg)
