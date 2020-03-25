@@ -33,7 +33,7 @@ def echo():
         'data': data
     })
 
-@APP.route("/auth/register", methods=['PUT'])
+@APP.route("/auth/register", methods=['POST'])
 def http_register():
     payload = request.get_json()
     details = auth.auth_register(
@@ -41,6 +41,14 @@ def http_register():
         payload['password'],
         payload['name_first'],
         payload['name_last'])
+    return dumps(details)
+
+APP.route("/auth/login", methods=['POST'])
+def http_login():
+    payload = request.get_json()
+    details = auth.auth_login(
+        payload['email'],
+        payload['password'])
     return dumps(details)
 
 
