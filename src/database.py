@@ -1,4 +1,4 @@
-from error import AccessError
+from error import AccessError, InputError
 
 def restore_database():
     global registered_users_store
@@ -144,6 +144,49 @@ def get_message():
     global message_list
     return message_list
 
+def get_profile(u_id):
+    '''Gets a user profile via u_id instead of token. Used in the user_profile function''''
+    for user in registered_users_store['registered_users']:
+        if user['u_id'] == u_id:
+            formatted_user = {}
+            formatted_user['u_id'] = user['u_id']
+            formatted_user['email'] = user['email']    
+            formatted_user['name_first'] = user['name_first']  
+            formatted_user['name_last'] = user['name_last']  
+            formatted_user['handle_str'] = user['handle_str']
+            return formatted_user
+    raise InputError
+
+def set_name(token, name_first, name_last):
+    '''Changes the first and last name of a user'''
+    user = search_database(token)
+    user['name_first'] = name_first
+    user['name_last'] = name_last
+
+def set_email(token, email):
+    '''Changes the email of a user'''
+    user = search_database(token)
+    user['email'] = email
+
+def set_handle(token, handle_str):
+    '''Changes the handle of a user'''
+    user = search_database(token)
+    user['handle_str'] = handle_str
+
+def check_email_already_used(handle_str):
+    '''Checks if an email is already being used'''
+    for user in registered_users_store['registered_users']:
+        if user['email'] == email:
+            return True
+    return False
+
+def check_handle_str_already_used(handle_str):
+    '''Checks if a handle is already being used'''
+    for user in registered_users_store['registered_users']:
+        if user['handle_str'] == handle_str:
+            return True
+    return False
+    
 def get_channel():
     """This function create a relationship between channel and message,
     and returns a list of dictionaries that contain it"""
