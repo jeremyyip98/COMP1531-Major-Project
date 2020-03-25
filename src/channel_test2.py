@@ -7,6 +7,15 @@ from message import message_send
 from helper_functions import register_valid_user, register_another_valid_user
 import pytest
 
+"""
+
+Channel Tests 2
+Written by Aaron Lin
+--------------------
+Implemtation tests for channel_invite, channel_details, channel_messages
+
+"""
+
     """    ERROR TESTS FOR CHANNEL_INVITE_USER    """
     
 ### Test when inviting user to a channel with invalid channel_id - gives InputError (where u_id is valid)
@@ -287,4 +296,11 @@ def test_channel_messages_normal():
         assert message1['messages'][i]['message'] == f'abcde{i}'
     assert message0['start'] == 100
     assert message0['end'] == -1
+
+"""
+
+HTTP Tests for the above
+
+"""
+
 
