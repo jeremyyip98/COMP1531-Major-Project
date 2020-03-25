@@ -57,13 +57,18 @@ def restore_channel_databse():
         ]
 }
 message_list = [{
-    # channel_id (int) (extra element that is not mentioned in spec)
     # message_id (int)
     # u_id (int)
     # message (string)
     # time_created (integer (unix timestamp))
     # reacts (list of dictionaries)
-    # is_pinned (Boolean?)
+    # is_pinned (Boolean)
+}]
+
+# Extra datatype that is not mentioned in the spec
+channel_list = [{
+    # channel_id (int)
+    # channel_messages (list of message_id (int))
 }]
 
 def check_token(token):
@@ -134,3 +139,9 @@ def get_message():
     """This function get the list of dictionary of messages and returns it"""
     global message_list
     return message_list
+
+def get_channel():
+    """This function create a relationship between channel and message,
+    and returns a list of dictionaries that contain it"""
+    global channel_list
+    return channel_list
