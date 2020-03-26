@@ -145,7 +145,7 @@ def get_message():
     return message_list
 
 def get_profile(u_id):
-    '''Gets a user profile via u_id instead of token. Used in the user_profile function''''
+    '''Gets a user profile via u_id instead of token. Used in the user_profile function'''
     for user in registered_users_store['registered_users']:
         if user['u_id'] == u_id:
             formatted_user = {}
