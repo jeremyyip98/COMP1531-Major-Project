@@ -1,16 +1,5 @@
 from error import AccessError, InputError
 
-def restore_database():
-    global registered_users_store
-    registered_users_store.clear()
-    registered_users_store = {
-                            'registered_users' : 
-                                [
-                                  #  {                   
-                                  #  }    
-                                ]
-
-                        }
 
 
 u_ids = [0]
@@ -46,6 +35,20 @@ list_of_channels = {
                               # }
                             ]
 }
+
+def restore_database():
+    global registered_users_store
+    registered_users_store.clear()
+    registered_users_store = {
+                            'registered_users' : 
+                                [
+                                  #  {                   
+                                  #  }    
+                                ]
+
+                        }
+
+
 def restore_channel_databse():
     """reseting the channel database to clear it"""
     global list_of_channels
@@ -128,8 +131,8 @@ def search_database(token):
         it returns False """
 
     for user in registered_users_store['registered_users']:
-      if user['token'] == token:
-        return user
+        if user['token'] == token:
+            return user
     return False
     
 def reset_message():

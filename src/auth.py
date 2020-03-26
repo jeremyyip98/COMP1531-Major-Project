@@ -47,35 +47,35 @@ def search_for_email(email):
 def auth_register(email, password, name_first, name_last):
     if not valid_email(email):
         raise InputError(description='Invalid Email address')
-    elif len(password) < 6 or len(password) > 50:
+    if len(password) < 6 or len(password) > 50:
         raise InputError(description='Password must be between 6 and 50 characters')
-    elif len(name_first) < 1 or len(name_first) > 50:
+    if len(name_first) < 1 or len(name_first) > 50:
         raise InputError(description='First name must be between 1 and 50 characters')
-    elif len(name_first) < 1 or len(name_first) > 50:
+    if len(name_first) < 1 or len(name_first) > 50:
         raise InputError(description='Last name must be between 1 and 50 characters')
-    elif len(database.registered_users_store['registered_users']) > 0 and search_for_email(email):
+    if len(database.registered_users_store['registered_users']) > 0 and search_for_email(email):
         raise InputError(description='Email is already in use')
-    else:
-        token = generate_token()
-        u_id = generate_u_id()
-        user = {
-            'u_id' : u_id,
-            'email' : email,
-            'name_first' : name_first,
-            'name_last' : name_last,
-            'hash' : encrypt(password),
-            'token' : token,
-            'handle_str' : make_handle(name_first, name_last)
-            }
-        # Will probably implement jwt
-        database.registered_users_store['registered_users'].append(user)
-        return {'u_id' : u_id, 'token' : token}
+    token = generate_token()
+    u_id = generate_u_id()
+    user = {
+        'u_id' : u_id,
+        'email' : email,
+        'name_first' : name_first,
+        'name_last' : name_last,
+        'hash' : encrypt(password),
+        'token' : token,
+        'handle_str' : make_handle(name_first, name_last)
+        }
+    # Will probably implement jwt
+    database.registered_users_store['registered_users'].append(user)
+    return {'u_id' : u_id, 'token' : token}
 
 
+#Should logging in wnile logged in do something
 def auth_login(email, password):
     if not valid_email(email):
         raise InputError(description='Invalid Email address')
-    elif not search_for_email(email):
+    if not search_for_email(email):
         raise InputError(description='Email is not registered to any user')
     for d in database.registered_users_store['registered_users']:
         if d['email'] == email:
