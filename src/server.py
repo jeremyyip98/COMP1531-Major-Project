@@ -35,22 +35,57 @@ def echo():
 # Added code
 @APP.route("message/send", methods=['POST'])
 def http_message_send():
-    """This function send a message from authorised_user to the channel specified by channel_id,
-    and returns {message_id}"""
-    message = 
-
+    """This route send a message from authorised_user to the channel specified by channel_id,
+    and return {message_id}"""
+    data = request.get_json()
+    result = message.message_send(
+        data['token'],
+        data['channel_id'],
+        data['message']
+    )
+    return dumps({
+        'message_id': result
+    })
 
 @APP.route("message/sendlater", methods=['POST'])
 def http_message_sendlater():
-    pass
+    """This route send a message from authorised_user to the channel specified by
+    channel_id automatically at a specified time in the future,
+    and return {message_id}"""
+    data = request.get_json()
+    result = message.message_sendlater(
+        data['token'],
+        data['channel_id'],
+        data['message'],
+        data['time_sent']
+    )
+    return dumps({
+        'message_id': result
+    })
 
 @APP.route("message/react", methods=['POST'])
 def http_message_react():
-    pass
+    """This function gets a message within a channel the authorised user is part of,
+    add a "react" to that particular message and return nothing"""
+    data = request.get_json()
+    message.message_react(
+        data['token'],
+        data['message_id'],
+        data['react_id']
+    )
+    return dumps({})
 
 @APP.route("message/unreact", methods=['POST'])
 def http_message_unreact():
-    pass
+    """This route gets a message within a channel the authorised user is part of,
+    remove a "react" to that particular message and return nothing"""
+    data = request.get_json()
+    message.message_unreact(
+        data['token'],
+        data['message_id'],
+        data['react_id']
+    )
+    return dumps({})
 
 @APP.route("message/pin", methods=['POST'])
 def http_message_pin():
