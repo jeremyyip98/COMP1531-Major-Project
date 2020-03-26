@@ -3,7 +3,7 @@ UNSW COMP1531 Iteration 2
 channel.py
 Written by Jackie Cai z5259449
 """
-from database import channel_ids, list_of_channels, search_database, get_u_id
+from database import channel_ids, list_of_channels, search_database, get_u_id, get_profile
 from error import AccessError, InputError
 
 def generate_channel_id():
@@ -231,4 +231,4 @@ def channel_details(token, channel_id):
         
     return details
             
-        
+def channel_messages(   
