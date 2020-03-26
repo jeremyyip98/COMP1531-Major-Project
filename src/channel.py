@@ -230,5 +230,3 @@ def channel_details(token, channel_id):
         raise AccessError(description='Authorised user is not a member of channel with channel_id')
         
     return details
-            
-def channel_messages(   
