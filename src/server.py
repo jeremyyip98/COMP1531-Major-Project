@@ -1,3 +1,9 @@
+"""
+UNSW COMP1531 Project Iteration 2
+server.py
+This file are running the frontend function works with the Message routes
+Written by: Yip Jeremy Chung Lum, z5098112
+"""
 import sys
 from json import dumps
 from flask import Flask, request
