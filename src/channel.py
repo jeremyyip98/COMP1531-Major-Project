@@ -173,11 +173,7 @@ def channel_invite(token, channel_id, u_id):
     
     found_authorised_user = False
     found_channel = False
-    for channel in list_of_channels['channels']:   
-        # raise accessError if authorised user is not in channel
-        if found_authorised_user is False:
-            raise AccessError(description='Authorised user not in channel')
-                
+    for channel in list_of_channels['channels']:
         # found the right channel and add user to channel
         if channel['channel_id'] == channel_id:
             found_channel = True
@@ -192,6 +188,10 @@ def channel_invite(token, channel_id, u_id):
     # no channel with channel_id
     if found_channel is False:
         raise InputError(description='Channel_ID does not refer to valid channel')
+        
+    # raise accessError if authorised user is not in channel
+    if found_authorised_user is False:
+        raise AccessError(description='Authorised user not in channel')
     
 def channel_details(token, channel_id):
     # check if the token is valid
