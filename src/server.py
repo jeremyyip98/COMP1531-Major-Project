@@ -111,11 +111,27 @@ def http_message_unpin():
 
 @APP.route("message/remove", methods=['DELETE'])
 def http_message_remove():
-    pass
+    """This route get a message_id for a message, this message is removed from the channel,
+    and return nothing"""
+    data = request.get_json()
+    message.message_remove(
+        data['token'],
+        data['message_id']
+    )
+    return dumps({})
 
 @APP.route("message/edit", methods=['PUT'])
 def http_message_edit():
-    pass
+    """This route get a message, update it's text with new text.
+    If the new message is an empty string, the message is deleted.
+    And return nothing"""
+    data = request.get_json()
+    message.message_edit(
+        data['token'],
+        data['message_id'],
+        data['message']
+    )
+    return dumps({})
 
 if __name__ == "__main__":
     APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080))
