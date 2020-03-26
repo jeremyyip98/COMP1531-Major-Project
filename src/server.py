@@ -65,7 +65,7 @@ def http_message_sendlater():
 
 @APP.route("message/react", methods=['POST'])
 def http_message_react():
-    """This function gets a message within a channel the authorised user is part of,
+    """This route get a message within a channel the authorised user is part of,
     add a "react" to that particular message and return nothing"""
     data = request.get_json()
     message.message_react(
@@ -77,7 +77,7 @@ def http_message_react():
 
 @APP.route("message/unreact", methods=['POST'])
 def http_message_unreact():
-    """This route gets a message within a channel the authorised user is part of,
+    """This route get a message within a channel the authorised user is part of,
     remove a "react" to that particular message and return nothing"""
     data = request.get_json()
     message.message_unreact(
@@ -89,11 +89,25 @@ def http_message_unreact():
 
 @APP.route("message/pin", methods=['POST'])
 def http_message_pin():
-    pass
+    """This route get a message within a channel, mark it as "pinned",
+    and return nothing"""
+    data = request.get_json()
+    message.message_pin(
+        data['token'],
+        data['message_id']
+    )
+    return dumps({})
 
 @APP.route("message/unpin", methods=['POST'])
 def http_message_unpin():
-    pass
+    """This route get a message within a channel, remove it's mark as "pinned",
+    and return nothing"""
+    data = request.get_json()
+    message.message_unpin(
+        data['token'],
+        data['message_id']
+    )
+    return dumps({})
 
 @APP.route("message/remove", methods=['DELETE'])
 def http_message_remove():
