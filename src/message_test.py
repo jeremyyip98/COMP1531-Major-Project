@@ -76,10 +76,6 @@ def test_send_correct_channel():
         if msg_dict['message_id'] == message_id:
             channel_message = msg_dict['message']
 
-
-    # Above code could be implented in another way:
-    # channelMessage = output.get('messages')[0].get('message')
-
     assert channel_message == 'abc'
 
 def test_send_invalid_token():
