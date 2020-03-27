@@ -191,4 +191,4 @@ def http_message_edit():
     return dumps({})
 
 if __name__ == "__main__":
-    APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080))
+    APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080),debug=True)
