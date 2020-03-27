@@ -33,6 +33,32 @@ def echo():
         'data': data
     })
 
+@APP.route("/channels/list", methods=['GET'])
+def http_list():
+    pass
+
+@APP.route("/channels/listall", methods=['GET'])
+def http_listall():
+    pass
+
+@APP.route("/channels/create", methods=['GET'])
+def http_create():
+    pass
+
+@APP.route("/channel/leave", methods=['POST'])
+def http_leave():
+    pass
+
+@APP.route("/channel/join", methods=['POST'])
+def http_join():
+    pass
+
+@APP.route("/channel/addowner", methods=['POST'])
+def http_addowner():
+    pass
+@APP.route("/channel/removeowner", methods=['POST'])
+def http_removeowner():
+    pass
 @APP.route("/auth/register", methods=['POST'])
 def http_register():
     payload = request.get_json()

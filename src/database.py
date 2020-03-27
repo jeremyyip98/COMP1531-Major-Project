@@ -49,17 +49,18 @@ def restore_database():
                         }
 
 
-def restore_channel_databse():
+def restore_channel_database():
     """reseting the channel database to clear it"""
     global list_of_channels
-    list_of_channels.clear()
+    global channel_ids
+    channel_ids = [0]
     list_of_channels = {
-        'channels' :
-        [
-            #{
-            # }
-        ]
-}
+                        'channels' :
+                        [
+                            #{
+                            # }
+                        ]
+                }
 message_list = [{
     # message_id (int)
     # u_id (int)
