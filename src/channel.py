@@ -3,7 +3,7 @@ UNSW COMP1531 Iteration 2
 channel.py
 Written by Jackie Cai z5259449
 """
-from database import channel_ids, list_of_channels, search_database, get_u_id, get_profile
+from database import channel_ids, list_of_channels, search_database, get_u_id, get_profile, get_channel, get_message
 from error import AccessError, InputError
 
 def generate_channel_id():
@@ -250,13 +250,12 @@ def channel_messages(token, channel_id, start):
         if chan['channel_id'] == channel_id:
             # total messages = length of channel_messages list
             num_total_messages = len(chan['channel_messages'])
-            int i = 0
-            int end = chan['channel_messages'][-1]
+            end = chan['channel_messages'][-1]
             # add from message_list to messages
             for msg_id in chan['channel_messages']:
-                if (i > 50):
+                if (end - start > 50):
                     break
-                else if (i <= 50 && msg_id == end):
+                elif (end - start <= 50 and msg_id == end):
                     end = -1
                 else:
                     message_ids.append(msg_id)
@@ -270,7 +269,7 @@ def channel_messages(token, channel_id, start):
         for msg_dict in message_list:
             if msg_dict['message_id'] == ids:
                 # adds the message dict to messages list
-                messages.append[msg_dict]
+                messages.append(msg_dict)
             
     if start >= num_total_messages:
         raise InputError('Start is greater than or equal to total messages in the channel')
