@@ -3,7 +3,7 @@ UNSW COMP1531 Iteration 2
 channel.py
 Written by Jackie Cai z5259449
 """
-from database import channel_ids, list_of_channels, search_database, get_u_id, get_profile, get_channel, get_message
+from database import channel_ids, list_of_channels, search_database, get_u_id, get_profile, get_channel, get_message, get_formatted_user
 from error import AccessError, InputError
 
 def channel_join(token, channel_id):
@@ -55,7 +55,7 @@ def channel_addowner(token, channel_id, u_id):
     is_valid = search_database(token)
     if is_valid is False:
         raise AccessError(description='Invalid Token')
-    user = is_valid
+    user = get_formatted_user(token)
     for chan in list_of_channels['channels']:
         #found channel
         if chan['channel_id'] == channel_id:
@@ -69,7 +69,7 @@ def channel_addowner(token, channel_id, u_id):
             if user['u_id'] not in chan['owner_members']:
                 raise AccessError(description='User is not an Owner of Slackr or Channel')
             else:
-                chan['owner_members'].appen(u_id)
+                chan['owner_members'].append(u_id)
                 return
     raise InputError(description='Channel ID is not a valid channel')
 def channel_removeowner(token, channel_id, u_id):
@@ -108,7 +108,7 @@ def channel_invite(token, channel_id, u_id):
         raise AccessError(description='Invalid Token')
         
     # authorised user is user who is in the channel and invites another user
-    authorised_user = is_valid
+    authorised_user = get_formatted_user(token)
     # invited_user is user who is invited and added to the channel
     # inputError raised in get_profile() when u_id not a valid user
     invited_user = get_profile(u_id)
@@ -122,10 +122,9 @@ def channel_invite(token, channel_id, u_id):
             # searching through members in the channel
             for members in channel['all_members']:
                 # checking if authorised user in the channel
-                if authorised_user == members:
+                if authorised_user['u_id'] == members:
                     found_authorised_user = True
-                    
-            channel['all_members'].append(invited_user)
+                    channel['all_members'].append(invited_user['u_id'])
     
     # no channel with channel_id
     if found_channel is False:
@@ -142,7 +141,7 @@ def channel_details(token, channel_id):
         raise AccessError(description='Invalid Token')
     
     # authorised user is user who is in the channel and invites another user
-    authorised_user = is_valid['u_id']
+    authorised_user = get_formatted_user(token)
     found_channel = False
     found_authorised_user = False
     
@@ -156,14 +155,13 @@ def channel_details(token, channel_id):
             
             # check if authorised user is in the channel
             for members in channel['all_members']:
-                if members == authorised_user:
+                if members == authorised_user['u_id']:
                     # authorised user is in the channel
                     found_authorised_user = True
-                    
-            # setting details to have the details of this channel
-            details['name'] = channel['channel_name']
-            details['owner_members'] = channel['owner_members']
-            details['all_members'] = channel['all_members']
+                    # setting details to have the details of this channel
+                    details['name'] = channel['channel_name']
+                    details['owner_members'] = channel['owner_members']
+                    details['all_members'] = channel['all_members']
         
     if found_channel is False:
         raise InputError(description='Channel_ID is not a valid channel')
@@ -224,7 +222,7 @@ def channel_messages(token, channel_id, start):
             
             # check if authorised user is in the channel
             for members in channel['all_members']:
-                if members == authorised_user:
+                if members == authorised_user['u_id']:
                     # authorised user is in the channel
                     found_authorised_user = True
             
