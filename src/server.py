@@ -8,10 +8,10 @@ import sys
 from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
-from error import InputError
 import message
 
 def defaultHandler(err):
+    """A given function by instructors"""
     response = err.get_response()
     print('response', err, err.get_response())
     response.data = dumps({
@@ -28,18 +28,8 @@ CORS(APP)
 APP.config['TRAP_HTTP_EXCEPTIONS'] = True
 APP.register_error_handler(Exception, defaultHandler)
 
-# Example
-@APP.route("/echo", methods=['GET'])
-def echo():
-    data = request.args.get('data')
-    if data == 'echo':
-        raise InputError(description='Cannot echo "echo"')
-    return dumps({
-        'data': data
-    })
-
 # Added code
-@APP.route("message/send", methods=['POST'])
+@APP.route("/message/send", methods=['POST'])
 def http_message_send():
     """This route send a message from authorised_user to the channel specified by channel_id,
     and return {message_id}"""
@@ -53,7 +43,7 @@ def http_message_send():
         'message_id': result
     })
 
-@APP.route("message/sendlater", methods=['POST'])
+@APP.route("/message/sendlater", methods=['POST'])
 def http_message_sendlater():
     """This route send a message from authorised_user to the channel specified by
     channel_id automatically at a specified time in the future,
@@ -69,7 +59,7 @@ def http_message_sendlater():
         'message_id': result
     })
 
-@APP.route("message/react", methods=['POST'])
+@APP.route("/message/react", methods=['POST'])
 def http_message_react():
     """This route get a message within a channel the authorised user is part of,
     add a "react" to that particular message and return nothing"""
@@ -81,7 +71,7 @@ def http_message_react():
     )
     return dumps({})
 
-@APP.route("message/unreact", methods=['POST'])
+@APP.route("/message/unreact", methods=['POST'])
 def http_message_unreact():
     """This route get a message within a channel the authorised user is part of,
     remove a "react" to that particular message and return nothing"""
@@ -93,7 +83,7 @@ def http_message_unreact():
     )
     return dumps({})
 
-@APP.route("message/pin", methods=['POST'])
+@APP.route("/message/pin", methods=['POST'])
 def http_message_pin():
     """This route get a message within a channel, mark it as "pinned",
     and return nothing"""
@@ -104,7 +94,7 @@ def http_message_pin():
     )
     return dumps({})
 
-@APP.route("message/unpin", methods=['POST'])
+@APP.route("/message/unpin", methods=['POST'])
 def http_message_unpin():
     """This route get a message within a channel, remove it's mark as "pinned",
     and return nothing"""
@@ -115,7 +105,7 @@ def http_message_unpin():
     )
     return dumps({})
 
-@APP.route("message/remove", methods=['DELETE'])
+@APP.route("/message/remove", methods=['DELETE'])
 def http_message_remove():
     """This route get a message_id for a message, this message is removed from the channel,
     and return nothing"""
@@ -126,7 +116,7 @@ def http_message_remove():
     )
     return dumps({})
 
-@APP.route("message/edit", methods=['PUT'])
+@APP.route("/message/edit", methods=['PUT'])
 def http_message_edit():
     """This route get a message, update it's text with new text.
     If the new message is an empty string, the message is deleted.
