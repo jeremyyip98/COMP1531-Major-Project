@@ -5,7 +5,7 @@ Jackie Cai z5259449
 """
 import pytest
 
-from database import restore_channel_database
+from database import restore_channel_database, restore_database
 from error import AccessError, InputError
 from auth import auth_register
 from user import user_profile
@@ -35,9 +35,10 @@ def test_channel_list_access_error():
     """test the token error"""
     #test invalid token
     with pytest.raises(AccessError) as err:
-	    channels_list('hopefullythisnotavalidtoken')
+        channels_list('hopefullythisnotavalidtoken')
 def test_channel_list_normal():
     """test that list only has one channel for both user even if the channel1 is public"""
+    restore_database()
     restore_channel_database()
     user1 = auth_register('name2@mail.com', 'password', 'Jim', 'Smith')
     channel1 = channels_create(user1['token'], 'My Channel', True)
@@ -66,6 +67,7 @@ def test_channel_listall_access_error():
 	    channels_listall('hopefullythisnotavalidtoken')
 def test_channel_listall_normal():
     """channel list all should list all channels regardless if the user is in the channel or not"""
+    restore_database()
     restore_channel_database()
     user1 = auth_register('name4@mail.com', 'password', 'Jim', 'Smith')
     user2 = auth_register('name5@mail.com', 'password1', 'Tim', 'Lift')
@@ -101,6 +103,7 @@ def test_channel_addowner_input_error():
 	    channel_addowner(user1['token'], channel1, user1['u_id'])
 def test_channel_addowner_normal():
     """test return types and the function does what it suppose to do"""
+    restore_database()
     restore_channel_database()
     user1 = auth_register('name9@mail.com', 'password', 'Jim', 'Smith')
     user2 = auth_register('name10@mail.com', 'password1', 'Tim', 'Lift')
@@ -141,6 +144,8 @@ def test_channel_remove_owner_input_error():
 	    channel_removeowner(user1['token'], channel1, user2['u_id'])
 def test_channel_remove_owner_normal():
     """test function works and return type is correct"""
+    restore_database()
+    restore_channel_database()
     user1 = auth_register('name15@mail.com', 'password', 'Jim', 'Smith')
     user2 = auth_register('name16@mail.com', 'password1', 'Tim', 'Lift')
     channel1 = channels_create(user1['token'], 'My Channel', True)
@@ -178,6 +183,8 @@ def test_channel_leave_input_error():
 	    channel_leave(user['token'], channel + 1)
 def test_channel_leave_normal():
     """test leave function works"""
+    restore_database()
+    restore_channel_database()
     user = auth_register('name19@mail.com', 'password', 'John', 'Doe')
     channel = channels_create(user['token'], 'valid_channel', True)
     details = channel_details(user['token'], channel)
@@ -202,6 +209,8 @@ def test_channel_join_error():
 	    channel_join(user2['token'], channel)
 def test_channel_join_normal():
     """test the function works and returns what it's suppose to"""
+    restore_database()
+    restore_channel_database()
     user = auth_register('name22@mail.com', 'password', 'John', 'Doe')
     user2 = auth_register('name23@mail.com', 'passw0rd', 'Ben', 'Ny')
     channel2 = channels_create(user2['token'], 'Public Channel', True)

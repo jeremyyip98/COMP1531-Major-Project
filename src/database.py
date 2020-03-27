@@ -69,7 +69,8 @@ def restore_channel_database():
     global list_of_channels
     list_of_channels['channels'].clear()
     global channel_ids
-    channel_ids = [0]
+    channel_ids.clear()
+    channel_ids.append(0)
 
 def check_token(token):
     """ Takes token raises Access Error if the token is not linked to any user,

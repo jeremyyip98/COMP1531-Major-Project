@@ -5,6 +5,8 @@ from flask_cors import CORS
 from error import InputError
 import error
 import auth
+import channel
+import channels
 
 def defaultHandler(err):
     response = err.get_response()
@@ -35,30 +37,78 @@ def echo():
 
 @APP.route("/channels/list", methods=['GET'])
 def http_list():
-    pass
+    payload = request.get_json()
+    details = channels.channels_list(
+        payload['token']
+    )
+    return(
+        {
+            'channels' : details
+        }
+    )
 
 @APP.route("/channels/listall", methods=['GET'])
 def http_listall():
-    pass
+    payload = request.get_json()
+    details = channels.channels_listall(
+        payload['token']
+    )
+    return(
+        {
+            'channels' : details
+        }
+    )
 
-@APP.route("/channels/create", methods=['GET'])
+@APP.route("/channels/create", methods=['POST'])
 def http_create():
-    pass
+    payload = request.get_json()
+    details = channels.channels_create(
+        payload['token'],
+        payload['channel_name'],
+        payload['is_public'])
+    return(
+        {
+            'channel_id' : details
+        }
+    )
 
 @APP.route("/channel/leave", methods=['POST'])
 def http_leave():
-    pass
+    payload = request.get_json()
+    channel.channel_leave(
+        payload['token'],
+        payload['channel_id']
+    )
+    return dumps({})
 
 @APP.route("/channel/join", methods=['POST'])
 def http_join():
-    pass
+    payload = request.get_json()
+    channel.channel_join(
+        payload['token'],
+        payload['channel_id']
+    )
+    return dumps({})
 
 @APP.route("/channel/addowner", methods=['POST'])
 def http_addowner():
-    pass
+    payload = request.get_json()
+    channel.channel_addowner(
+        payload['token'],
+        payload['channel_id'],
+        payload['u_id']
+    )
+    return dumps({})
+
 @APP.route("/channel/removeowner", methods=['POST'])
 def http_removeowner():
-    pass
+    payload = request.get_json()
+    channel.channel_leave(
+        payload['token'],
+        payload['channel_id']
+    )
+    return dumps({})
+
 @APP.route("/auth/register", methods=['POST'])
 def http_register():
     payload = request.get_json()
