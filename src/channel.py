@@ -156,9 +156,7 @@ def channel_details(token, channel_id):
             
             # check if authorised user is in the channel
             for members in channel['all_members']:
-                print('The type of authorised_user is : ', type(authorised_user))
-                print('The type of members is: ', type(members))
-                if authorised_user == members:
+                if authorised_user['u_id'] == members:
                     # authorised user is in the channel
                     found_authorised_user = True
                     

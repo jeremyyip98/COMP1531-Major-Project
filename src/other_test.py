@@ -1,7 +1,8 @@
-from other import users_all, search
+from other import users_all#, search
 from auth import auth_register
-from helper_functions import register_valid_user, create_valid_channel, register_another_valid_user
-from message import message_send
+from helper_functions import register_valid_user, register_another_valid_user
+#, create_valid_channel
+#from message import message_send
 import pytest
 from error import InputError, AccessError
 
@@ -22,15 +23,14 @@ def test_users_all_one_user():
 
 # Testing users all with two users
 def test_users_all_two_users():
-    details = register_valid_user()
-    register_another_valid_user()
+    details = register_another_valid_user()
     users = users_all(details["token"])
     assert users["users"][0]["name_first"] == "First" 
     assert users["users"][1]["name_first"] == "Anotherfirst"
     
 
 
-
+"""
 # Helper function which creates a user, channel and then sends a message to it
 def send_test_message(message, channel_name, different_user):
     channel_id, details = create_valid_channel(channel_name, different_user)
@@ -102,3 +102,4 @@ def test_search_term_in_channel_not_joined():
 
 
 
+"""
