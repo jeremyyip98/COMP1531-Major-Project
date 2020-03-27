@@ -5,8 +5,7 @@ Written by: Yip Jeremy Chung Lum, z5098112
 """
 from datetime import datetime
 from database import get_message, get_u_id, get_permission
-from channel import  channels_list, channels_listall
-from channel import channel_details
+from channel import  channels_list, channels_listall, channel_details
 from error import InputError, AccessError
 
 ##############################################################
