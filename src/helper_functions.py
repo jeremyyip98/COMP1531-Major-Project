@@ -1,3 +1,4 @@
+import re
 from auth import auth_register
 from channels import channels_create
 from message import message_send
@@ -28,4 +29,3 @@ def valid_email(email):
         return True
     else:
         return False
-        
