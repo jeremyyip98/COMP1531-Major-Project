@@ -30,14 +30,15 @@ list_of_channels = {
                               #'channel_id' : channel_id,
                               #'channel_name' : channel_name
                               #'is_public' : boolean
-                              #'owner_members' : [owners]
-                              #'all_members : [all_members]
+                              #'owner_members' : [u_id] - list of owner u_ids
+                              #'all_members : [u_id] - list of member u_ids
                               # }
                             ]
 }
 
 def restore_database():
     global registered_users_store
+    registered_users_store.clear()
     registered_users_store = {
                             'registered_users' : 
                                 [
@@ -47,25 +48,26 @@ def restore_database():
 
                         }
 
-
-def restore_channel_databse():
+def restore_channel_database():
     """reseting the channel database to clear it"""
     global list_of_channels
+    global channel_ids
+    channel_ids = [0]
     list_of_channels = {
-        'channels' :
-        [
-            #{
-            # }
-        ]
-}
+                        'channels' :
+                        [
+                            #{
+                            # }
+                        ]
+                }
 MESSAGELIST = [
     # {
-        # message_id (int)
-        # u_id (int)
-        # message (string)
-        # time_created (integer (unix timestamp))
-        # reacts (list of dictionaries)
-        # is_pinned (Boolean)
+    # message_id (int)
+    # u_id (int)
+    # message (string)
+    # time_created (integer (unix timestamp))
+    # reacts (list of dictionaries)
+    # is_pinned (Boolean)
     # }
 ]
 
@@ -180,10 +182,10 @@ def set_handle(token, handle_str):
     user = search_database(token)
     user['handle_str'] = handle_str
 
-def check_email_already_used(handle_str):
+def check_email_already_used(email):
     '''Checks if an email is already being used'''
     for user in registered_users_store['registered_users']:
-        if user['email'] == handle_str:
+        if user['email'] == email:
             return True
     return False
 

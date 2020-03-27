@@ -57,6 +57,22 @@ def channel_add(channel_id, message_id):
             if dict_channel['channel_id'] == channel_id:
                 dict_channel['channel_messages'].append(message_id)
 
+# Helper function for message_create() and get_channel_id()
+def channel_add(channel_id, message_id):
+    """This function store a list of dictionaries containing
+    the channel_id with it's corresponding message_ids and return nothing"""
+    channel = get_channel()
+    if not channel: # If the channel is empty
+        dictionary = {
+            "channel_id" : channel_id,
+            "channel_messages" : [message_id]
+        }
+        channel.append(dictionary)
+    else:
+        for dict_channel in channel:
+            if dict_channel['channel_id'] == channel_id:
+                dict_channel['channel_messages'].append(message_id)
+
 # Helper function for message_send() and message_sendlater()
 def check_joined_channel(token, channel_id):
     """This function check has the authorised user joined the channel or not
