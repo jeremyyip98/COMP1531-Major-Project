@@ -66,7 +66,7 @@ def check_joined_channel(token, channel_id):
     # channels_list() return a list of all channels (a list of dictionaries)
     # that the authorised user is part of, hence loop through the dictionaries
     for dict_item in channels_list(token):
-        if dict_item[channel_id] == channel_id:   # If the given channel_id exists
+        if dict_item['channel_id'] == channel_id:   # If the given channel_id exists
             joined = True
             break
     return joined
