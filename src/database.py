@@ -38,7 +38,6 @@ list_of_channels = {
 
 def restore_database():
     global registered_users_store
-    registered_users_store.clear()
     registered_users_store = {
                             'registered_users' : 
                                 [
@@ -52,7 +51,6 @@ def restore_database():
 def restore_channel_databse():
     """reseting the channel database to clear it"""
     global list_of_channels
-    list_of_channels.clear()
     list_of_channels = {
         'channels' :
         [
@@ -60,20 +58,24 @@ def restore_channel_databse():
             # }
         ]
 }
-MESSAGELIST = [{
-    # message_id (int)
-    # u_id (int)
-    # message (string)
-    # time_created (integer (unix timestamp))
-    # reacts (list of dictionaries)
-    # is_pinned (Boolean)
-}]
+MESSAGELIST = [
+    # {
+        # message_id (int)
+        # u_id (int)
+        # message (string)
+        # time_created (integer (unix timestamp))
+        # reacts (list of dictionaries)
+        # is_pinned (Boolean)
+    # }
+]
 
 # Extra datatype that is not mentioned in the spec
-CHANNELLIST = [{
-    # channel_id (int)
-    # channel_messages (list of message_id (int))
-}]
+CHANNELLIST = [
+    # {
+        # channel_id (int)
+        # channel_messages (list of message_id (int))
+    # }
+]
 
 def check_token(token):
     """ Takes token raises Access Error if the token is not linked to any user,
@@ -138,9 +140,11 @@ def search_database(token):
 def reset_message():
     """This function reset the message and returns nothing"""
     global MESSAGELIST
-    MESSAGELIST = [{
+    MESSAGELIST = [
+        # {
 
-    }]
+        # }
+    ]
 
 def get_message():
     """This function get the list of dictionary of messages and returns it"""
@@ -176,12 +180,14 @@ def set_handle(token, handle_str):
     user = search_database(token)
     user['handle_str'] = handle_str
 
+"""
 def check_email_already_used(handle_str):
     '''Checks if an email is already being used'''
     for user in registered_users_store['registered_users']:
         if user['email'] == email:
             return True
     return False
+"""
 
 def check_handle_str_already_used(handle_str):
     '''Checks if a handle is already being used'''
