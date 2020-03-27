@@ -30,8 +30,8 @@ list_of_channels = {
                               #'channel_id' : channel_id,
                               #'channel_name' : channel_name
                               #'is_public' : boolean
-                              #'owner_members' : [owners]
-                              #'all_members : [all_members]
+                              #'owner_members' : [u_id] - list of owner u_ids
+                              #'all_members : [u_id] - list of member u_ids
                               # }
                             ]
 }
@@ -62,7 +62,6 @@ def restore_database():
                                 ]
 
                         }
-
 
 def restore_channel_database():
     """reseting the channel database to clear it"""
@@ -174,7 +173,7 @@ def set_handle(token, handle_str):
     user = search_database(token)
     user['handle_str'] = handle_str
 
-def check_email_already_used(handle_str):
+def check_email_already_used(email):
     '''Checks if an email is already being used'''
     for user in registered_users_store['registered_users']:
         if user['email'] == email:
@@ -187,7 +186,7 @@ def check_handle_str_already_used(handle_str):
         if user['handle_str'] == handle_str:
             return True
     return False
-    
+
 def get_channel():
     """This function create a relationship between channel and message,
     and returns a list of dictionaries that contain it"""
