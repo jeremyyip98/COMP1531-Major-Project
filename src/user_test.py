@@ -51,13 +51,11 @@ def test_user_profile_setname_valid():
 # We raise an access error since we passed in an invalid token
 def test_user_profile_setname_invalid_token():
     database.restore_database()
-    database.restore_database()
     with pytest.raises(AccessError) as e:
         user_profile_setname("hopefullythisisnotavalidtoken", "Newfirst", "Newlast")
 
 # Here, the new name_first is too short
 def test_user_profile_setname_first_name_too_short():
-    database.restore_database()
     database.restore_database()
     results = register_valid_user()
     with pytest.raises(InputError) as e:

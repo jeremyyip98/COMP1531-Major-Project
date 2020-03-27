@@ -8,6 +8,7 @@ from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
 import message
+from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle
 
 def defaultHandler(err):
     """A given function by instructors"""
@@ -187,6 +188,37 @@ def http_message_edit():
         data['message_id'],
         data['message']
     )
+    return dumps({})
+
+@APP.route("/user/profile", methods=["GET"])
+def http_profile():
+    token = request.args.get('token')
+    u_id = request.args.get('u_id')
+    return dumps(user_profile(token, u_id))
+
+@APP.route("/user/profile/setname", methods=["POST"])
+def http_setname():
+    payload = request.get_json()
+    token = payload["token"]
+    name_first = payload["name_first"]
+    name_last = payload["name_last"]
+    user_profile_setname(token, name_first, name_last)
+    return dumps({})
+
+@APP.route("/user/profile/setemail", methods=["POST"])
+def http_setemail():
+    payload = request.get_json()
+    token = payload["token"]
+    email = payload["email"]
+    user_profile_setemail(token, email)
+    return dumps({})
+
+@APP.route("/user/profile/sethandle", methods=["POST"])
+def http_sethandle():
+    payload = request.get_json()
+    token = payload["token"]
+    handle_str = payload["handle_str"]
+    user_profile_sethandle(token, handle_str)
     return dumps({})
 
 if __name__ == "__main__":
