@@ -4,18 +4,18 @@ message_test.py
 Written by: Yip Jeremy Chung Lum, z5098112
 """
 import pytest
+from database import reset_message
 from message import message_send, message_remove, message_edit
 from channel import channel_join, channel_add_owner, channel_messages, channels_create
 from helper_functions import register_valid_user, register_another_valid_user
-from error import InputError
-from error import AccessError
-
+from error import InputError, AccessError
 
 #########################################################
 # The test functions for the message_send() in message.py
 #########################################################
 def test_send_exceed_characters():
     """This function raise InputError, if message is more than 1000 characters"""
+    reset_message()
     # Generate a token
     results = register_valid_user()
 
@@ -28,6 +28,7 @@ def test_send_exceed_characters():
 def test__send_not_joined_channel():
     """This function raise AccessError, if the authorised user has not joined
     the channel they are trying to post to"""
+    reset_message()
     # Generate a token that is going to be used
     joined = register_valid_user()
 
@@ -46,6 +47,7 @@ def test__send_not_joined_channel():
 
 def test_send_correct_channel():
     """This function check if the message was sent to the channel"""
+    reset_message()
     # Generate a token
     results = register_valid_user()
 
@@ -74,6 +76,7 @@ def test_send_correct_channel():
 
 def test_send_invalid_token():
     """This function check if it's an invalid token"""
+    reset_message()
     # Generate a token
     results = register_valid_user()
 
@@ -87,6 +90,7 @@ def test_send_invalid_token():
 ###########################################################
 def test_remove_not_exists():
     """This function raise InputError, if the message (based on ID) no longer exist"""
+    reset_message()
     # Generate a token
     results = register_valid_user()
 
@@ -110,6 +114,7 @@ def test_remove_not_exists():
 def test_remove_invalid_user():
     """This function rais AccessError, if the authorised user is not the one who sent the message,
      and not an admin/owner of the channel"""
+    reset_message()
     # Generate a token
     results = register_valid_user()
 
@@ -140,6 +145,7 @@ def test_remove_invalid_user():
 
 def test_remove_confirm():
     """This function check if the message was removed in the channel"""
+    reset_message()
     # Generate a token
     results = register_valid_user()
 
@@ -178,6 +184,7 @@ def test_remove_confirm():
 
 def test_remove_invalid_token():
     """This function check if it's an invalid token"""
+    reset_message()
     # Generate a token
     results = register_valid_user()
 
@@ -198,6 +205,7 @@ def test_remove_invalid_token():
 def test_edit_invalid_user():
     """This function return AccessErrori f the authorised user is not the one who sent the message,
     and not an admin/owner of the channel """
+    reset_message()
     # Generate a token
     results = register_valid_user()
 
@@ -227,6 +235,7 @@ def test_edit_invalid_user():
 
 def test_edit_confirm():
     """This function check if the message was edtied in the channel"""
+    reset_message()
     # Generate a token
     results = register_valid_user()
 
@@ -261,6 +270,7 @@ def test_edit_confirm():
 
 def test_edit_invalid_token():
     """This function check if it's an invalid token"""
+    reset_message()
       # Generate a token
     results = register_valid_user()
 
