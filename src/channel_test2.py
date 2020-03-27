@@ -5,6 +5,7 @@ from channels import channels_list, channels_listall, channels_create
 from channel import channel_addowner, channel_removeowner, channel_invite, channel_details, channel_join, channel_leave, channel_messages
 from message import message_send
 from helper_functions import register_valid_user, register_another_valid_user
+from database import restore_channel_database
 import pytest
 
 
@@ -21,6 +22,7 @@ Implemtation tests for channel_invite, channel_details, channel_messages
     
 ### Test when inviting user to a channel with invalid channel_id - gives InputError (where u_id is valid)
 def test_invite_invalid_channel_id():
+    restore_database()
     restore_channel_database()
     #   Create user and channel
     user = register_valid_user()
