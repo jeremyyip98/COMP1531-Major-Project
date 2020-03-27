@@ -60,20 +60,24 @@ def restore_channel_database():
                             # }
                         ]
                 }
-message_list = [{
+MESSAGELIST = [
+    # {
     # message_id (int)
     # u_id (int)
     # message (string)
     # time_created (integer (unix timestamp))
     # reacts (list of dictionaries)
     # is_pinned (Boolean)
-}]
+    # }
+]
 
 # Extra datatype that is not mentioned in the spec
-channel_list = [{
+CHANNELLIST = [
+    # {
     # channel_id (int)
     # channel_messages (list of message_id (int))
-}]
+    # }
+]
 
 def check_token(token):
     """ Takes token raises Access Error if the token is not linked to any user,
@@ -137,15 +141,16 @@ def search_database(token):
     
 def reset_message():
     """This function reset the message and returns nothing"""
-    global message_list
-    message_list = [{
-
-    }]
+    global MESSAGELIST
+    MESSAGELIST = [
+        # {
+        # }
+    ]
 
 def get_message():
     """This function get the list of dictionary of messages and returns it"""
-    global message_list
-    return message_list
+    global MESSAGELIST
+    return MESSAGELIST
 
 def get_profile(u_id):
     '''Gets a user profile via u_id instead of token. Used in the user_profile function'''
@@ -193,5 +198,5 @@ def check_handle_str_already_used(handle_str):
 def get_channel():
     """This function create a relationship between channel and message,
     and returns a list of dictionaries that contain it"""
-    global channel_list
-    return channel_list
+    global CHANNELLIST
+    return CHANNELLIST
