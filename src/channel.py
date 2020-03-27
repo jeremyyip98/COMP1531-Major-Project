@@ -190,12 +190,12 @@ def channel_messages(token, channel_id, start):
         if chan['channel_id'] == channel_id:
             # total messages = length of channel_messages list
             num_total_messages = len(chan['channel_messages'])
-            end = chan['channel_messages'][-1]
+            end_of_list = chan['channel_messages'][-1]
             # add from message_list to messages
             for msg_id in chan['channel_messages']:
                 if (end - start > 50):
                     break
-                elif (end - start <= 50 and msg_id == end):
+                elif (end - start <= 50 and msg_id == end_of_list):
                     end = -1
                 else:
                     message_ids.append(msg_id)
