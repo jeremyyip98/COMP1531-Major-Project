@@ -180,14 +180,12 @@ def set_handle(token, handle_str):
     user = search_database(token)
     user['handle_str'] = handle_str
 
-"""
 def check_email_already_used(handle_str):
     '''Checks if an email is already being used'''
     for user in registered_users_store['registered_users']:
-        if user['email'] == email:
+        if user['email'] == handle_str:
             return True
     return False
-"""
 
 def check_handle_str_already_used(handle_str):
     '''Checks if a handle is already being used'''
@@ -201,3 +199,12 @@ def get_channel():
     and returns a list of dictionaries that contain it"""
     global CHANNELLIST
     return CHANNELLIST
+
+def reset_channel():
+    """This function reset the message and returns nothing"""
+    global CHANNELLIST
+    CHANNELLIST = [
+        # {
+
+        # }
+    ]

@@ -6,7 +6,8 @@ Written by: Yip Jeremy Chung Lum, z5098112
 import pytest
 from database import reset_message, restore_channel_databse, restore_database, reset_channel, get_message
 from message import message_send, message_remove, message_edit
-from channel import channel_join, channel_add_owner, channel_messages, channels_create
+from channel import channel_join, channel_addowner, channel_messages
+from channels import channels_create
 from helper_functions import register_valid_user, register_another_valid_user
 from error import InputError, AccessError
 
@@ -35,10 +36,7 @@ def test_send_exceed_characters():
 def test__send_not_joined_channel():
     """This function raise AccessError, if the authorised user has not joined
     the channel they are trying to post to"""
-    reset_message()
-    restore_channel_databse()
-    restore_database()
-    reset_channel()
+    restore_everything()
     # Generate a token that is going to be used
     joined = register_valid_user()
 
@@ -47,9 +45,6 @@ def test__send_not_joined_channel():
 
     # Create a channel and store the channel ID
     channel_info = channels_create(joined['token'], 'Cool Kids', False)
-
-    # Given the stored channel ID, add the user to that channel
-    #channel_join(joined['token'], channel_info)
 
     with pytest.raises(AccessError):
         # Send a message that the authorised user has not joined that channel
@@ -124,14 +119,11 @@ def test_remove_invalid_user():
     # Create a channel and store the channel ID
     channel_info = channels_create(results['token'], 'Cool Kids', False)
 
-    # Given the stored channel ID, add the user to that channel
-    channel_join(results['token'], channel_info)
-
     # Add another user to the channel
     channel_join(not_owner['token'], channel_info)
 
     # Make user of "results" an owner of this channel
-    channel_add_owner(results['token'], channel_info, results['u_id'])
+    channel_addowner(results['token'], channel_info, results['u_id'])
 
     # Send a message to the stored channel ID and store the message ID
     message_info = message_send(results['token'], channel_info, 'abc')
@@ -152,11 +144,8 @@ def test_remove_confirm():
     # Create a channel and store the channel ID
     channel_info = channels_create(results['token'], 'Cool Kids', False)
 
-    # Given the stored channel ID, add the user to that channel
-    channel_join(results['token'], channel_info)
-
     # Make user of "results" an owner of this channel
-    channel_add_owner(results['token'], channel_info, results['u_id'])
+    channel_addowner(results['token'], channel_info, results['u_id'])
 
     # Send a message to the stored channel ID
     message_send(results['token'], channel_info, 'abc')
@@ -191,9 +180,6 @@ def test_remove_invalid_token():
     # Create a channel and store the channel ID
     channel_info = channels_create(results['token'], 'Cool Kids', False)
 
-    # Given the stored channel ID, add the user to that channel
-    channel_join(results['token'], channel_info)
-
     # Send a message to the stored channel ID and store the message ID
     message_info = message_send(results['token'], channel_info, 'abc')
     with pytest.raises(AccessError):
@@ -215,14 +201,11 @@ def test_edit_invalid_user():
     # Create a channel and store the channel ID
     channel_info = channels_create(results['token'], 'Cool Kids', False)
 
-    # Given the stored channel ID, add the user to that channel
-    channel_join(results['token'], channel_info)
-
     # Add another user to the channel
     channel_join(not_owner['token'], channel_info)
 
     # Make user of "results" an owner of this channel
-    channel_add_owner(results['token'], channel_info, results['u_id'])
+    channel_addowner(results['token'], channel_info, results['u_id'])
 
     # Send a message to the stored channel ID and store the message ID
     message_info = message_send(results['token'], channel_info, 'abc')
@@ -242,11 +225,8 @@ def test_edit_confirm():
     # Create a channel and store the channel ID
     channel_info = channels_create(results['token'], 'Cool Kids', False)
 
-    # Given the stored channel ID, add the user to that channel
-    channel_join(results['token'], channel_info)
-
     # Make user of "results" an owner of this channel
-    channel_add_owner(results['token'], channel_info, results['u_id'])
+    channel_addowner(results['token'], channel_info, results['u_id'])
 
     # Send a message to the stored channel ID and store the message ID
     message_info = message_send(results['token'], channel_info, 'abc')
@@ -276,9 +256,6 @@ def test_edit_invalid_token():
 
     # Create a channel and store the channel ID
     channel_info = channels_create(results['token'], 'Cool Kids', False)
-
-    # Given the stored channel ID, add the user to that channel
-    channel_join(results['token'], channel_info)
 
     # Send a message to the stored channel ID and store the message ID
     message_info = message_send(results['token'], channel_info, 'abc')
