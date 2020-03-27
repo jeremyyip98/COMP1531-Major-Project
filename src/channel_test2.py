@@ -5,7 +5,9 @@ from channels import channels_list, channels_listall, channels_create
 from channel import channel_addowner, channel_removeowner, channel_invite, channel_details, channel_join, channel_leave, channel_messages
 from message import message_send
 from helper_functions import register_valid_user, register_another_valid_user
+from database import restore_channel_database
 import pytest
+
 
 """
 
@@ -16,10 +18,11 @@ Implemtation tests for channel_invite, channel_details, channel_messages
 
 """
 
-    """    ERROR TESTS FOR CHANNEL_INVITE_USER    """
+"""    ERROR TESTS FOR CHANNEL_INVITE_USER    """
     
 ### Test when inviting user to a channel with invalid channel_id - gives InputError (where u_id is valid)
 def test_invite_invalid_channel_id():
+    restore_database()
     restore_channel_database()
     #   Create user and channel
     user = register_valid_user()
@@ -81,7 +84,7 @@ def test_invite_invalid_token():
         channel_invite('hopefullythisisnotavalidtoken', channel['channel_id'], user['u_id'])
         
         
-    """    TEST FOR NORMAL FUNCTIONING OF INVITE_USER    """
+"""    TEST FOR NORMAL FUNCTIONING OF INVITE_USER    """
     
 ### Test for normal activity of channel_invite function
 def test_channel_invite_normal():
@@ -101,7 +104,7 @@ def test_channel_invite_normal():
     assert user2_channels['channels'][0]['channel_id'] == channel['channel_id']
 
 
-    """    ERROR TESTS FOR CHANNEL_DETAILS    """
+"""    ERROR TESTS FOR CHANNEL_DETAILS    """
     
 ### Test when authorised user is not part of the channel - AccessError
 def test_details_not_in_channel():
@@ -145,7 +148,7 @@ def test_details_invalid_token():
         channel_details('hopefullythisisnotavalidtoken', channel['channel_id'])
 
 
-    """    TESTS FOR NORMAL FUNCTION OF CHANNEL_DETAILS    """
+"""    TESTS FOR NORMAL FUNCTION OF CHANNEL_DETAILS    """
         
 ### test for normal function of channel_details ###
 def test_channel_details_normal():
@@ -183,7 +186,7 @@ def test_channel_details_normal():
     assert details['all_members'] == member_list
 
 
-    """    TEST FOR ERRORS IN CHANNEL_MESSAGES    """
+"""    TEST FOR ERRORS IN CHANNEL_MESSAGES    """
     
 ### Test when checking channel with no messages - AccessError
 def test_no_messages():
@@ -264,7 +267,7 @@ def test_messages_invalid_token():
         channel_messages('hopefullythisisnotavalidtoken', channel['channel_id'], 0)
 
 
-    """    TEST NORMAL FUNCTIONING OF CHANNEL_MESSAGES    """
+"""    TEST NORMAL FUNCTIONING OF CHANNEL_MESSAGES    """
             
 ### Test the normal functioning of channel_messages ###     
 def test_channel_messages_normal():
@@ -296,11 +299,4 @@ def test_channel_messages_normal():
         assert message1['messages'][i]['message'] == f'abcde{i}'
     assert message0['start'] == 100
     assert message0['end'] == -1
-
-"""
-
-HTTP Tests for the above
-
-"""
-
-
+    

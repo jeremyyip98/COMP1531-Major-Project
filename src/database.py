@@ -30,8 +30,8 @@ list_of_channels = {
                               #'channel_id' : channel_id,
                               #'channel_name' : channel_name
                               #'is_public' : boolean
-                              #'owner_members' : [owners]
-                              #'all_members : [all_members]
+                              #'owner_members' : [u_id] - list of owner u_ids
+                              #'all_members : [u_id] - list of member u_ids
                               # }
                             ]
 }
@@ -47,7 +47,6 @@ def restore_database():
                                 ]
 
                         }
-
 
 def restore_channel_database():
     """reseting the channel database to clear it"""
