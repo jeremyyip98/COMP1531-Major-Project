@@ -4,8 +4,9 @@ message.py
 Written by: Yip Jeremy Chung Lum, z5098112
 """
 from datetime import datetime
-from database import get_message, get_u_id, get_permission
-from channel import  channels_list, channels_listall, channel_details
+from database import get_message, get_u_id, get_channel
+from channels import  channels_list, channels_listall
+from channel import channel_details
 from error import InputError, AccessError
 
 ##############################################################
@@ -15,14 +16,13 @@ from error import InputError, AccessError
 def message_create(channel_id, u_id, message, time):
     """This function create a message and return it"""
     message = get_message()
-    if not message:    # If messages is empty
+    if message == [{}]:    # If messages is empty
         message_id = 0
     else:
         most_recent_message = message[-1]
         message_id = most_recent_message['message_id'] + 1
 
     dictionary = {
-        "channel_id" : channel_id,
         "message_id" : message_id,
         "u_id" : u_id,
         "message" : message,
@@ -35,7 +35,27 @@ def message_create(channel_id, u_id, message, time):
         "is_pinned" : False     # When the message is creating, no one should be able to pin it
     }
     message.append(dictionary)
+
+    # Add the message to it's corresponding channel
+    channel_add(channel_id, message_id)
+
     return message
+
+# Helper function for message_create() and get_channel_id()
+def channel_add(channel_id, message_id):
+    """This function store a list of dictionaries containing
+    the channel_id with it's corresponding message_ids and return nothing"""
+    channel = get_channel()
+    if not channel: # If the channel is empty
+        dictionary = {
+            "channel_id" : channel_id,
+            "channel_messages" : [message_id]
+        }
+        channel.append(dictionary)
+    else:
+        for dict_channel in channel:
+            if dict_channel['channel_id'] == channel_id:
+                dict_channel['channel_messages'].append(message_id)
 
 # Helper function for message_send() and message_sendlater()
 def check_joined_channel(token, channel_id):
@@ -46,10 +66,9 @@ def check_joined_channel(token, channel_id):
     # channels_list() return a list of all channels (a list of dictionaries)
     # that the authorised user is part of, hence loop through the dictionaries
     for dict_item in channels_list(token):
-        for key in dict_item:                   # Loop through the key in the dictionaries
-            if key[channel_id] == channel_id:   # If the given channel_id exists
-                joined = True
-                break
+        if dict_item[channel_id] == channel_id:   # If the given channel_id exists
+            joined = True
+            break
     return joined
 
 # Helper function for react_create and react_remove
@@ -104,11 +123,9 @@ def react_create(react_id, u_id, message_id):
 
             # Checking if the user has already reacted with the same react_id before
             joined = check_same_react_id(react, react_id, u_id)
-
             # Only add the user to u_ids, when he has not reacted before
             if joined is False:
                 react['u_ids'].append(u_id)
-
             # If the authorised user is reacting to his/her own message
             if dict_message['u_id'] == u_id:
                 react['is_this_user_reacted'] = False
@@ -127,11 +144,9 @@ def react_remove(react_id, u_id, message_id):
 
             # Checking if the user has already reacted with the same react_id before
             joined = check_same_react_id(react, react_id, u_id)
-
             # Only remove the user to u_ids, when he has reacted before
             if joined is True:
                 react['u_ids'].remove(u_id)
-
             # If the authorised user is removing the reacte to his/her own message
             if dict_message['u_id'] == u_id:
                 react['is_this_user_reacted'] = False
@@ -143,11 +158,12 @@ def react_remove(react_id, u_id, message_id):
 def get_channel_id(message_id):
     """This function given message_id, search through message,
     and return the channel_id corresponding to the message_id"""
-    message = get_message()
+    channel = get_channel()
 
-    for dict_message in message:
-        if dict_message['message_id'] == message_id:
-            channel_id = dict_message['channel_id']
+    for dict_channel in channel:
+        if message_id in dict_channel['channel_messages']:
+            channel_id = dict_channel['channel_id']
+
     return channel_id
 
 # Helper function for message_pin() and message_unpin()
@@ -331,10 +347,11 @@ def message_remove(token, message_id):
         raise InputError('Message_id no longer exist')
 
     is_user_sent = is_user_sent_message(token, message_id)
-    is_owner_channel = check_owner(token, message_id)
-    is_owner_slackr = get_permission(token)
+    is_owner = check_owner(token, message_id)
 
-    if is_user_sent is False and is_owner_channel is False and is_owner_slackr == 2:
+    # Currently only checked is the user an owner of the channel
+    # Haven't include the case when user is an owner of slackr (Don't know where to get this info.)
+    if is_user_sent is False or is_owner is False:
         raise AccessError('The authorised user is not the one who sent the message, nor an owner.')
 
     message = get_message()
@@ -353,10 +370,11 @@ def message_edit(token, message_id, message):
         raise InputError('Message_id no longer exist')
 
     is_user_sent = is_user_sent_message(token, message_id)
-    is_owner_channel = check_owner(token, message_id)
-    is_owner_slackr = get_permission(token)
+    is_owner = check_owner(token, message_id)
 
-    if is_user_sent is False and is_owner_channel is False and is_owner_slackr == 2:
+    # Currently only checked is the user an owner of the channel
+    # Haven't include the case when user is an owner of slackr (Don't know where to get this info.)
+    if is_user_sent is False or is_owner is False:
         raise AccessError('The authorised user is not the one who sent the message, nor an owner')
 
     message = get_message()
