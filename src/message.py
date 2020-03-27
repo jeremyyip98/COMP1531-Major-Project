@@ -15,11 +15,11 @@ from error import InputError, AccessError
 # Helper function for message_send() and message_sendlater()
 def message_create(channel_id, u_id, message, time):
     """This function create a message and return it"""
-    message = get_message()
-    if not message:    # If messages is empty
+    message_list = get_message()
+    if not message_list:    # If messages is empty
         message_id = 0
     else:
-        most_recent_message = message[-1]
+        most_recent_message = message_list[-1]
         message_id = most_recent_message['message_id'] + 1
 
     dictionary = {
@@ -34,12 +34,12 @@ def message_create(channel_id, u_id, message, time):
         }],
         "is_pinned" : False     # When the message is creating, no one should be able to pin it
     }
-    message.append(dictionary)
+    message_list.append(dictionary)
 
     # Add the message to it's corresponding channel
     channel_add(channel_id, message_id)
 
-    return message
+    return message_list
 
 # Helper function for message_create() and get_channel_id()
 def channel_add(channel_id, message_id):
@@ -47,13 +47,11 @@ def channel_add(channel_id, message_id):
     the channel_id with it's corresponding message_ids and return nothing"""
     channel = get_channel()
     if not channel: # If the channel is empty
-        print('If you see this message, it means the channel is fucking empty and we are gonna append some shits to it!')
         dictionary = {
             "channel_id" : channel_id,
             "channel_messages" : [message_id]
         }
         channel.append(dictionary)
-        print('If you see this message it means we have successfully appened the shit, which is: ', channel)
     else:
         for dict_channel in channel:
             if dict_channel['channel_id'] == channel_id:
