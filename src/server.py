@@ -13,6 +13,7 @@ import auth
 import channel
 import channels
 import message
+import other
 
 def defaultHandler(err):
     """A given function by instructors"""
@@ -229,6 +230,17 @@ def http_message_edit():
         data['token'],
         data['message_id'],
         data['message']
+    )
+    return dumps({})
+
+@APP.route("/admin/userpermission/change", methods=['POST'])
+def http_user_permission_change():
+    """changes the Slackr Owner permission"""
+    data = request.get_json()
+    other.admin_userpermission_change(
+        data['token'],
+        data['u_id'],
+        data['permission_id']
     )
     return dumps({})
 

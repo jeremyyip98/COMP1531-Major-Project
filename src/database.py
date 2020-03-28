@@ -118,7 +118,6 @@ def get_formatted_user(token):
     formatted_user['name_first'] = user['name_first']  
     formatted_user['name_last'] = user['name_last']  
     formatted_user['handle_str'] = user['handle_str']
-    formatted_user['permission_id'] = user['permission_id']
     return formatted_user  
 
 def get_all_users():
@@ -222,3 +221,10 @@ def reset_channel():
 
         # }
     ]
+
+def get_profile_allinfo(u_id):
+    '''Gets a user profile via u_id instead of token. Used in the user_profile function'''
+    for user in registered_users_store['registered_users']:
+        if user['u_id'] == u_id:
+            return user
+    raise InputError
