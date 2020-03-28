@@ -8,7 +8,7 @@ import json
 import urllib.request
 from database import restore_channel_database, restore_database
 
-BASE_URL = "http://127.0.0.1:10033"
+BASE_URL = "http://127.0.0.1:8080"
 
 def test_channels_createt_payload():
     data = json.dumps({
