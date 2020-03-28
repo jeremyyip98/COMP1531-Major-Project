@@ -103,6 +103,7 @@ def get_formatted_user(token):
     formatted_user['name_first'] = user['name_first']  
     formatted_user['name_last'] = user['name_last']  
     formatted_user['handle_str'] = user['handle_str']
+    formatted_user['permission_id'] = user['permission_id']
     return formatted_user  
 
 def get_all_users():
