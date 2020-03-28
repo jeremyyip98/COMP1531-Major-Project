@@ -139,7 +139,7 @@ def search_database(token):
 def reset_message():
     """This function reset the message and returns nothing"""
     global message_list
-    message_list = [
+    message_list[:] = [
         # {
 
         # }
@@ -202,7 +202,7 @@ def get_channel():
 def reset_channel():
     """This function reset the message and returns nothing"""
     global channel_list
-    channel_list = [
+    channel_list[:] = [
         # {
 
         # }
