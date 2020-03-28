@@ -5,13 +5,26 @@ import helper_functions
 from error import InputError, AccessError
 from message import message_sendlater
 
+standup_queue = ""
+
+def reset_standup_queue():
+    global standup_queue
+    standup_queue = ""
+    return
 
 def standup_start(token, channel_id, length):
     database.check_token(token)
+    if not database.check_channel_exists(channel_id):
+        raise InputError(description='Channel id is not a valid channel id')
     database.turn_on_standup(channel_id, length)
-    timer = threading.Timer(length, database.turn_off_standup)
-    timer.start()
+    time = database.get_standup_finish_time(channel_id)
+    message_sendlater(token, channel_id, standup_queue, time)
+    standup_timer = threading.Timer(length, database.turn_off_standup)
+    standup_timer.start()
+    reset_timer = threading.Timer(length, reset_standup_queue)
+    reset_timer.start()
     return {'time_finish' : database.get_standup_finish_time(channel_id)}
+
 
 def standup_active(token, channel_id):
     database.check_token(token)
@@ -30,6 +43,7 @@ def standup_send(token, channel_id, message):
         raise InputError(description='An active standup is not corrently happening')
     if not database.check_user_in_channel(token, channel_id):
         raise AccessError(description='The authorised user is not a member of channel')
-
-    time = database.get_standup_finish_time(channel_id)
-    message_sendlater(token, channel_id, message, time)
+    person = database.get_formatted_user(token)
+    name = person['name_first']
+    standup_queue = standup_queue + " " + name ": " + message + "\n"
+    # What if standup_queue is longer than 1000 characters?
