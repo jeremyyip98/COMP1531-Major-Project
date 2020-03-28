@@ -1,6 +1,6 @@
 from error import AccessError, InputError
 from datetime import datetime, timezone
-
+from message import message_send
 
 u_ids = [0]
 
@@ -81,6 +81,11 @@ CHANNELLIST = [
         # channel_messages (list of message_id (int))
     # }
 ]
+
+standup_queue = ""
+def restore_standup_queue():
+    global standup_queue
+    standup_queue = ""
 
 def check_token(token):
     """ Takes token raises Access Error if the token is not linked to any user,
@@ -215,10 +220,13 @@ def turn_on_standup(channel_id, length):
                 raise InputError(description='An active standup is currently running in this channel')
     raise InputError(description='Not a valid channel ID')
 
-def turn_off_standup(channel_id):
+def turn_off_standup(token, channel_id):
+    '''deactivates stand up mode for a channel and sends the messages in standup queue'''
     for channel in list_of_channels:
         if channel['channel_id'] == channel_id:
             channel['is_in_standup'] = False
+            message_send(token, channel_id, standup_queue)
+            restore_standup_queue()
             return
 
 
@@ -252,6 +260,10 @@ def get_standup_finish_time(channel_id):
     for channel in list_of_channels:
         if channel['channel_id'] == channel_id:
             return channel.get('standup_finish_time')
+
+def get_standup_queue():
+    global standup_queue
+    return standup_queue
 
 def get_channel():
     """This function create a relationship between channel and message,
