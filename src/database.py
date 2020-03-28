@@ -61,7 +61,7 @@ def restore_channel_database():
                             # }
                         ]
                 }
-MESSAGELIST = [
+message_list = [
     # {
     # message_id (int)
     # u_id (int)
@@ -73,7 +73,7 @@ MESSAGELIST = [
 ]
 
 # Extra datatype that is not mentioned in the spec
-CHANNELLIST = [
+channel_list = [
     # {
         # channel_id (int)
         # channel_messages (list of message_id (int))
@@ -143,8 +143,8 @@ def search_database(token):
     
 def reset_message():
     """This function reset the message and returns nothing"""
-    global MESSAGELIST
-    MESSAGELIST = [
+    global message_list
+    message_list[:] = [
         # {
 
         # }
@@ -152,8 +152,12 @@ def reset_message():
 
 def get_message():
     """This function get the list of dictionary of messages and returns it"""
-    global MESSAGELIST
-    return MESSAGELIST
+    global message_list
+    return message_list
+
+def set_message():
+    """This function set the list of dictionary of messages and return nothing"""
+    global message_list
 
 def get_profile(u_id):
     '''Gets a user profile via u_id instead of token. Used in the user_profile function'''
@@ -201,13 +205,13 @@ def check_handle_str_already_used(handle_str):
 def get_channel():
     """This function create a relationship between channel and message,
     and returns a list of dictionaries that contain it"""
-    global CHANNELLIST
-    return CHANNELLIST
+    global channel_list
+    return channel_list
 
 def reset_channel():
     """This function reset the message and returns nothing"""
-    global CHANNELLIST
-    CHANNELLIST = [
+    global channel_list
+    channel_list[:] = [
         # {
 
         # }
