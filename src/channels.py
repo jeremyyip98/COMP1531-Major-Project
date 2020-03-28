@@ -29,6 +29,7 @@ def channels_create(token, name, is_public):
         'is_public' : is_public,
         'owner_members' : [user],
         'all_members' : [user],
+        'is_in_standup' : False
     }
     list_of_channels['channels'].append(new_channel)
     return re_channel_id
@@ -67,4 +68,4 @@ def channels_listall(token):
             'channel_name' : chan['channel_name']
         }
         authed_channel.append(add)
-    return authed_channel 
+    return authed_channel

@@ -13,6 +13,7 @@ import auth
 import channel
 import channels
 import message
+import other
 from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle
 
 def defaultHandler(err):
@@ -42,6 +43,8 @@ def echo():
     return dumps({
         'data': data
     })
+
+#
     
 @APP.route("/channel/invite", methods=['POST'])
 def http_invite():
@@ -71,27 +74,16 @@ def http_messages():
 
 @APP.route("/channels/list", methods=['GET'])
 def http_list():
-    payload = request.get_json()
-    details = channels.channels_list(
-        payload['token']
-    )
-    return(
-        {
-            'channels' : details
-        }
-    )
+    token = request.args.get('token')
+    details = channels.channels_list(token)
+    return({'channels' : details})
 
 @APP.route("/channels/listall", methods=['GET'])
 def http_listall():
-    payload = request.get_json()
-    details = channels.channels_listall(
-        payload['token']
-    )
-    return(
-        {
-            'channels' : details
-        }
-    )
+    token = request.args.get('token')
+    details = channels.channels_listall(token)
+    return({'channels' : details})
+
 
 @APP.route("/channels/create", methods=['POST'])
 def http_create():
@@ -99,7 +91,8 @@ def http_create():
     details = channels.channels_create(
         payload['token'],
         payload['channel_name'],
-        payload['is_public'])
+        payload['is_public']
+    )
     return(
         {
             'channel_id' : details
@@ -266,6 +259,17 @@ def http_message_edit():
         data['token'],
         data['message_id'],
         data['message']
+    )
+    return dumps({})
+
+@APP.route("/admin/userpermission/change", methods=['POST'])
+def http_user_permission_change():
+    """changes the Slackr Owner permission"""
+    data = request.get_json()
+    other.admin_userpermission_change(
+        data['token'],
+        data['u_id'],
+        data['permission_id']
     )
     return dumps({})
 

@@ -225,4 +225,5 @@ def test_channel_join_already_in():
     channel = channels_create(user['token'], 'valid_channel', False)
     with pytest.raises(InputError) as err:
     	channel_join(user['token'], channel)
-
+    restore_channel_database()
+    restore_database()

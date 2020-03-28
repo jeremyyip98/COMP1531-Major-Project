@@ -53,14 +53,9 @@ def restore_channel_database():
     global list_of_channels
     list_of_channels['channels'].clear()
     global channel_ids
-    channel_ids = [0]
-    list_of_channels = {
-                        'channels' :
-                        [
-                            #{
-                            # }
-                        ]
-                }
+    channel_ids.clear()
+    channel_ids.append(0)
+
 MESSAGELIST = [
     # {
     # message_id (int)
@@ -212,3 +207,10 @@ def reset_channel():
 
         # }
     ]
+
+def get_profile_allinfo(u_id):
+    '''Gets a user profile via u_id instead of token. Used in the user_profile function'''
+    for user in registered_users_store['registered_users']:
+        if user['u_id'] == u_id:
+            return user
+    raise InputError
