@@ -67,4 +67,4 @@ def channels_listall(token):
             'channel_name' : chan['channel_name']
         }
         authed_channel.append(add)
-    return authed_channel 
+    return authed_channel
