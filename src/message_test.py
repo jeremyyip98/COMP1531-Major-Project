@@ -4,7 +4,7 @@ message_test.py
 Written by: Yip Jeremy Chung Lum, z5098112
 """
 import pytest
-from database import reset_message, restore_channel_databse, restore_database, reset_channel, get_message
+from database import reset_message, restore_channel_database, restore_database, reset_channel, get_message
 from message import message_send, message_remove, message_edit
 from channel import channel_join, channel_addowner, channel_messages
 from channels import channels_create
@@ -14,7 +14,7 @@ from error import InputError, AccessError
 def restore_everything():
     """This function restore everything and return nothing"""
     reset_message()
-    restore_channel_databse()
+    restore_channel_database()
     restore_database()
     reset_channel()
 

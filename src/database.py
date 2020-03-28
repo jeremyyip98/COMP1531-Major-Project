@@ -51,6 +51,7 @@ def restore_database():
 def restore_channel_database():
     """reseting the channel database to clear it"""
     global list_of_channels
+    list_of_channels['channels'].clear()
     global channel_ids
     channel_ids = [0]
     list_of_channels = {
@@ -107,6 +108,7 @@ def get_formatted_user(token):
     formatted_user['name_first'] = user['name_first']  
     formatted_user['name_last'] = user['name_last']  
     formatted_user['handle_str'] = user['handle_str']
+    formatted_user['permission_id'] = user['permission_id']
     return formatted_user  
 
 def get_all_users():
