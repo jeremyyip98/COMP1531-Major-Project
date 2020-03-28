@@ -14,6 +14,7 @@ import channel
 import channels
 import message
 import other
+from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle
 
 def defaultHandler(err):
     """A given function by instructors"""
@@ -42,7 +43,35 @@ def echo():
     return dumps({
         'data': data
     })
+
 #
+    
+@APP.route("/channel/invite", methods=['POST'])
+def http_invite():
+    data = request.get_json()
+    channels.channel_invite(
+        payload['token'],
+        payload['channel_id'],
+        payload['u_id'])
+    return dumps({})
+    
+@APP.route("/channel/details", methods=['GET'])
+def http_details():
+    details = channels.channel_details(
+        request.args.get('token'),
+        request.args.get('channel_id'))
+        
+    return dumps(details)
+    
+@APP.route("/channel/messages", methods=['GET'])
+def http_messages():
+    details = channels.channel_messages(
+        request.args.get('token'),
+        request.args.get('channel_id'),
+        request.args.get('start'))
+        
+    return dumps(details)
+
 @APP.route("/channels/list", methods=['GET'])
 def http_list():
     token = request.args.get('token')
@@ -242,6 +271,36 @@ def http_user_permission_change():
         data['u_id'],
         data['permission_id']
     )
+
+@APP.route("/user/profile", methods=["GET"])
+def http_profile():
+    token = request.args.get('token')
+    u_id = request.args.get('u_id')
+    return dumps(user_profile(token, u_id))
+
+@APP.route("/user/profile/setname", methods=["POST"])
+def http_setname():
+    payload = request.get_json()
+    token = payload["token"]
+    name_first = payload["name_first"]
+    name_last = payload["name_last"]
+    user_profile_setname(token, name_first, name_last)
+    return dumps({})
+
+@APP.route("/user/profile/setemail", methods=["POST"])
+def http_setemail():
+    payload = request.get_json()
+    token = payload["token"]
+    email = payload["email"]
+    user_profile_setemail(token, email)
+    return dumps({})
+
+@APP.route("/user/profile/sethandle", methods=["POST"])
+def http_sethandle():
+    payload = request.get_json()
+    token = payload["token"]
+    handle_str = payload["handle_str"]
+    user_profile_sethandle(token, handle_str)
     return dumps({})
 
 if __name__ == "__main__":

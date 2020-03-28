@@ -24,7 +24,7 @@ def user_profile_setemail(token, email):
         raise InputError(description='Invalid email address')
     if database.check_email_already_used(email):
         raise InputError(description='Email is already being used by another user')
-    database.set_handle(token, email)
+    database.set_email(token, email)
     return {}
 
 def user_profile_sethandle(token, handle_str):
