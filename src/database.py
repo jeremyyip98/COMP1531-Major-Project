@@ -90,8 +90,8 @@ MESSAGELIST = [
 # Extra datatype that is not mentioned in the spec
 CHANNELLIST = [
     # {
-    # channel_id (int)
-    # channel_messages (list of message_id (int))
+        # channel_id (int)
+        # channel_messages (list of message_id (int))
     # }
 ]
 
@@ -161,6 +161,7 @@ def reset_message():
     global MESSAGELIST
     MESSAGELIST = [
         # {
+
         # }
     ]
 
@@ -211,9 +212,18 @@ def check_handle_str_already_used(handle_str):
         if user['handle_str'] == handle_str:
             return True
     return False
-
+    
 def get_channel():
     """This function create a relationship between channel and message,
     and returns a list of dictionaries that contain it"""
     global CHANNELLIST
     return CHANNELLIST
+
+def reset_channel():
+    """This function reset the message and returns nothing"""
+    global CHANNELLIST
+    CHANNELLIST = [
+        # {
+
+        # }
+    ]
