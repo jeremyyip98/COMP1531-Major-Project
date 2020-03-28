@@ -271,7 +271,7 @@ def http_user_permission_change():
         data['u_id'],
         data['permission_id']
     )
-    return ({})
+    return dumps({})
 
 @APP.route("/user/profile", methods=["GET"])
 def http_profile():
