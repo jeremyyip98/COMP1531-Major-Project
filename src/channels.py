@@ -47,7 +47,11 @@ def channels_list(token):
         for mem in chan['all_members']:
             #if user are in the channel append to list
             if mem == user:
-                authed_channel.append(chan)
+                add = {
+                    'channel_id' : chan['channel_id'],
+                    'channel_name' : chan['channel_name']
+                }
+                authed_channel.append(add)
     return authed_channel
 def channels_listall(token):
     """Gets a token and returns a list of channel that exist"""
@@ -56,4 +60,11 @@ def channels_listall(token):
     if is_valid is False:
         raise AccessError(description='Invalid Token')
     #no access error means they are user and returns all channels
-    return list_of_channels['channels']
+    authed_channel = []
+    for chan in list_of_channels['channels']:
+        add = {
+            'channel_id' : chan['channel_id'],
+            'channel_name' : chan['channel_name']
+        }
+        authed_channel.append(add)
+    return authed_channel 
