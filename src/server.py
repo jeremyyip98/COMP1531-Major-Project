@@ -34,30 +34,19 @@ def echo():
     return dumps({
         'data': data
     })
-
+#
 @APP.route("/channels/list", methods=['GET'])
 def http_list():
-    payload = request.get_json()
-    details = channels.channels_list(
-        payload['token']
-    )
-    return(
-        {
-            'channels' : details
-        }
-    )
+    token = request.args.get('token')
+    details = channels.channels_list(token)
+    return({'channels' : details})
 
 @APP.route("/channels/listall", methods=['GET'])
 def http_listall():
-    payload = request.get_json()
-    details = channels.channels_listall(
-        payload['token']
-    )
-    return(
-        {
-            'channels' : details
-        }
-    )
+    token = request.args.get('token')
+    details = channels.channels_listall(token)
+    return({'channels' : details})
+
 
 @APP.route("/channels/create", methods=['POST'])
 def http_create():
@@ -65,7 +54,8 @@ def http_create():
     details = channels.channels_create(
         payload['token'],
         payload['channel_name'],
-        payload['is_public'])
+        payload['is_public']
+    )
     return(
         {
             'channel_id' : details

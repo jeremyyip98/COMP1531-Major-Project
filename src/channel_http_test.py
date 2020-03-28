@@ -20,11 +20,13 @@ def test_echo_failure():
     with pytest.raises(HTTPError):
         response = urllib.request.urlopen('http://127.0.0.1:8080/echo?data=echo')
 
-DATA = json.dumps({
-        'channel_id' : '',
-        'channel_name' : 'password',
+def test_channels_create():
+    data = json.dumps({
+        'channel_id' : '1',
+        'channel_name' : 'My Channel',
         'is_public' : True,
         'owner_members' : ['Jackie'],
-        'all_members' : ['Jackie'],
-    }).encode('utf-8')
-    
+        'all_members' : ['Jackie']
+    }).encode('utf-8')   
+    req = urllib.request.Request(f"{BASE_URL}/channels/create", data=data, headers={'Content-Type': 'application/json'})
+    payload = json.load(urllib.request.urlopen(req))
