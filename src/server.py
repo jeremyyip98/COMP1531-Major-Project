@@ -41,6 +41,32 @@ def echo():
     return dumps({
         'data': data
     })
+    
+@APP.route("/channel/invite", methods=['POST'])
+def http_invite():
+    data = request.get_json()
+    channels.channel_invite(
+        payload['token'],
+        payload['channel_id'],
+        payload['u_id'])
+    return dumps({})
+    
+@APP.route("/channel/details", methods=['GET'])
+def http_details():
+    details = channels.channel_details(
+        request.args.get('token'),
+        request.args.get('channel_id'))
+        
+    return dumps(details)
+    
+@APP.route("/channel/messages", methods=['GET'])
+def http_messages():
+    details = channels.channel_messages(
+        request.args.get('token'),
+        request.args.get('channel_id'),
+        request.args.get('start'))
+        
+    return dumps(details)
 
 @APP.route("/channels/list", methods=['GET'])
 def http_list():
