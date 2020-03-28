@@ -36,21 +36,6 @@ list_of_channels = {
                             ]
 }
 
-message_list = [{
-    # message_id (int)
-    # u_id (int)
-    # message (string)
-    # time_created (integer (unix timestamp))
-    # reacts (list of dictionaries)
-    # is_pinned (Boolean)
-}]
-
-# Extra datatype that is not mentioned in the spec
-channel_list = [{
-    # channel_id (int)
-    # channel_messages (list of message_id (int))
-}]
-
 def restore_database():
     global registered_users_store
     registered_users_store.clear()
