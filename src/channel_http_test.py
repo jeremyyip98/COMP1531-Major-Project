@@ -6,8 +6,7 @@ Jackie Cai z5259449
 
 import json
 import urllib.request
-from urllib.error import HTTPError
-import pytest
+from database import restore_channel_database, restore_database
 
 BASE_URL = "http://127.0.0.1:10033"
 
@@ -23,7 +22,7 @@ def test_channels_createt_payload():
     assert payload['channel_name'] == 'My Channel'
     assert payload['is_public'] is True
 
-def test_channels_create_payload():
+def test_channels_createf_payload():
     data = json.dumps({
         'token' : 'validtoken2',
         'channel_name' : 'False Channel',
@@ -57,6 +56,8 @@ def test_listall_payload():
             'channel_id' : 2,
             'channel_name' : 'False Channel'
         }]
+    restore_channel_database()
+    restore_database()
 
 def test_join_payload():
     data = json.dumps({
@@ -67,6 +68,8 @@ def test_join_payload():
     payload = json.load(urllib.request.urlopen(req))  
     assert payload['token'] == 'validtoken'
     assert payload['channel_id'] == 1
+    restore_channel_database()
+    restore_database()  
 
 def test_leave_payload():
     data = json.dumps({
@@ -77,6 +80,8 @@ def test_leave_payload():
     payload = json.load(urllib.request.urlopen(req))  
     assert payload['token'] == 'validtoken'
     assert payload['channel_id'] == 1
+    restore_channel_database()
+    restore_database()
 
 def test_addowner_payload():
     data = json.dumps({
@@ -89,6 +94,8 @@ def test_addowner_payload():
     assert payload['token'] == 'validtoken'
     assert payload['channel_id'] == 1
     assert payload['u_id'] == 1
+    restore_channel_database()
+    restore_database()
 
 def test_removeowner_payload():
     data = json.dumps({
@@ -101,3 +108,5 @@ def test_removeowner_payload():
     assert payload['token'] == 'validtoken'
     assert payload['channel_id'] == 1
     assert payload['u_id'] == 1
+    restore_channel_database()
+    restore_database()
