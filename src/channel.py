@@ -3,8 +3,7 @@ UNSW COMP1531 Iteration 2
 channel.py
 Written by Jackie Cai z5259449
 """
-from database import channel_ids, list_of_channels, search_database, get_u_id, get_profile, get_channel, get_message, get_formatted_user
-from message import message_send
+from database import list_of_channels, search_database, get_u_id, get_profile, get_channel, get_message, get_formatted_user
 from error import AccessError, InputError
 
 def channel_join(token, channel_id):
