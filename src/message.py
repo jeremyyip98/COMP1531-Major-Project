@@ -4,7 +4,7 @@ message.py
 Written by: Yip Jeremy Chung Lum, z5098112
 """
 from datetime import datetime
-from database import get_message, get_u_id, get_channel
+from database import get_message, get_u_id, get_channel, get_permission
 from channels import  channels_list, channels_listall
 from channel import channel_details
 from error import InputError, AccessError
@@ -170,11 +170,15 @@ def get_channel_id(message_id):
     """This function given message_id, search through message,
     and return the channel_id corresponding to the message_id"""
     channel = get_channel()
+    found = False
 
     for dict_channel in channel:
         if message_id in dict_channel['channel_messages']:
             channel_id = dict_channel['channel_id']
+            found = True
 
+    if found is False:
+        raise InputError('Given message_id does not exist in channel')
     return channel_id
 
 # Helper function for message_pin() and message_unpin()
@@ -358,11 +362,10 @@ def message_remove(token, message_id):
         raise InputError('Message_id no longer exist')
 
     is_user_sent = is_user_sent_message(token, message_id)
-    is_owner = check_owner(token, message_id)
+    is_owner_channel = check_owner(token, message_id)
+    is_owner_slackr = get_permission(token)
 
-    # Currently only checked is the user an owner of the channel
-    # Haven't include the case when user is an owner of slackr (Don't know where to get this info.)
-    if is_user_sent is False or is_owner is False:
+    if is_user_sent is False and is_owner_channel is False and is_owner_slackr is False:
         raise AccessError('The authorised user is not the one who sent the message, nor an owner.')
 
     message = get_message()
@@ -371,7 +374,6 @@ def message_remove(token, message_id):
             del dict_message
             channel_remove(message_id)
             break
-    
 
 def message_edit(token, message_id, message):
     """This function given a message, update it's text with new text.
@@ -383,12 +385,11 @@ def message_edit(token, message_id, message):
         raise InputError('Message_id no longer exist')
 
     is_user_sent = is_user_sent_message(token, message_id)
-    is_owner = check_owner(token, message_id)
+    is_owner_channel = check_owner(token, message_id)
+    is_owner_slackr = get_permission(token)
 
-    # Currently only checked is the user an owner of the channel
-    # Haven't include the case when user is an owner of slackr (Don't know where to get this info.)
-    if is_user_sent is False or is_owner is False:
-        raise AccessError('The authorised user is not the one who sent the message, nor an owner')
+    if is_user_sent is False and is_owner_channel is False and is_owner_slackr is False:
+        raise AccessError('The authorised user is not the one who sent the message, nor an owner.')
 
     message = get_message()
     for dict_message in message:
