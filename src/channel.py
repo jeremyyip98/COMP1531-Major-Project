@@ -4,6 +4,7 @@ channel.py
 Written by Jackie Cai z5259449
 """
 from database import channel_ids, list_of_channels, search_database, get_u_id, get_profile, get_channel, get_message, get_formatted_user
+from message import message_send
 from error import AccessError, InputError
 
 def channel_join(token, channel_id):
@@ -183,7 +184,7 @@ def channel_details(token, channel_id):
                                   })
             
             details['owner_members'] = owner_list
-            details['all_members'] = member_list]
+            details['all_members'] = member_list
         
     if found_channel is False:
         raise InputError(description='Channel_ID is not a valid channel')
@@ -210,8 +211,6 @@ def channel_messages(token, channel_id, start):
     # get_channel to get the message_list inside the channel
     for chan in get_channel():
         if chan['channel_id'] == channel_id:
-            # total messages = length of channel_messages list
-            num_total_messages = len(chan['channel_messages'])
             end_of_list = chan['channel_messages'][-1]
             # add from message_list to messages
             for msg_id in chan['channel_messages']:
@@ -222,6 +221,12 @@ def channel_messages(token, channel_id, start):
                 else:
                     message_ids.append(msg_id)
                     end += 1
+                # incrementing total_message
+                num_total_messages += 1
+                    
+    if start >= num_total_messages:
+        print(f"start = {start} // num_total_messages = {num_total_messages}")
+        raise InputError('Start is greater than or equal to total messages in the channel')
                     
     # initialise empty messages list
     messages = []
@@ -232,9 +237,6 @@ def channel_messages(token, channel_id, start):
             if msg_dict['message_id'] == ids:
                 # adds the message dict to messages list
                 messages.append(msg_dict)
-            
-    if start >= num_total_messages:
-        raise InputError('Start is greater than or equal to total messages in the channel')
     
     for channel in list_of_channels['channels']:
         # found the right channel

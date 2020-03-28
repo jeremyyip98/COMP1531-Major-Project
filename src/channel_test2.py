@@ -5,7 +5,7 @@ from channels import channels_list, channels_listall, channels_create
 from channel import channel_addowner, channel_removeowner, channel_invite, channel_details, channel_join, channel_leave, channel_messages
 from message import message_send
 from helper_functions import register_valid_user, register_another_valid_user
-from database import restore_channel_database, restore_database
+from database import restore_channel_database, restore_database, reset_message
 import pytest
 
 
@@ -52,28 +52,16 @@ def test_invite_authorised_user_invalid():
     restore_database()
     restore_channel_database()
     #   Create user and channel
-    user_in_channel_id = auth_register('name@mail.com', 'password', 'John', 'Doe')
-    channel_id = channels_create(user_in_channel['token'] + 'invalid', 'valid_channel', True)
+    user_in_channel = auth_register('name@mail.com', 'password', 'John', 'Doe')
+    channel_id = channels_create(user_in_channel['token'], 'valid_channel', True)
     
     #   Register the two users not in channel
-    user_not_in_channel_id = register_valid_user()
-    another_user_not_in_channel_id = register_another_valid_user()
+    user_not_in_channel = register_valid_user()
+    another_user_not_in_channel = register_another_valid_user()
     
     #   AccessError When user_not_in_channel invites another_user_not_in_channel
     with pytest.raises(AccessError) as e:
          channel_invite(user_not_in_channel['token'], channel_id, another_user_not_in_channel['u_id'])
-         
-### Test when member of channel invites themselves - InputError 
-def test_invite_self():
-    restore_database()
-    restore_channel_database()
-    #   Create user and channel
-    user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
-    
-    #   Raise InputError
-    with pytest.raises(InputError) as e:
-        channel_invite(user['token'], channel_id, user['u_id'])
     
 ### Test if function gives AccessError when invalid token passed
 def test_invite_invalid_token():
@@ -199,6 +187,7 @@ def test_channel_details_normal():
     
 ### Test when checking channel with no messages - AccessError
 def test_no_messages():
+    reset_message()
     restore_database()
     restore_channel_database()
     #   create user and channel
@@ -211,6 +200,7 @@ def test_no_messages():
 
 ### Test when checking channel with INVALID CHANNEL_ID - InputError
 def test_messages_invalid_chanel_id():
+    reset_message()
     restore_database()
     restore_channel_database()
     #   create user and channel
@@ -230,6 +220,7 @@ def test_messages_invalid_chanel_id():
     
 ### Test for when 'start' is greater than total messages - InputError
 def test_message_out_of_range():
+    reset_message()
     restore_database()
     restore_channel_database()
     #   create user and channel
@@ -250,6 +241,7 @@ def test_message_out_of_range():
     
 ### Test when authorised user is not part of the channel - AccessError
 def test_messages_not_in_channel():
+    reset_message()
     restore_database()
     restore_channel_database()
     #   create user and channel
@@ -267,6 +259,7 @@ def test_messages_not_in_channel():
         
 ### Test if function gives AccessError when invalid token passed
 def test_messages_invalid_token():
+    reset_message()
     restore_database()
     restore_channel_database()
     #   Create user and channel
@@ -285,6 +278,7 @@ def test_messages_invalid_token():
             
 ### Test the normal functioning of channel_messages ###     
 def test_channel_messages_normal():
+    reset_message()
     restore_database()
     restore_channel_database()
     #   Create user and channel
@@ -315,3 +309,4 @@ def test_channel_messages_normal():
     assert message0['start'] == 100
     assert message0['end'] == -1
     
+
