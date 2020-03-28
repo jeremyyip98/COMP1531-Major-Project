@@ -1,4 +1,5 @@
-from database import check_token, get_all_users
+from database import check_token, get_all_users, get_profile, search_database, get_message, get_permission, get_profile_allinfo
+from error import AccessError, InputError
 
 # Probably should need permission to do this!!!
 
@@ -18,3 +19,17 @@ def search(token, query_str):
 
 def standup_start():
     pass
+
+def admin_userpermission_change(token, u_id, permission_id):
+    is_valid = search_database(token)
+    if is_valid is False:
+        raise AccessError(description='Invalid Token')
+    #this functions raises an input error if the u_id does not refer to valid user
+    user = get_profile_allinfo(u_id)
+    a_user = get_permission(token)
+    if permission_id not in (1, 2):
+        raise InputError(description='Not valid permission id')
+    if a_user != 1:
+        raise AccessError(description='Not an Owner of Slackr')
+    user['permission_id'] = permission_id
+    

@@ -1,14 +1,20 @@
 """
 UNSW COMP1531 Project Iteration 2
 server.py
-This file are running the frontend function works with the Message routes
-Written by: Yip Jeremy Chung Lum, z5098112
+This file are running the frontend function works all the routes
 """
 import sys
 from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
+from error import InputError
+import error
+import auth
+import channel
+import channels
 import message
+import other
+from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle
 
 def defaultHandler(err):
     """A given function by instructors"""
@@ -38,32 +44,98 @@ def echo():
         'data': data
     })
 
+#
+    
+@APP.route("/channel/invite", methods=['POST'])
+def http_invite():
+    data = request.get_json()
+    channels.channel_invite(
+        payload['token'],
+        payload['channel_id'],
+        payload['u_id'])
+    return dumps({})
+    
+@APP.route("/channel/details", methods=['GET'])
+def http_details():
+    details = channels.channel_details(
+        request.args.get('token'),
+        request.args.get('channel_id'))
+        
+    return dumps(details)
+    
+@APP.route("/channel/messages", methods=['GET'])
+def http_messages():
+    details = channels.channel_messages(
+        request.args.get('token'),
+        request.args.get('channel_id'),
+        request.args.get('start'))
+        
+    return dumps(details)
+
 @APP.route("/channels/list", methods=['GET'])
 def http_list():
-    pass
+    token = request.args.get('token')
+    details = channels.channels_list(token)
+    return({'channels' : details})
 
 @APP.route("/channels/listall", methods=['GET'])
 def http_listall():
-    pass
+    token = request.args.get('token')
+    details = channels.channels_listall(token)
+    return({'channels' : details})
 
-@APP.route("/channels/create", methods=['GET'])
+
+@APP.route("/channels/create", methods=['POST'])
 def http_create():
-    pass
+    payload = request.get_json()
+    details = channels.channels_create(
+        payload['token'],
+        payload['channel_name'],
+        payload['is_public']
+    )
+    return(
+        {
+            'channel_id' : details
+        }
+    )
 
 @APP.route("/channel/leave", methods=['POST'])
 def http_leave():
-    pass
+    payload = request.get_json()
+    channel.channel_leave(
+        payload['token'],
+        payload['channel_id']
+    )
+    return dumps({})
 
 @APP.route("/channel/join", methods=['POST'])
 def http_join():
-    pass
+    payload = request.get_json()
+    channel.channel_join(
+        payload['token'],
+        payload['channel_id']
+    )
+    return dumps({})
 
 @APP.route("/channel/addowner", methods=['POST'])
 def http_addowner():
-    pass
+    payload = request.get_json()
+    channel.channel_addowner(
+        payload['token'],
+        payload['channel_id'],
+        payload['u_id']
+    )
+    return dumps({})
+
 @APP.route("/channel/removeowner", methods=['POST'])
 def http_removeowner():
-    pass
+    payload = request.get_json()
+    channel.channel_leave(
+        payload['token'],
+        payload['channel_id']
+    )
+    return dumps({})
+
 @APP.route("/auth/register", methods=['POST'])
 def http_register():
     payload = request.get_json()
@@ -188,6 +260,48 @@ def http_message_edit():
         data['message_id'],
         data['message']
     )
+    return dumps({})
+
+@APP.route("/admin/userpermission/change", methods=['POST'])
+def http_user_permission_change():
+    """changes the Slackr Owner permission"""
+    data = request.get_json()
+    other.admin_userpermission_change(
+        data['token'],
+        data['u_id'],
+        data['permission_id']
+    )
+    return dumps({})
+
+@APP.route("/user/profile", methods=["GET"])
+def http_profile():
+    token = request.args.get('token')
+    u_id = request.args.get('u_id')
+    return dumps(user_profile(token, u_id))
+
+@APP.route("/user/profile/setname", methods=["POST"])
+def http_setname():
+    payload = request.get_json()
+    token = payload["token"]
+    name_first = payload["name_first"]
+    name_last = payload["name_last"]
+    user_profile_setname(token, name_first, name_last)
+    return dumps({})
+
+@APP.route("/user/profile/setemail", methods=["POST"])
+def http_setemail():
+    payload = request.get_json()
+    token = payload["token"]
+    email = payload["email"]
+    user_profile_setemail(token, email)
+    return dumps({})
+
+@APP.route("/user/profile/sethandle", methods=["POST"])
+def http_sethandle():
+    payload = request.get_json()
+    token = payload["token"]
+    handle_str = payload["handle_str"]
+    user_profile_sethandle(token, handle_str)
     return dumps({})
 
 if __name__ == "__main__":
