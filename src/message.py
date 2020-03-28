@@ -57,21 +57,16 @@ def channel_add(channel_id, message_id):
             if dict_channel['channel_id'] == channel_id:
                 dict_channel['channel_messages'].append(message_id)
 
-# Helper function for message_create() and get_channel_id()
-def channel_add(channel_id, message_id):
-    """This function store a list of dictionaries containing
-    the channel_id with it's corresponding message_ids and return nothing"""
+def channel_remove(message_id):
+    """This function remove the message_ids from the channel and return nothing"""
+    channel_id = get_channel_id(message_id)
     channel = get_channel()
-    if not channel: # If the channel is empty
-        dictionary = {
-            "channel_id" : channel_id,
-            "channel_messages" : [message_id]
-        }
-        channel.append(dictionary)
-    else:
+    if channel: # If the channel is not empty
         for dict_channel in channel:
             if dict_channel['channel_id'] == channel_id:
-                dict_channel['channel_messages'].append(message_id)
+                for msg_id in dict_channel['channel_messages']:
+                    if msg_id == message_id:
+                        dict_channel['channel_messages'].remove(message_id)
 
 # Helper function for message_send() and message_sendlater()
 def check_joined_channel(token, channel_id):
@@ -191,8 +186,8 @@ def check_owner(token, message_id):
     channel_id = get_channel_id(message_id)
     owners_list = channel_details(token, channel_id)
 
-    for dict_owner in owners_list:
-        if dict_owner['u_id'] == u_id:
+    for owner_id in owners_list:
+        if owner_id == u_id:
             is_owner = True
             break
     return is_owner
@@ -374,7 +369,9 @@ def message_remove(token, message_id):
     for dict_message in message:
         if dict_message['message_id'] == message_id:
             del dict_message
+            channel_remove(message_id)
             break
+    
 
 def message_edit(token, message_id, message):
     """This function given a message, update it's text with new text.
