@@ -274,5 +274,17 @@ def http_sethandle():
     user_profile_sethandle(token, handle_str)
     return dumps({})
 
+@APP.route("standup/start", methods=["POST"])
+def http_standup_start():
+    return
+
+@APP.route("standup/active", methods=["GET"])
+def http_standup_active():
+    return
+
+@APP.route("standup/send", methods=["POST"])
+def http_standup_send():
+    return
+
 if __name__ == "__main__":
     APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080),debug=True)
