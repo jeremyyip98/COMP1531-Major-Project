@@ -364,7 +364,6 @@ def message_remove(token, message_id):
     and return nothing"""
     valid_message = check_valid_message(get_u_id(token), message_id)
     global message_list
-    
 
     if valid_message is False:
         raise InputError('Message_id no longer exist')

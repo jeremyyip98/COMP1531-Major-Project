@@ -14,6 +14,7 @@ import channel
 import channels
 import message
 import other
+from database import reset_message, reset_channel
 from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle
 from standup import standup_start, standup_active, standup_send
 
@@ -261,6 +262,14 @@ def http_message_edit():
         data['message_id'],
         data['message']
     )
+    return dumps({})
+
+# Adding an extra route in order to reset the values in the list everytime I run the pytest
+@APP.route("/message/reset", methods=['DELETE'])
+def reset_store():
+    """This function reset the list and returns nothing"""
+    reset_message()
+    reset_channel()
     return dumps({})
 
 @APP.route("/admin/userpermission/change", methods=['POST'])
