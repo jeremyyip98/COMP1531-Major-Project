@@ -1,6 +1,7 @@
+import re
 from auth import auth_register
 from channels import channels_create
-from message import message_send
+from database import get_profile_allinfo
 
 # Helper function to register a valid user and return u_id and token
 def register_valid_user():
@@ -27,4 +28,11 @@ def valid_email(email):
     if re.search(regex, email):
         return True
     else:
-        return False      
+        return False
+
+def create_admin():
+    user_id = auth_register("test@gmail.com", "Password", "First", "Last")
+    user = get_profile_allinfo(user_id['u_id'])
+    user['permission_id'] = 1
+    return user
+        

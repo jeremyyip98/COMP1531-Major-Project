@@ -64,7 +64,8 @@ def auth_register(email, password, name_first, name_last):
         'name_last' : name_last,
         'hash' : encrypt(password),
         'token' : token,
-        'handle_str' : make_handle(name_first, name_last)
+        'handle_str' : make_handle(name_first, name_last),
+        'permission_id' : 2
         }
     # Will probably implement jwt
     database.registered_users_store['registered_users'].append(user)

@@ -1,6 +1,7 @@
-from other import users_all, search
+from other import users_all, admin_userpermission_change, search
 from auth import auth_register
-from helper_functions import register_valid_user, register_another_valid_user, create_valid_channel
+from helper_functions import register_valid_user, register_another_valid_user, create_admin, create_valid_channel
+from database import restore_database, get_profile_allinfo
 from message import message_send
 import pytest
 from error import InputError, AccessError
@@ -26,7 +27,33 @@ def test_users_all_two_users():
     users = users_all(details["token"])
     assert users["users"][0]["name_first"] == "First" 
     assert users["users"][1]["name_first"] == "Anotherfirst"
-    
+
+def test_admin_permission_change_error():
+    restore_database()
+    admin = create_admin()
+    user = register_another_valid_user()
+    #test access error when user is not an admin
+    with pytest.raises(AccessError) as err:
+        admin_userpermission_change(user['token'], user['u_id'], 1)
+    #test input error when permssion id is not 1 or 2
+    with pytest.raises(InputError) as err:
+    	admin_userpermission_change(admin['token'], user['u_id'], 3)
+    #test access error with invalid token
+    with pytest.raises(AccessError) as err:
+    	admin_userpermission_change('hopefullyinvlaidtoken', user['u_id'], 1)
+    #test invalid user token
+    with pytest.raises(InputError) as err:
+    	admin_userpermission_change(admin['token'], user['u_id'] + 100, 1)
+    restore_database()
+
+def test_admin_permission_change_normal():
+    admin = create_admin()
+    user = register_another_valid_user()
+    user = get_profile_allinfo(user['u_id'])
+    assert user['permission_id'] == 2
+    admin_userpermission_change(admin['token'], user['u_id'], 1)
+    assert user['permission_id'] == 1
+    restore_database()
 
 
 

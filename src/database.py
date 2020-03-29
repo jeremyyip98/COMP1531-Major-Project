@@ -30,8 +30,8 @@ list_of_channels = {
                               #'channel_id' : channel_id,
                               #'channel_name' : channel_name
                               #'is_public' : boolean
-                              #'owner_members' : [owners]
-                              #'all_members : [all_members]
+                              #'owner_members' : [u_id] - list of owner u_ids
+                              #'all_members : [u_id] - list of member u_ids
                               # }
                             ]
 }
@@ -48,32 +48,32 @@ def restore_database():
 
                         }
 
-
-def restore_channel_databse():
+def restore_channel_database():
     """reseting the channel database to clear it"""
     global list_of_channels
-    list_of_channels.clear()
-    list_of_channels = {
-        'channels' :
-        [
-            #{
-            # }
-        ]
-}
-message_list = [{
+    list_of_channels['channels'].clear()
+    global channel_ids
+    channel_ids.clear()
+    channel_ids.append(0)
+
+message_list = [
+    # {
     # message_id (int)
     # u_id (int)
     # message (string)
     # time_created (integer (unix timestamp))
     # reacts (list of dictionaries)
     # is_pinned (Boolean)
-}]
+    # }
+]
 
 # Extra datatype that is not mentioned in the spec
-channel_list = [{
-    # channel_id (int)
-    # channel_messages (list of message_id (int))
-}]
+channel_list = [
+    # {
+        # channel_id (int)
+        # channel_messages (list of message_id (int))
+    # }
+]
 
 def check_token(token):
     """ Takes token raises Access Error if the token is not linked to any user,
@@ -103,6 +103,7 @@ def get_formatted_user(token):
     formatted_user['name_first'] = user['name_first']  
     formatted_user['name_last'] = user['name_last']  
     formatted_user['handle_str'] = user['handle_str']
+    formatted_user['permission_id'] = user['permission_id']
     return formatted_user  
 
 def get_all_users():
@@ -138,9 +139,11 @@ def search_database(token):
 def reset_message():
     """This function reset the message and returns nothing"""
     global message_list
-    message_list = [{
+    message_list[:] = [
+        # {
 
-    }]
+        # }
+    ]
 
 def get_message():
     """This function get the list of dictionary of messages and returns it"""
@@ -176,7 +179,7 @@ def set_handle(token, handle_str):
     user = search_database(token)
     user['handle_str'] = handle_str
 
-def check_email_already_used(handle_str):
+def check_email_already_used(email):
     '''Checks if an email is already being used'''
     for user in registered_users_store['registered_users']:
         if user['email'] == email:
@@ -195,3 +198,19 @@ def get_channel():
     and returns a list of dictionaries that contain it"""
     global channel_list
     return channel_list
+
+def reset_channel():
+    """This function reset the message and returns nothing"""
+    global channel_list
+    channel_list[:] = [
+        # {
+
+        # }
+    ]
+
+def get_profile_allinfo(u_id):
+    '''Gets a user profile via u_id instead of token. Used in the user_profile function'''
+    for user in registered_users_store['registered_users']:
+        if user['u_id'] == u_id:
+            return user
+    raise InputError
