@@ -14,6 +14,7 @@ import channel
 import channels
 import message
 import other
+import database
 from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle
 
 def defaultHandler(err):
@@ -302,6 +303,22 @@ def http_sethandle():
     token = payload["token"]
     handle_str = payload["handle_str"]
     user_profile_sethandle(token, handle_str)
+    return dumps({})
+
+@APP.route("/users/all", methods=['GET'])
+def http_users_all():
+    token = request.args.get('token')
+    return dumps(other.users_all(token))
+
+@APP.route("/search", methods=['GET'])
+def http_users_all():
+    token = request.args.get('token')
+    query_str = request.args.get('query_str')
+    return dumps(other.search(token, query_str))
+
+@APP.route("/workspace/reset", methods=['POST'])
+def http_reset():
+    database.restore_database()
     return dumps({})
 
 if __name__ == "__main__":

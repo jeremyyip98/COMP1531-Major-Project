@@ -33,7 +33,7 @@ def test_register_too_long_password():
     })
 
 def test_register_already_registered_email():
-    restore_database()
+    requests.post(f"{BASE_URL}/auth/register", json={})
     test_register_valid()
     test_register_valid()
     
