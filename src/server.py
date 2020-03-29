@@ -17,6 +17,7 @@ import other
 from database import reset_message, reset_channel
 from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle
 from standup import standup_start, standup_active, standup_send
+from workspace_reset import workspace_reset
 
 def defaultHandler(err):
     """A given function by instructors"""
@@ -335,8 +336,13 @@ def http_standup_send():
     payload = request.get_json()
     token = payload['token']
     channel_id = payload['channel_id']
-    message = payload['message']
-    standup_send(token, channel_id, message)
+    msg = payload['message']
+    standup_send(token, channel_id, msg)
+    return dumps({})
+
+@APP.route("/workspace/reset", methods=["POST"])
+def http_workspace_reset():
+    workspace_reset()
     return dumps({})
 
 if __name__ == "__main__":
