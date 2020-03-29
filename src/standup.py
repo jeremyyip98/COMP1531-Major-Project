@@ -42,5 +42,6 @@ def standup_send(token, channel_id, message):
     person = database.get_formatted_user(token)
     name = person['name_first']
     standup_queue = database.get_standup_queue()
-    standup_queue = standup_queue + " " + name ": " + message + "\n"
+    standup_queue = standup_queue + " " + name + ": " + message + "\n"
     # What if standup_queue is longer than 1000 characters?
+    
