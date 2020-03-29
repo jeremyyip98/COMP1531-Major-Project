@@ -4,7 +4,7 @@ message_test.py
 Written by: Yip Jeremy Chung Lum, z5098112
 """
 import pytest
-from database import reset_message, restore_channel_databse, restore_database, reset_channel, get_message
+from database import reset_message, restore_channel_database, restore_database, reset_channel, message_list
 from message import message_send, message_remove, message_edit
 from channel import channel_join, channel_addowner, channel_messages
 from channels import channels_create
@@ -14,7 +14,7 @@ from error import InputError, AccessError
 def restore_everything():
     """This function restore everything and return nothing"""
     reset_message()
-    restore_channel_databse()
+    restore_channel_database()
     restore_database()
     reset_channel()
 
@@ -53,6 +53,7 @@ def test__send_not_joined_channel():
 def test_send_correct_channel():
     """This function check if the message was sent to the channel"""
     restore_everything()
+
     # Generate a token
     results = register_valid_user()
 
@@ -62,7 +63,7 @@ def test_send_correct_channel():
     # Send a message
     message_id = message_send(results['token'], channel_info, 'abc')
 
-    message_list = get_message()
+    global message_list
 
     # Initialising channel_message
     channel_message = 'something'
@@ -144,9 +145,6 @@ def test_remove_confirm():
     # Create a channel and store the channel ID
     channel_info = channels_create(results['token'], 'Cool Kids', False)
 
-    # Make user of "results" an owner of this channel
-    channel_addowner(results['token'], channel_info, results['u_id'])
-
     # Send a message to the stored channel ID
     message_send(results['token'], channel_info, 'abc')
 
@@ -156,20 +154,15 @@ def test_remove_confirm():
     # Remove the recent messsage
     message_remove(results['token'], message_info2)
 
-    # Store the most recent message in the channel
-    output = channel_messages(results['token'], channel_info, 0)
+    global message_list
 
-    # Get the list "messages" from the dictionary "output"
-    channel_list = output.get('messages')
+    removed = True
 
-    # Get the first index in the list, which is a dictionary
-    channel_dict = channel_list[0]
+    for msg_dict in message_list:
+        if msg_dict['message_id'] == message_info2:
+            removed = False
 
-    # Get the key "message" from the dictionary
-    channel_message = channel_dict.get('message')
-
-    assert channel_message == 'abc'
-
+    assert removed is True
 
 def test_remove_invalid_token():
     """This function check if it's an invalid token"""
@@ -219,14 +212,13 @@ def test_edit_invalid_user():
 def test_edit_confirm():
     """This function check if the message was edtied in the channel"""
     restore_everything()
+    global message_list
+
     # Generate a token
     results = register_valid_user()
 
     # Create a channel and store the channel ID
     channel_info = channels_create(results['token'], 'Cool Kids', False)
-
-    # Make user of "results" an owner of this channel
-    channel_addowner(results['token'], channel_info, results['u_id'])
 
     # Send a message to the stored channel ID and store the message ID
     message_info = message_send(results['token'], channel_info, 'abc')
@@ -234,17 +226,12 @@ def test_edit_confirm():
     # Edit a message
     message_edit(results['token'], message_info, 'abcdefg')
 
-    # Store the most recent message in the channel
-    output = channel_messages(results['token'], channel_info, 0)
+    channel_message = 'false'
 
-    # Get the list "messages" from the dictionary "output"
-    channel_list = output.get('messages')
-
-    # Get the first index in the list, which is a dictionary
-    channel_dict = channel_list[0]
-
-    # Get the key "message" from the dictionary
-    channel_message = channel_dict.get('message')
+    for dict_msg in message_list:
+        if dict_msg['message_id'] == message_info:
+            # Get the key "message" from the dictionary
+            channel_message = dict_msg['message']
 
     assert channel_message == 'abcdefg'
 
