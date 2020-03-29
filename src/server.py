@@ -14,10 +14,10 @@ import channel
 import channels
 import message
 import other
-from database import reset_message, reset_channel
+from database import reset_message, reset_channel, restore_database
 from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle
-from standup import standup_start, standup_active, standup_send
-from workspace_reset import workspace_reset
+#from standup import standup_start, standup_active, standup_send
+#from workspace_reset import workspace_reset
 
 def defaultHandler(err):
     """A given function by instructors"""
@@ -96,7 +96,7 @@ def http_create():
         payload['channel_name'],
         payload['is_public']
     )
-    return(
+    return dumps(
         {
             'channel_id' : details
         }
@@ -271,6 +271,7 @@ def reset_store():
     """This function reset the list and returns nothing"""
     reset_message()
     reset_channel()
+    restore_database()
     return dumps({})
 
 @APP.route("/admin/userpermission/change", methods=['POST'])
@@ -314,7 +315,7 @@ def http_sethandle():
     handle_str = payload["handle_str"]
     user_profile_sethandle(token, handle_str)
     return dumps({})
-
+"""
 @APP.route("/standup/start", methods=["POST"])
 def http_standup_start():
     payload = request.get_json()
@@ -344,6 +345,6 @@ def http_standup_send():
 def http_workspace_reset():
     workspace_reset()
     return dumps({})
-
+"""
 if __name__ == "__main__":
     APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080),debug=True)
