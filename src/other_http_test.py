@@ -12,9 +12,6 @@ def test_channels_createt_payload():
         'u_id' : user2['u_id'],
         'permission_id' : 1,
     })
-    assert len(registered_users_store['registered_users']) == 2
     for i in registered_users_store['registered_users']:
         if user2['u_id'] == i['u_id']:
             assert i['permission_id'] == 1
-
-    

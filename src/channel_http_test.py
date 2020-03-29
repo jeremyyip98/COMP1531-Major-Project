@@ -34,7 +34,7 @@ def create_user2():
 # ----------------
 
 def test_channels_createt_payload():
-    get_list_of_channels()
+    list = get_list_of_channels()
     create_user1()
     payload = requests.post(f"{BASE_URL}/channels/create", json={
         'token' : user1['token'],
@@ -44,6 +44,7 @@ def test_channels_createt_payload():
     assert payload.json() == {'channel_id' : 1}
 
 def test_channels_createf_payload():
+    list = get_list_of_channels()
     create_user2()
     payload = requests.post(f"{BASE_URL}/channels/create", json={
         'token' : user2['token'],
@@ -83,7 +84,7 @@ def test_join_payload():
     list = get_list_of_channels()
     for i in list['channels']:
         if i['channel_id'] == 1:
-            assert user2['u_id'] in ['all_members']
+            assert user2['u_id'] in i['all_members']
 
 def test_leave_payload():
     requests.post(f"{BASE_URL}/channel/leave", json={
