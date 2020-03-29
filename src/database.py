@@ -1,6 +1,6 @@
 from error import AccessError, InputError
-
-
+from datetime import datetime, timezone
+from message import message_send
 
 u_ids = [0]
 
@@ -32,6 +32,8 @@ list_of_channels = {
                               #'is_public' : boolean
                               #'owner_members' : [u_id] - list of owner u_ids
                               #'all_members : [u_id] - list of member u_ids
+                              #'is_in_standup: False
+                              #'standup_finish_time: time
                               # }
                             ]
 }
@@ -74,6 +76,11 @@ channel_list = [
         # channel_messages (list of message_id (int))
     # }
 ]
+
+standup_queue = ""
+def restore_standup_queue():
+    global standup_queue
+    standup_queue = ""
 
 def check_token(token):
     """ Takes token raises Access Error if the token is not linked to any user,
@@ -193,6 +200,66 @@ def check_handle_str_already_used(handle_str):
             return True
     return False
     
+def turn_on_standup(channel_id, length):
+    '''makes a channel into standup mode if it's not already. The standup_finish_time is equal to
+    the present time plus the length'''
+    for channel in list_of_channels:
+        if channel['channel_id'] == channel_id:
+            if not channel['is_in_standup']:
+                channel['is_in_standup'] = True
+                current_dt = datetime.now()
+                timestamp = current_dt.replace(tzinfo=timezone.utc).timestamp()
+                channel['standup_finish_time'] = timestamp + length
+                return
+            if channel['is_in_standup']:
+                raise InputError(description='An active standup is currently running in this channel')
+    raise InputError(description='Not a valid channel ID')
+
+def turn_off_standup(token, channel_id):
+    '''deactivates stand up mode for a channel and sends the messages in standup queue'''
+    for channel in list_of_channels:
+        if channel['channel_id'] == channel_id:
+            channel['is_in_standup'] = False
+            message_send(token, channel_id, standup_queue)
+            restore_standup_queue()
+            return
+
+
+def check_channel_exists(channel_id):
+    '''check if a channel with channel_id exists'''
+    for channel in list_of_channels:
+        if channel['channel_id'] == channel_id:
+            return True
+    return False
+
+def check_user_in_channel(token, channel_id):
+    '''check if a user (identified by their token) is a member of a channel (identified by channel id)'''
+    person = get_u_id(token)
+    for channel in list_of_channels:
+        if channel['channel_id'] == channel_id:
+            for mem_id in channel['all_members']:
+                if mem_id == person:
+                    return True
+    return False
+
+def check_standup_happening(channel_id):
+    '''check if a standup is happening in a channel'''
+    for channel in list_of_channels:
+        if channel['channel_id'] == channel_id:
+            if channel['is_in_standup']:
+                return True
+    return False
+
+def get_standup_finish_time(channel_id):
+    '''get the finishing time for a standup'''
+    for channel in list_of_channels:
+        if channel['channel_id'] == channel_id:
+            return channel.get('standup_finish_time')
+
+def get_standup_queue():
+    global standup_queue
+    return standup_queue
+
 def get_channel():
     """This function create a relationship between channel and message,
     and returns a list of dictionaries that contain it"""

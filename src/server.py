@@ -15,6 +15,7 @@ import channels
 import message
 import other
 from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle
+from standup import standup_start, standup_active, standup_send
 
 def defaultHandler(err):
     """A given function by instructors"""
@@ -302,6 +303,31 @@ def http_sethandle():
     token = payload["token"]
     handle_str = payload["handle_str"]
     user_profile_sethandle(token, handle_str)
+    return dumps({})
+
+@APP.route("standup/start", methods=["POST"])
+def http_standup_start():
+    payload = request.get_json()
+    token = payload['token']
+    channel_id = payload['channel_id']
+    length = payload['length']
+    result = standup_start(token, channel_id, length)
+    return dumps(result)
+
+@APP.route("standup/active", methods=["GET"])
+def http_standup_active():
+    token = request.args.get('token')
+    channel_id = request.args.get('channel_id')
+    result = standup_active(token, channel_id)
+    return dumps(result)
+
+@APP.route("standup/send", methods=["POST"])
+def http_standup_send():
+    payload = request.get_json()
+    token = payload['token']
+    channel_id = payload['channel_id']
+    message = payload['message']
+    standup_send(token, channel_id, message)
     return dumps({})
 
 if __name__ == "__main__":
