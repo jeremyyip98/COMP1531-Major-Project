@@ -6,10 +6,11 @@ from error import InputError, AccessError
 from message import message_send
 
 
-def reset_standup_queue():
-    global standup_queue
+def send_standup_queue(token, channel_id):
+    ''' helper function for sending standup queue at the end of standup'''
+    standup_queue = database.get_standup_queue()
+    message_send(token, channel_id, standup_queue)
     standup_queue = ""
-    return
 
 def standup_start(token, channel_id, length):
     database.check_token(token)
@@ -18,6 +19,7 @@ def standup_start(token, channel_id, length):
     database.turn_on_standup(channel_id, length)
     reset_standup_queue()
     standup_timer = threading.Timer(length, database.turn_off_standup).start()
+    queue_timer = threading.Timer(length, send_standup_queue, args = [token, channel_id]).start()
     return {'time_finish' : database.get_standup_finish_time(channel_id)}
 
 def standup_active(token, channel_id):
