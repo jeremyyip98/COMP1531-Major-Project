@@ -16,8 +16,8 @@ import message
 import other
 from database import reset_message, reset_channel, restore_database
 from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle
-#from standup import standup_start, standup_active, standup_send
-#from workspace_reset import workspace_reset
+from standup import standup_start, standup_active, standup_send
+from workspace_reset import workspace_reset
 
 def defaultHandler(err):
     """A given function by instructors"""
@@ -341,10 +341,35 @@ def http_standup_send():
     standup_send(token, channel_id, msg)
     return dumps({})
 
+@APP.route("/standup/start", methods=["POST"])
+def http_standup_start():
+    payload = request.get_json()
+    token = payload['token']
+    channel_id = payload['channel_id']
+    length = payload['length']
+    result = standup_start(token, channel_id, length)
+    return dumps(result)
+
+@APP.route("/standup/active", methods=["GET"])
+def http_standup_active():
+    token = request.args.get('token')
+    channel_id = request.args.get('channel_id')
+    result = standup_active(token, channel_id)
+    return dumps(result)
+
+@APP.route("/standup/send", methods=["POST"])
+def http_standup_send():
+    payload = request.get_json()
+    token = payload['token']
+    channel_id = payload['channel_id']
+    msg = payload['message']
+    standup_send(token, channel_id, msg)
+    return dumps({})
+
 @APP.route("/workspace/reset", methods=["POST"])
 def http_workspace_reset():
     workspace_reset()
     return dumps({})
-"""
+
 if __name__ == "__main__":
     APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080),debug=True)

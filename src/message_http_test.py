@@ -7,7 +7,7 @@ import datetime
 import requests
 from database import message_list
 
-PORT = 8080
+PORT = 10013
 BASE_URL = f"http://127.0.0.1:{PORT}"
 
 def test_send_valid():
