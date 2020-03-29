@@ -92,11 +92,7 @@ def http_create():
         payload['channel_name'],
         payload['is_public']
     )
-    return(
-        {
-            'channel_id' : details
-        }
-    )
+    return({'channel_id' : details})
 
 @APP.route("/channel/leave", methods=['POST'])
 def http_leave():

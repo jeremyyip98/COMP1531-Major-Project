@@ -214,3 +214,7 @@ def get_profile_allinfo(u_id):
         if user['u_id'] == u_id:
             return user
     raise InputError
+
+def get_list_of_channels():
+    global list_of_channels
+    return list_of_channels
