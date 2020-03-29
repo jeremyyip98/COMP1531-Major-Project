@@ -18,7 +18,7 @@ def create_valid_channel(channel_name, different_user):
         details = register_valid_user()
     elif different_user == True:
         details = register_another_valid_user()
-    return channels_create(details["token"], channel_name, True), details
+    return channels_create(details["token"], channel_name, True), detail
 
 def valid_email(email):
     """ Takes email address string and returns true if it is a valid email
@@ -27,5 +27,4 @@ def valid_email(email):
     if re.search(regex, email):
         return True
     else:
-        return False
-        
+        return False      

@@ -1,8 +1,7 @@
-from other import users_all#, search
+from other import users_all, search
 from auth import auth_register
-from helper_functions import register_valid_user, register_another_valid_user
-#, create_valid_channel
-#from message import message_send
+from helper_functions import register_valid_user, register_another_valid_user, create_valid_channel
+from message import message_send
 import pytest
 from error import InputError, AccessError
 
@@ -30,7 +29,7 @@ def test_users_all_two_users():
     
 
 
-"""
+
 # Helper function which creates a user, channel and then sends a message to it
 def send_test_message(message, channel_name, different_user):
     channel_id, details = create_valid_channel(channel_name, different_user)
@@ -99,7 +98,3 @@ def test_search_term_in_channel_not_joined():
     send_test_message("Gobble", "test_channel_two", user_two)
     assert len(search(details["token"], "gobble")["messages"]) == 1
 
-
-
-
-"""

@@ -96,5 +96,4 @@ def auth_logout(token):
 
 
 if __name__ == "__main__":
-    pass
-    
+    pass  
