@@ -75,13 +75,13 @@ def http_messages():
 def http_list():
     token = request.args.get('token')
     details = channels.channels_list(token)
-    return({'channels' : details})
+    return dumps({'channels' : details})
 
 @APP.route("/channels/listall", methods=['GET'])
 def http_listall():
     token = request.args.get('token')
     details = channels.channels_listall(token)
-    return({'channels' : details})
+    return dumps({'channels' : details})
 
 
 @APP.route("/channels/create", methods=['POST'])
@@ -92,7 +92,7 @@ def http_create():
         payload['channel_name'],
         payload['is_public']
     )
-    return({'channel_id' : details})
+    return dumps({'channel_id' : details})
 
 @APP.route("/channel/leave", methods=['POST'])
 def http_leave():
