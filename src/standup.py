@@ -6,18 +6,21 @@ from error import InputError, AccessError
 from message import message_send
 
 
-def reset_standup_queue():
-    global standup_queue
+def send_standup_queue(token, channel_id):
+    ''' helper function for sending standup queue at the end of standup'''
+    standup_queue = database.get_standup_queue()
+    message_send(token, channel_id, standup_queue)
     standup_queue = ""
-    return
 
 def standup_start(token, channel_id, length):
     database.check_token(token)
     if not database.check_channel_exists(channel_id):
         raise InputError(description='Channel id is not a valid channel id')
     database.turn_on_standup(channel_id, length)
-    reset_standup_queue()
-    standup_timer = threading.Timer(length, database.turn_off_standup).start()
+    standup_timer = threading.Timer(length, database.turn_off_standup)
+    standup_timer.start()
+    queue_timer = threading.Timer(length, send_standup_queue, args = [token, channel_id])
+    queue_timer.start()
     return {'time_finish' : database.get_standup_finish_time(channel_id)}
 
 def standup_active(token, channel_id):
@@ -40,5 +43,6 @@ def standup_send(token, channel_id, message):
     person = database.get_formatted_user(token)
     name = person['name_first']
     standup_queue = database.get_standup_queue()
-    standup_queue = standup_queue + " " + name ": " + message + "\n"
+    standup_queue = standup_queue + " " + name + ": " + message + "\n"
     # What if standup_queue is longer than 1000 characters?
+    

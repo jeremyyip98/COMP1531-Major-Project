@@ -1,6 +1,5 @@
 from error import AccessError, InputError
 from datetime import datetime, timezone
-from message import message_send
 
 u_ids = [0]
 
@@ -220,8 +219,6 @@ def turn_off_standup(token, channel_id):
     for channel in list_of_channels:
         if channel['channel_id'] == channel_id:
             channel['is_in_standup'] = False
-            message_send(token, channel_id, standup_queue)
-            restore_standup_queue()
             return
 
 
