@@ -148,6 +148,9 @@ def http_register():
         payload['name_last'])
     return dumps(details)
 
+@APP.route("/test", methods=['GET'])
+def http_test():
+    return dumps(database.get_data())
 
 @APP.route("/auth/login", methods=['POST'])
 def http_login():
@@ -269,8 +272,8 @@ def http_message_edit():
 @APP.route("/message/reset", methods=['DELETE'])
 def reset_store():
     """This function reset the list and returns nothing"""
-    reset_message()
-    reset_channel()
+    database.reset_message()
+    database.reset_channel()
     return dumps({})
 
 @APP.route("/admin/userpermission/change", methods=['POST'])

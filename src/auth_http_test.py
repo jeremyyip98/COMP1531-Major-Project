@@ -124,8 +124,8 @@ def test_register_handle_correct():
                 'token' : received['token'] ,
                 'u_id' : received['u_id']
             })
-    r = requests.get(f"{BASE_URL}/user/profile?{queryString}")
-    payload = r.json()['user']
+    r = requests.get(f"{BASE_URL}/user/profile?{queryString}").json()
+    payload = r['user']
     assert payload['handle_str'] == 'firstlast'
 
 
