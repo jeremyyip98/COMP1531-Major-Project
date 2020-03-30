@@ -117,4 +117,3 @@ def test_removeowner_payload():
         if i['channel_id'] == 1:
             assert user2['u_id'] not in ['owner_members']
     requests.post(f"{BASE_URL}/workspace/reset", json={})
-    
