@@ -148,10 +148,6 @@ def http_register():
         payload['name_last'])
     return dumps(details)
 
-@APP.route("/test", methods=['GET'])
-def http_test():
-    return dumps(database.get_data())
-
 @APP.route("/auth/login", methods=['POST'])
 def http_login():
     payload = request.get_json()
