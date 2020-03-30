@@ -148,6 +148,7 @@ def http_register():
         payload['name_last'])
     return dumps(details)
 
+
 @APP.route("/auth/login", methods=['POST'])
 def http_login():
     payload = request.get_json()
@@ -159,7 +160,7 @@ def http_login():
 @APP.route("/auth/logout", methods=['POST'])
 def http_logout():
     payload = request.get_json()
-    is_success = {"is_sucess" : auth.auth_logout(payload['token'])}
+    is_success = {"is_success" : auth.auth_logout(payload['token'])}
     return dumps(is_success)
 
 
@@ -264,6 +265,14 @@ def http_message_edit():
     )
     return dumps({})
 
+# Adding an extra route in order to reset the values in the list everytime I run the pytest
+@APP.route("/message/reset", methods=['DELETE'])
+def reset_store():
+    """This function reset the list and returns nothing"""
+    reset_message()
+    reset_channel()
+    return dumps({})
+
 @APP.route("/admin/userpermission/change", methods=['POST'])
 def http_user_permission_change():
     """changes the Slackr Owner permission"""
@@ -278,7 +287,7 @@ def http_user_permission_change():
 @APP.route("/user/profile", methods=["GET"])
 def http_profile():
     token = request.args.get('token')
-    u_id = request.args.get('u_id')
+    u_id = int(request.args.get('u_id'))
     return dumps(user_profile(token, u_id))
 
 @APP.route("/user/profile/setname", methods=["POST"])
@@ -312,16 +321,16 @@ def http_users_all():
     return dumps(other.users_all(token))
 
 @APP.route("/search", methods=['GET'])
-def http_users_all():
-    token = request.args.get('token')
-    query_str = request.args.get('query_str')
+def http_search():
+    token = request.args.get('token', None)
+    query_str = request.args.get('query_str', None)
     return dumps(other.search(token, query_str))
 
 @APP.route("/workspace/reset", methods=['POST'])
 def http_reset():
     database.restore_database()
-    
-@APP.route("standup/start", methods=["POST"])
+
+@APP.route("/standup/start", methods=["POST"])
 def http_standup_start():
     payload = request.get_json()
     token = payload['token']
@@ -330,14 +339,14 @@ def http_standup_start():
     result = standup_start(token, channel_id, length)
     return dumps(result)
 
-@APP.route("standup/active", methods=["GET"])
+@APP.route("/standup/active", methods=["GET"])
 def http_standup_active():
     token = request.args.get('token')
     channel_id = request.args.get('channel_id')
     result = standup_active(token, channel_id)
     return dumps(result)
 
-@APP.route("standup/send", methods=["POST"])
+@APP.route("/standup/send", methods=["POST"])
 def http_standup_send():
     payload = request.get_json()
     token = payload['token']
