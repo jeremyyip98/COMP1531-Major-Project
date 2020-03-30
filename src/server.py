@@ -310,31 +310,6 @@ def http_sethandle():
     handle_str = payload["handle_str"]
     user_profile_sethandle(token, handle_str)
     return dumps({})
-"""
-@APP.route("/standup/start", methods=["POST"])
-def http_standup_start():
-    payload = request.get_json()
-    token = payload['token']
-    channel_id = payload['channel_id']
-    length = payload['length']
-    result = standup_start(token, channel_id, length)
-    return dumps(result)
-
-@APP.route("/standup/active", methods=["GET"])
-def http_standup_active():
-    token = request.args.get('token')
-    channel_id = request.args.get('channel_id')
-    result = standup_active(token, channel_id)
-    return dumps(result)
-
-@APP.route("/standup/send", methods=["POST"])
-def http_standup_send():
-    payload = request.get_json()
-    token = payload['token']
-    channel_id = payload['channel_id']
-    msg = payload['message']
-    standup_send(token, channel_id, msg)
-    return dumps({})
 
 @APP.route("/standup/start", methods=["POST"])
 def http_standup_start():
