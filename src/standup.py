@@ -17,9 +17,9 @@ def standup_start(token, channel_id, length):
     if not database.check_channel_exists(channel_id):
         raise InputError(description='Channel id is not a valid channel id')
     database.turn_on_standup(channel_id, length)
-    standup_timer = threading.Timer(length, database.turn_off_standup)
+    standup_timer = threading.Timer(length, database.turn_off_standup, args=[channel_id])
     standup_timer.start()
-    queue_timer = threading.Timer(length, send_standup_queue, args = [token, channel_id])
+    queue_timer = threading.Timer(length, send_standup_queue, args=[token, channel_id])
     queue_timer.start()
     return {'time_finish' : database.get_standup_finish_time(channel_id)}
 
@@ -45,4 +45,3 @@ def standup_send(token, channel_id, message):
     standup_queue = database.get_standup_queue()
     standup_queue = standup_queue + " " + name + ": " + message + "\n"
     # What if standup_queue is longer than 1000 characters?
-    
