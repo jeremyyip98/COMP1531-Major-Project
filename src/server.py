@@ -8,7 +8,6 @@ from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
 from error import InputError
-import error
 import auth
 import channel
 import channels
@@ -51,8 +50,8 @@ def echo():
     
 @APP.route("/channel/invite", methods=['POST'])
 def http_invite():
-    data = request.get_json()
-    channels.channel_invite(
+    payload = request.get_json()
+    channel.channel_invite(
         payload['token'],
         payload['channel_id'],
         payload['u_id'])
@@ -60,7 +59,7 @@ def http_invite():
     
 @APP.route("/channel/details", methods=['GET'])
 def http_details():
-    details = channels.channel_details(
+    details = channel.channel_details(
         request.args.get('token'),
         request.args.get('channel_id'))
         
@@ -68,7 +67,7 @@ def http_details():
     
 @APP.route("/channel/messages", methods=['GET'])
 def http_messages():
-    details = channels.channel_messages(
+    details = channel.channel_messages(
         request.args.get('token'),
         request.args.get('channel_id'),
         request.args.get('start'))
@@ -79,13 +78,13 @@ def http_messages():
 def http_list():
     token = request.args.get('token')
     details = channels.channels_list(token)
-    return({'channels' : details})
+    return dumps({'channels' : details})
 
 @APP.route("/channels/listall", methods=['GET'])
 def http_listall():
     token = request.args.get('token')
     details = channels.channels_listall(token)
-    return({'channels' : details})
+    return dumps({'channels' : details})
 
 
 @APP.route("/channels/create", methods=['POST'])
@@ -96,11 +95,7 @@ def http_create():
         payload['channel_name'],
         payload['is_public']
     )
-    return dumps(
-        {
-            'channel_id' : details
-        }
-    )
+    return dumps({'channel_id' : details})
 
 @APP.route("/channel/leave", methods=['POST'])
 def http_leave():
@@ -315,31 +310,6 @@ def http_sethandle():
     handle_str = payload["handle_str"]
     user_profile_sethandle(token, handle_str)
     return dumps({})
-"""
-@APP.route("/standup/start", methods=["POST"])
-def http_standup_start():
-    payload = request.get_json()
-    token = payload['token']
-    channel_id = payload['channel_id']
-    length = payload['length']
-    result = standup_start(token, channel_id, length)
-    return dumps(result)
-
-@APP.route("/standup/active", methods=["GET"])
-def http_standup_active():
-    token = request.args.get('token')
-    channel_id = request.args.get('channel_id')
-    result = standup_active(token, channel_id)
-    return dumps(result)
-
-@APP.route("/standup/send", methods=["POST"])
-def http_standup_send():
-    payload = request.get_json()
-    token = payload['token']
-    channel_id = payload['channel_id']
-    msg = payload['message']
-    standup_send(token, channel_id, msg)
-    return dumps({})
 
 @APP.route("/standup/start", methods=["POST"])
 def http_standup_start():
@@ -372,4 +342,4 @@ def http_workspace_reset():
     return dumps({})
 
 if __name__ == "__main__":
-    APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080),debug=True)
+    APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080), debug=True)
