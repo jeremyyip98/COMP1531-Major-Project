@@ -76,10 +76,13 @@ channel_list = [
     # }
 ]
 
-standup_queue = ""
+standup_queue = ['''{
+    'name_first' : 'First',
+    'message' : 'some message',
+}''']
 def restore_standup_queue():
     global standup_queue
-    standup_queue = ""
+    standup_queue.clear()
 
 def check_token(token):
     """ Takes token raises Access Error if the token is not linked to any user,
