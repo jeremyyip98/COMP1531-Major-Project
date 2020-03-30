@@ -61,6 +61,7 @@ def auth_register(email, password, name_first, name_last):
         'email' : email,
         'name_first' : name_first,
         'name_last' : name_last,
+        'permission_id' : 2,
         'hash' : encrypt(password),
         'token' : token,
         'handle_str' : make_handle(name_first, name_last)
