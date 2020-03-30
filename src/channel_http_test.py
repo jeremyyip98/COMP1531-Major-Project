@@ -8,7 +8,7 @@ import json
 import requests
 from database import get_list_of_channels
 
-BASE_URL = "http://127.0.0.1:10013"
+BASE_URL = "http://127.0.0.1:8080"
 # Helper Functions
 def create_user1():
     global user1

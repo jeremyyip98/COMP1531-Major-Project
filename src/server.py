@@ -360,7 +360,7 @@ def http_standup_send():
     msg = payload['message']
     standup_send(token, channel_id, msg)
     return dumps({})
-
+"""
 @APP.route("/workspace/reset", methods=["POST"])
 def http_workspace_reset():
     workspace_reset()
