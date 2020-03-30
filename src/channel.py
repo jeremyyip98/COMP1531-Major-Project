@@ -135,6 +135,7 @@ def channel_invite(token, channel_id, u_id):
         raise AccessError(description='Authorised user not in channel')
     
 def channel_details(token, channel_id):
+    """Gives details of channel"""
     # check if the token is valid
     is_valid = search_database(token)
     if is_valid is False:

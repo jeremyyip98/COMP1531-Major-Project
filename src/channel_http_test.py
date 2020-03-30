@@ -44,7 +44,6 @@ def test_channels_createt_payload():
     assert payload.json() == {'channel_id' : 1}
 
 def test_channels_createf_payload():
-    list = get_list_of_channels()
     create_user2()
     payload = requests.post(f"{BASE_URL}/channels/create", json={
         'token' : user2['token'],
@@ -117,4 +116,5 @@ def test_removeowner_payload():
     for i in list['channels']:
         if i['channel_id'] == 1:
             assert user2['u_id'] not in ['owner_members']
+    requests.post(f"{BASE_URL}/workspace/reset", json={})
     
