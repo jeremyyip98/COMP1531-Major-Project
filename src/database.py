@@ -214,7 +214,7 @@ def turn_on_standup(channel_id, length):
                 raise InputError(description='An active standup is currently running in this channel')
     raise InputError(description='Not a valid channel ID')
 
-def turn_off_standup(token, channel_id):
+def turn_off_standup(channel_id):
     '''deactivates stand up mode for a channel and sends the messages in standup queue'''
     for channel in list_of_channels:
         if channel['channel_id'] == channel_id:
