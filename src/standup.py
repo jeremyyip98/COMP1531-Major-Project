@@ -5,12 +5,17 @@ import helper_functions
 from error import InputError, AccessError
 from message import message_send
 
+def convert_standup_queue(s_q):
+    compiled_mesage = ""
+    for msg_dict in s_q:
+        compiled_mesage = compiled_mesage + msg_dict['name_first'] + ": " + msg_dict['message'] + "\n"
+    return compiled_mesage
 
 def send_standup_queue(token, channel_id):
     ''' helper function for sending standup queue at the end of standup'''
     standup_queue = database.get_standup_queue()
-    message_send(token, channel_id, standup_queue)
-    standup_queue = ""
+    compiled_mesage = convert_standup_queue(standup_queue)
+    message_send(token, channel_id, compiled_mesage)
 
 def standup_start(token, channel_id, length):
     database.check_token(token)
@@ -43,5 +48,8 @@ def standup_send(token, channel_id, message):
     person = database.get_formatted_user(token)
     name = person['name_first']
     standup_queue = database.get_standup_queue()
-    standup_queue = standup_queue + " " + name + ": " + message + "\n"
+    standup_queue.append({
+        'name_first' : name,
+        'message' : message,
+    })
     # What if standup_queue is longer than 1000 characters?
