@@ -3,6 +3,7 @@ import database
 import helper_functions
 
 def user_profile(token, u_id):
+    u_id = int(u_id)
     database.check_token(token)
     profile = database.get_profile(u_id)
     return {'user': profile}
