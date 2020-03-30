@@ -10,7 +10,7 @@ from error import AccessError, InputError
 from auth import auth_register
 from user import user_profile
 from channels import channels_create, channels_list, channels_listall
-from channel import channel_addowner, channel_removeowner, channel_invite, channel_details, channel_join, channel_leave
+from channel import channel_addowner, channel_removeowner, channel_invite, channel_join, channel_leave, channel_details
 
 def test_channels_create_access_error():
     """test invalid token"""
@@ -118,7 +118,7 @@ def test_channel_addowner_normal():
     details = channel_details(user2['token'], channel1)
     #assert that user 2 is in owners through the details function
     user2_profile = user_profile(user2['token'], user2['u_id'])
-    assert details['owner_members'][1] == user2_profile['user']['u_id']
+    assert details['owner_members'][1]['name_first'] == user2_profile['user']['name_first']
 def test_channel_remove_owner_access_error():
     """"test access error for remove owner"""
     #assume user1 is owner of channel when he makes the channel
@@ -149,16 +149,17 @@ def test_channel_remove_owner_normal():
     user1 = auth_register('name15@mail.com', 'password', 'Jim', 'Smith')
     user2 = auth_register('name16@mail.com', 'password1', 'Tim', 'Lift')
     channel1 = channels_create(user1['token'], 'My Channel', True)
-    details = channel_details(user1['token'], channel1)
     channel_addowner(user1['token'], channel1, user2['u_id'])
+    details = channel_details(user1['token'], channel1)
     #checking that the owners are user1 and user2
     user1_profile = user_profile(user1['token'], user1['u_id'])
-    assert details['owner_members'][0] == user1_profile['user']['u_id']
+    assert details['owner_members'][0]['name_first'] == user1_profile['user']['name_first']
     user2_profile = user_profile(user2['token'], user2['u_id'])
-    assert details['owner_members'][1] == user2_profile['user']['u_id']
+    assert details['owner_members'][1]['name_first'] == user2_profile['user']['name_first']
     assert len(details['owner_members']) == 2
     channel_removeowner(user2['token'], channel1, user2['u_id'])
     #check that after removing the user2 as owner there is only one owner
+    details = channel_details(user1['token'], channel1)
     assert len(details['owner_members']) == 1
 def test_channel_leave_access_error():
     """test the access error for token and other"""
@@ -219,6 +220,7 @@ def test_channel_join_normal():
     assert len(details['all_members']) == 1
     #test there are now 2 people in the channel
     channel_join(user['token'], channel2)
+    details = channel_details(user2['token'], channel2)
     assert len(details['all_members']) == 2
 def test_channel_join_already_in():
     user = auth_register('name24@mail.com', 'password', 'John', 'Doe')
