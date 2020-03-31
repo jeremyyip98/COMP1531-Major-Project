@@ -8,6 +8,7 @@ BASE_URL = f"http://127.0.0.1:{PORT}"
 
 
 def register_example_use():
+    requests.post(f"{BASE_URL}/workspace/reset", json={})
     received = requests.post(f"{BASE_URL}/auth/register", json={
             "email" : "test@gmail.com",
             "password" : "Password",
@@ -25,7 +26,7 @@ def test_register_valid():
             "name_last" : "Last"
         }).json() 
     queryString = urllib.parse.urlencode({
-                'token' : received['token'] ,
+                'token' : received['token'],
                 'u_id' : received['u_id']
             })
     r = requests.get(f"{BASE_URL}/user/profile?{queryString}")
@@ -37,6 +38,7 @@ def test_register_valid():
 
 
 def test_register_invalid_password():
+    requests.post(f"{BASE_URL}/workspace/reset", json={})
     payload = requests.post(f"{BASE_URL}/auth/register", json={
         "email" : "test@gmail.com",
         "password" : "short",
@@ -50,6 +52,7 @@ def test_register_invalid_password():
 # Password is too long
 # Assumes maximum password is 50
 def test_register_too_long_password():
+    requests.post(f"{BASE_URL}/workspace/reset", json={})
     payload = requests.post(f"{BASE_URL}/auth/register", json={
         "email" : "test@gmail.com",
         "password" : "F"*51,
@@ -58,16 +61,17 @@ def test_register_too_long_password():
     })
     assert payload.status_code == 400
 
-def test_register_already_registered_email():  
+def test_register_already_registered_email(): 
+    requests.post(f"{BASE_URL}/workspace/reset", json={}) 
     requests.post(f"{BASE_URL}/auth/register", json={
             "email" : "test@gmail.com",
-            "password" : "Password ",
+            "password" : "Password",
             "name_first" : "First",
             "name_last" : "Last"
         })
     received = requests.post(f"{BASE_URL}/auth/register", json={
             "email" : "test@gmail.com",
-            "password" : "Password ",
+            "password" : "Password",
             "name_first" : "First",
             "name_last" : "Last"
         })
@@ -75,6 +79,7 @@ def test_register_already_registered_email():
     
 
 def test_register_empty_first_name():
+    requests.post(f"{BASE_URL}/workspace/reset", json={})
     payload = requests.post(f"{BASE_URL}/auth/register", json={
         "email" : "test@gmail.com",
         "password" : "F"*51,
@@ -84,6 +89,7 @@ def test_register_empty_first_name():
     assert payload.status_code == 400
 
 def test_register_empty_last_name():
+    requests.post(f"{BASE_URL}/workspace/reset", json={})
     payload = requests.post(f"{BASE_URL}/auth/register", json={
         "email" : "test@gmail.com",
         "password" : "F"*51,
@@ -93,6 +99,7 @@ def test_register_empty_last_name():
     assert payload.status_code == 400
 
 def test_register_too_long_first_name():
+    requests.post(f"{BASE_URL}/workspace/reset", json={})
     payload = requests.post(f"{BASE_URL}/auth/register", json={
         "email" : "test@gmail.com",
         "password" : "First",
@@ -102,6 +109,7 @@ def test_register_too_long_first_name():
     assert payload.status_code == 400
 
 def test_register_too_long_last_name():
+    requests.post(f"{BASE_URL}/workspace/reset", json={})
     payload = requests.post(f"{BASE_URL}/auth/register", json={
         "email" : "test@gmail.com",
         "password" : "First",
@@ -116,7 +124,7 @@ def test_register_handle_correct():
     requests.post(f"{BASE_URL}/workspace/reset", json={}) 
     received = requests.post(f"{BASE_URL}/auth/register", json={
             "email" : "test@gmail.com",
-            "password" : "Password ",
+            "password" : "Password",
             "name_first" : "First",
             "name_last" : "Last"
         }).json() 
@@ -134,7 +142,7 @@ def test_register_long_handle_concatenation():
     requests.post(f"{BASE_URL}/workspace/reset", json={}) 
     received = requests.post(f"{BASE_URL}/auth/register", json={
             "email" : "test@gmail.com",
-            "password" : "Password ",
+            "password" : "Password",
             "name_first" : "VeryLongFirst",
             "name_last" : "VeryLonglast"
         }).json() 
@@ -159,6 +167,7 @@ def test_login_valid():
 
 # Logging in with unregistered email
 def test_login_invalid_email():
+    requests.post(f"{BASE_URL}/workspace/reset", json={})
     assert requests.post(f"{BASE_URL}/auth/login", json={
         "email" : "bumpkin@gmail.com",
         "password" : "Password"

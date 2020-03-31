@@ -1,6 +1,5 @@
 from error import AccessError, InputError
 from datetime import datetime, timezone
-from message import message_send
 
 u_ids = [0]
 
@@ -38,6 +37,9 @@ list_of_channels = {
                             ]
 }
 
+def get_data():
+    return registered_users_store
+
 def restore_database():
     global registered_users_store
     registered_users_store.clear()
@@ -49,6 +51,7 @@ def restore_database():
                                 ]
 
                         }
+    return
 
 def restore_channel_database():
     """reseting the channel database to clear it"""
@@ -132,6 +135,7 @@ def search_database(token):
             'name_last' : Last,
             'hash' : encrypted password,
             'token' : token,
+            'premission : 1,
             'handle_str' :firstlast             
 
         }
@@ -161,12 +165,13 @@ def get_profile(u_id):
     '''Gets a user profile via u_id instead of token. Used in the user_profile function'''
     for user in registered_users_store['registered_users']:
         if user['u_id'] == u_id:
-            formatted_user = {}
-            formatted_user['u_id'] = user['u_id']
-            formatted_user['email'] = user['email']    
-            formatted_user['name_first'] = user['name_first']  
-            formatted_user['name_last'] = user['name_last']  
-            formatted_user['handle_str'] = user['handle_str']
+            formatted_user = {
+                "u_id" : user['u_id'],
+                "email" : user['email'],    
+                "name_first" : user['name_first'],  
+                "name_last" : user['name_last'],
+                "handle_str" : user['handle_str']
+            }
             return formatted_user
     raise InputError
 
@@ -223,6 +228,8 @@ def turn_off_standup(token, channel_id):
             message_send(token, channel_id, standup_queue)
             restore_standup_queue()
             return
+
+
 
 
 def check_channel_exists(channel_id):

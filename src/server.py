@@ -14,7 +14,7 @@ import channel
 import channels
 import message
 import other
-import database
+from database import restore_database, reset_message, reset_channel
 from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle
 from standup import standup_start, standup_active, standup_send
 
@@ -268,8 +268,8 @@ def http_message_edit():
 @APP.route("/message/reset", methods=['DELETE'])
 def reset_store():
     """This function reset the list and returns nothing"""
-    database.reset_message()
-    database.reset_channel()
+    reset_message()
+    reset_channel()
     return dumps({})
 
 @APP.route("/admin/userpermission/change", methods=['POST'])
@@ -322,12 +322,16 @@ def http_users_all():
 @APP.route("/search", methods=['GET'])
 def http_search():
     token = request.args.get('token', None)
+    print(token)
     query_str = request.args.get('query_str', None)
     return dumps(other.search(token, query_str))
 
 @APP.route("/workspace/reset", methods=['POST'])
 def http_reset():
-    database.restore_database()
+    restore_database()
+    reset_message()
+    reset_channel()
+    return dumps({})
 
 @APP.route("/standup/start", methods=["POST"])
 def http_standup_start():

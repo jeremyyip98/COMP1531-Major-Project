@@ -1,4 +1,6 @@
-from database import check_token, get_all_users, get_profile, search_database, get_message, get_permission, get_profile_allinfo
+from database import check_token, get_all_users, get_profile,\
+    search_database, get_message, get_permission, get_profile_allinfo, check_user_in_channel
+from message import get_channel_id
 from error import AccessError, InputError
 
 # Probably should need permission to do this!!!
@@ -15,7 +17,7 @@ def search(token, query_str):
         if query_str in message['message']:
             query_str_matches.append(message)
     query_str_matches =  sorted(query_str_matches, key = lambda i: i['time_created'], reverse=True)
-    return query_str_matches
+    return {"messages" : query_str_matches}
 
 def standup_start():
     pass
