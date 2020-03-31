@@ -155,7 +155,7 @@ def http_login():
 @APP.route("/auth/logout", methods=['POST'])
 def http_logout():
     payload = request.get_json()
-    is_success = {"is_sucess" : auth.auth_logout(payload['token'])}
+    is_success = {"is_success" : auth.auth_logout(payload['token'])}
     return dumps(is_success)
 
 
@@ -283,7 +283,7 @@ def http_user_permission_change():
 @APP.route("/user/profile", methods=["GET"])
 def http_profile():
     token = request.args.get('token')
-    u_id = request.args.get('u_id')
+    u_id = int(request.args.get('u_id'))
     return dumps(user_profile(token, u_id))
 
 @APP.route("/user/profile/setname", methods=["POST"])
@@ -310,6 +310,18 @@ def http_sethandle():
     handle_str = payload["handle_str"]
     user_profile_sethandle(token, handle_str)
     return dumps({})
+
+@APP.route("/users/all", methods=['GET'])
+def http_users_all():
+    token = request.args.get('token')
+    return dumps(other.users_all(token))
+
+@APP.route("/search", methods=['GET'])
+def http_search():
+    token = request.args.get('token', None)
+    print(token)
+    query_str = request.args.get('query_str', None)
+    return dumps(other.search(token, query_str))
 
 @APP.route("/standup/start", methods=["POST"])
 def http_standup_start():

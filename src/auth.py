@@ -33,10 +33,9 @@ def make_handle(first, last):
 
 def generate_token():
     token = secrets.token_urlsafe(20)
-    print(database.search_database(token))
     while database.search_database(token):
         token = secrets.token_urlsafe(15)
-    return secrets.token_urlsafe(15)
+    return token
 
 def encrypt(password):
     return hashlib.sha256(password.encode()).hexdigest()
@@ -62,10 +61,10 @@ def auth_register(email, password, name_first, name_last):
         'email' : email,
         'name_first' : name_first,
         'name_last' : name_last,
+        'permission_id' : 2,
         'hash' : encrypt(password),
         'token' : token,
-        'handle_str' : make_handle(name_first, name_last),
-        'permission_id' : 2
+        'handle_str' : make_handle(name_first, name_last)
         }
     # Will probably implement jwt
     database.registered_users_store['registered_users'].append(user)
@@ -81,6 +80,8 @@ def auth_login(email, password):
     for d in database.registered_users_store['registered_users']:
         if d['email'] == email:
             if d['hash'] == encrypt(password):
+                if not d['token']:
+                    d['token'] = generate_token()
                 return {'u_id' : d['u_id'], 'token' : d['token']}
             else:
                 raise InputError(description='Incorrect Password')
@@ -98,4 +99,3 @@ def auth_logout(token):
 
 if __name__ == "__main__":
     pass
-    
