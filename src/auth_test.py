@@ -1,7 +1,7 @@
 from auth import auth_register, auth_login, auth_logout
 from helper_functions import register_valid_user
 from database import restore_database
-# from user import user_profile
+from user import user_profile
 import pytest
 from error import InputError, AccessError
 
@@ -54,20 +54,21 @@ def test_register_too_long_last_name():
         auth_register("test@gmail.com", "Password", "First", "L" * 51)
 
 
-"""
+
 # The tests involving handles assume that user_profile works correctly
 
 # Tests that a handle is correctly concatenated
 def test_register_handle_correct():
+    restore_database()
     details = register_valid_user()
-    assert user_profile(details["token"], details["u_id"])["handle_str"] == "firstlast"
+    assert user_profile(details["token"], details["u_id"])['user']["handle_str"] == "firstlast"
 
 # Tests that if first and last name concatenation is more than 20 characters it is cut off at 20 correctly
 def test_register_long_handle_concatenation():
+    restore_database()
     details = auth_register("test@gmail.com", "Password", "VeryLongFirst", "VeryLonglast")
-    assert user_profile(details["token"], details["u_id"])["handle_str"] == "verylongfirstverylon"
+    assert user_profile(details["token"], details["u_id"])['user']["handle_str"] == "verylongfirstverylon"
 
-"""
 
 # Testing successful login
 def test_login_valid_details():

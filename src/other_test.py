@@ -1,9 +1,8 @@
-from other import users_all, admin_userpermission_change#, search
+from other import users_all, admin_userpermission_change, search
 from auth import auth_register
-from helper_functions import register_valid_user, register_another_valid_user, create_admin
+from helper_functions import register_valid_user, register_another_valid_user, create_admin, create_valid_channel
 from database import restore_database, get_profile_allinfo
-#, create_valid_channel
-#from message import message_send
+from message import message_send
 import pytest
 from error import InputError, AccessError
 
@@ -57,7 +56,7 @@ def test_admin_permission_change_normal():
     restore_database()
 
 
-"""
+
 # Helper function which creates a user, channel and then sends a message to it
 def send_test_message(message, channel_name, different_user):
     channel_id, details = create_valid_channel(channel_name, different_user)
@@ -126,7 +125,3 @@ def test_search_term_in_channel_not_joined():
     send_test_message("Gobble", "test_channel_two", user_two)
     assert len(search(details["token"], "gobble")["messages"]) == 1
 
-
-
-
-"""

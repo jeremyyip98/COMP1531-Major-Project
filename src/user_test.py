@@ -31,7 +31,7 @@ def test_user_profile_invalid_user():
     database.restore_database()
     results = register_valid_user()
     with pytest.raises(InputError) as e:
-        user_profile(results["token"], "INVALIDUSER")
+        user_profile(results["token"], 999)
 
 # We now assume that user_profile works
 
