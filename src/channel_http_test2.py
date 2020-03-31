@@ -1,5 +1,6 @@
 import json
 import urllib.request
+import requests
 import pytest
 from database import message_list, get_list_of_channels
 
@@ -17,7 +18,7 @@ def create_user1():
     user1 = requests.post(f"{BASE_URL}/auth/register", json={
         'email': 'mail@mail.com',
         'password' : 'password',
-        'name_first': 'Bob'
+        'name_first': 'Bob',
         'name_last': 'Ross'
     })
     user1 = user1.json()
@@ -51,16 +52,16 @@ def send_message():
 def create_valid_channel(user):
     user1 = create_user1()
     payload = requests.post(f"{BASE_URL}/channels/create", json={
-        'token' : user['token'],
+        'token' : user1['token'],
         'channel_name' : 'My Channel',
         'is_public' : True,
     })
     
     return payload.json()['channel_id']
     
-def join_channel(user, channel_id):
+def join_channel(token, channel_id):
     requests.post(f"{BASE_URL}/channel/join", json={
-        'token' : user['token'],
+        'token' : token,
         'channel_id' : channel_id
     })
     channel_list = get_list_of_channels()
@@ -81,7 +82,7 @@ def test_invite_payload():
         'token' : user1['token'],
         'channel_id' : channel_id,
         'u_id' : 2
-    }
+    })
     
     channel_list = get_list_of_channels()
     for channel in channel_list['channels']:
@@ -129,11 +130,11 @@ def test_message_payload():
     
     # sends 10 messages
     for i in range(10):
-        send_message():
+        send_message()
     
     queryString = urllib.parse.urlencode({
-        'token' : user1['token']
-        'channel_id' : channel_id
+        'token' : user1['token'],
+        'channel_id' : channel_id,
         'start' : 0
     })
     
@@ -163,19 +164,17 @@ def test_message_payload():
     
     # sends 100 messages
     for i in range(100):
-        send_message():
+        send_message()
     
     queryString = urllib.parse.urlencode({
-        'token' : user1['token']
-        'channel_id' : channel_id
+        'token' : user1['token'],
+        'channel_id' : channel_id,
         'start' : 20
     })
     
     response = urllib.request.urlopen(f"{BASE_URL}/channel/messages?{queryString}")
     payload = json.load(response)
     
-    global message_list
-    global channel_list
     for channel in channel_list:
         if channel['channel_id'] == channel_id:
             for message_id in channel['channel_messages']:

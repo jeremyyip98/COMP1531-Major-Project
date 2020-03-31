@@ -212,6 +212,7 @@ def channel_messages(token, channel_id, start):
     for chan in get_channel():
         if chan['channel_id'] == channel_id:
             end_of_list = chan['channel_messages'][-1]
+            num_total_messages = len(chan['channel_messages'])
             # add from message_list to messages
             for msg_id in chan['channel_messages']:
                 if (end - start > 50):
@@ -219,13 +220,20 @@ def channel_messages(token, channel_id, start):
                 elif (end - start <= 50 and msg_id == end_of_list):
                     end = -1
                 else:
-                    message_ids.append(msg_id)
-                    end += 1
+                    id_in_list = False
+                    for ids in message_ids:
+                        if msg_id == ids:
+                            id_in_list = True
+                    if id_in_list is False:
+                        message_ids.append(msg_id)
+                        end += 1
                 # incrementing total_message
-                num_total_messages += 1
-                    
+                #num_total_messages += 1
+    end -= 1
+    
+    print(f"start = {start}, end = {end}, num_total_messages = {num_total_messages}")
+    
     if start >= num_total_messages:
-        print(f"start = {start} // num_total_messages = {num_total_messages}")
         raise InputError('Start is greater than or equal to total messages in the channel')
                     
     # initialise empty messages list
@@ -250,11 +258,10 @@ def channel_messages(token, channel_id, start):
                     # authorised user is in the channel
                     found_authorised_user = True
             
-            
     if found_channel is False:
         raise InputError(description='Channel_ID is not a valid channel')
         
     if found_authorised_user is False:
-        raise AccessError(description='Authorised user is not a member of channel with channel_id')
-        
+        raise AccessError(description='Authorised user is not a member of channel with channel_id')    
+    
     return {'messages': messages, 'start': start, 'end': end}
