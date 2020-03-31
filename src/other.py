@@ -1,7 +1,6 @@
 """ File includes implementation for search, users_all and admin permission change """
 from database import check_token, get_all_users, get_profile,\
-    search_database, get_message, get_permission, get_profile_allinfo, check_user_in_channel
-from message import get_channel_id
+    search_database, get_message, get_permission, get_profile_allinfo
 from error import AccessError, InputError
 
 # Probably should need permission to do this!!!
