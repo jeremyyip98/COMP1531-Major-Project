@@ -59,9 +59,9 @@ def create_valid_channel(user):
     
     return payload.json()['channel_id']
     
-def join_channel(token, channel_id):
+def join_channel(user, channel_id):
     requests.post(f"{BASE_URL}/channel/join", json={
-        'token' : token,
+        'token' : user['token'],
         'channel_id' : channel_id
     })
     channel_list = get_list_of_channels()
@@ -73,6 +73,7 @@ def join_channel(token, channel_id):
 """ HTTP tests """
 
 def test_invite_payload():
+    requests.post(f"{BASE_URL}/workspace/reset", json={})
     user1 = create_user1()
     user2 = create_user2()
     channel_id = create_valid_channel(user1)
@@ -90,6 +91,7 @@ def test_invite_payload():
             assert user2['u_id'] in channel['all_members']
     
 def test_details_payload():
+    requests.post(f"{BASE_URL}/workspace/reset", json={})
     user1 = create_user1()
     channel_id = create_valid_channel(user1)
     # add user2 to the channel (user1 is already in the channel since he created it)
@@ -125,6 +127,7 @@ def test_details_payload():
     }
     
 def test_message_payload():
+    requests.post(f"{BASE_URL}/workspace/reset", json={})
     user1 = create_user1
     channel_id = create_valid_channel(user1)
     
