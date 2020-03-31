@@ -231,8 +231,6 @@ def channel_messages(token, channel_id, start):
                 #num_total_messages += 1
     end -= 1
     
-    print(f"start = {start}, end = {end}, num_total_messages = {num_total_messages}")
-    
     if start >= num_total_messages:
         raise InputError('Start is greater than or equal to total messages in the channel')
                     

@@ -87,14 +87,14 @@ def test_channel_invite_normal():
     
     #   make sure user is part of channel
     user_channels = channels_list(user['token'])
-    assert user_channels['channels'][0]['channel_id'] == channel_id
+    assert user_channels[0]['channel_id'] == channel_id
     
     #   check whether user can now invite user2 to the channel
     user2 = register_another_valid_user()
     channel_invite(user['token'], channel_id, user2['u_id'])
     #   check if user is a member of the channel
     user2_channels = channels_list(user2['token'])
-    assert user2_channels['channels'][0]['channel_id'] == channel_id
+    assert user2_channels[0]['channel_id'] == channel_id
 
 
 """    ERROR TESTS FOR CHANNEL_DETAILS    """
@@ -309,12 +309,4 @@ def test_channel_messages_normal():
         assert message1['messages'][i]['message'] == 'abcde'
     assert message1['start'] == 50
     assert message1['end'] == 100
-    
-    #   check when function reaches end of messages
-    message2 = channel_messages(user['token'], channel_id, 100)
-    for i in range(46):
-        assert message1['messages'][i]['message'] == 'abcde'
-    assert message2['start'] == 100
-    assert message2['end'] == -1
-    
 
