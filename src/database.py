@@ -80,18 +80,21 @@ channel_list = [
     # }
 ]
 
-standup_queue = ""
+standup_queue = ['''{
+    'name_first' : 'First',
+    'message' : 'some message',
+}''']
 def restore_standup_queue():
     global standup_queue
-    standup_queue = ""
+    standup_queue.clear()
 
 def check_token(token):
     """ Takes token raises Access Error if the token is not linked to any user,
         otherwise it returns True """
-    if search_database(token):
-        return True
-    else:
+    if search_database(token) is False:
         raise AccessError
+    else:
+        return True
 
 def get_u_id(token):
     """ Takes token and returns the u_id of user token belongs to"""
@@ -208,7 +211,7 @@ def check_handle_str_already_used(handle_str):
 def turn_on_standup(channel_id, length):
     '''makes a channel into standup mode if it's not already. The standup_finish_time is equal to
     the present time plus the length'''
-    for channel in list_of_channels:
+    for channel in list_of_channels['channels']:
         if channel['channel_id'] == channel_id:
             if not channel['is_in_standup']:
                 channel['is_in_standup'] = True
@@ -220,13 +223,11 @@ def turn_on_standup(channel_id, length):
                 raise InputError(description='An active standup is currently running in this channel')
     raise InputError(description='Not a valid channel ID')
 
-def turn_off_standup(token, channel_id):
+def turn_off_standup(channel_id):
     '''deactivates stand up mode for a channel and sends the messages in standup queue'''
-    for channel in list_of_channels:
+    for channel in list_of_channels['channels']:
         if channel['channel_id'] == channel_id:
             channel['is_in_standup'] = False
-            message_send(token, channel_id, standup_queue)
-            restore_standup_queue()
             return
 
 
@@ -234,7 +235,7 @@ def turn_off_standup(token, channel_id):
 
 def check_channel_exists(channel_id):
     '''check if a channel with channel_id exists'''
-    for channel in list_of_channels:
+    for channel in list_of_channels['channels']:
         if channel['channel_id'] == channel_id:
             return True
     return False
@@ -242,7 +243,7 @@ def check_channel_exists(channel_id):
 def check_user_in_channel(token, channel_id):
     '''check if a user (identified by their token) is a member of a channel (identified by channel id)'''
     person = get_u_id(token)
-    for channel in list_of_channels:
+    for channel in list_of_channels['channels']:
         if channel['channel_id'] == channel_id:
             for mem_id in channel['all_members']:
                 if mem_id == person:
@@ -251,7 +252,7 @@ def check_user_in_channel(token, channel_id):
 
 def check_standup_happening(channel_id):
     '''check if a standup is happening in a channel'''
-    for channel in list_of_channels:
+    for channel in list_of_channels['channels']:
         if channel['channel_id'] == channel_id:
             if channel['is_in_standup']:
                 return True
@@ -259,7 +260,7 @@ def check_standup_happening(channel_id):
 
 def get_standup_finish_time(channel_id):
     '''get the finishing time for a standup'''
-    for channel in list_of_channels:
+    for channel in list_of_channels['channels']:
         if channel['channel_id'] == channel_id:
             return channel.get('standup_finish_time')
 
@@ -288,3 +289,7 @@ def get_profile_allinfo(u_id):
         if user['u_id'] == u_id:
             return user
     raise InputError
+
+def get_list_of_channels():
+    global list_of_channels
+    return list_of_channels

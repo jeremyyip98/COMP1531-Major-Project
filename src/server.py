@@ -8,15 +8,15 @@ from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
 from error import InputError
-import error
 import auth
 import channel
 import channels
 import message
 import other
-from database import restore_database, reset_message, reset_channel
+from database import reset_message, reset_channel, restore_database
 from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle
 from standup import standup_start, standup_active, standup_send
+from workspace_reset import workspace_reset
 
 def defaultHandler(err):
     """A given function by instructors"""
@@ -50,8 +50,8 @@ def echo():
     
 @APP.route("/channel/invite", methods=['POST'])
 def http_invite():
-    data = request.get_json()
-    channels.channel_invite(
+    payload = request.get_json()
+    channel.channel_invite(
         payload['token'],
         payload['channel_id'],
         payload['u_id'])
@@ -59,7 +59,7 @@ def http_invite():
     
 @APP.route("/channel/details", methods=['GET'])
 def http_details():
-    details = channels.channel_details(
+    details = channel.channel_details(
         request.args.get('token'),
         request.args.get('channel_id'))
         
@@ -67,7 +67,7 @@ def http_details():
     
 @APP.route("/channel/messages", methods=['GET'])
 def http_messages():
-    details = channels.channel_messages(
+    details = channel.channel_messages(
         request.args.get('token'),
         request.args.get('channel_id'),
         request.args.get('start'))
@@ -78,13 +78,13 @@ def http_messages():
 def http_list():
     token = request.args.get('token')
     details = channels.channels_list(token)
-    return({'channels' : details})
+    return dumps({'channels' : details})
 
 @APP.route("/channels/listall", methods=['GET'])
 def http_listall():
     token = request.args.get('token')
     details = channels.channels_listall(token)
-    return({'channels' : details})
+    return dumps({'channels' : details})
 
 
 @APP.route("/channels/create", methods=['POST'])
@@ -95,11 +95,7 @@ def http_create():
         payload['channel_name'],
         payload['is_public']
     )
-    return(
-        {
-            'channel_id' : details
-        }
-    )
+    return dumps({'channel_id' : details})
 
 @APP.route("/channel/leave", methods=['POST'])
 def http_leave():
@@ -270,6 +266,7 @@ def reset_store():
     """This function reset the list and returns nothing"""
     reset_message()
     reset_channel()
+    restore_database()
     return dumps({})
 
 @APP.route("/admin/userpermission/change", methods=['POST'])
@@ -326,13 +323,6 @@ def http_search():
     query_str = request.args.get('query_str', None)
     return dumps(other.search(token, query_str))
 
-@APP.route("/workspace/reset", methods=['POST'])
-def http_reset():
-    restore_database()
-    reset_message()
-    reset_channel()
-    return dumps({})
-
 @APP.route("/standup/start", methods=["POST"])
 def http_standup_start():
     payload = request.get_json()
@@ -354,9 +344,14 @@ def http_standup_send():
     payload = request.get_json()
     token = payload['token']
     channel_id = payload['channel_id']
-    message = payload['message']
-    standup_send(token, channel_id, message)
+    msg = payload['message']
+    standup_send(token, channel_id, msg)
+    return dumps({})
+
+@APP.route("/workspace/reset", methods=["POST"])
+def http_workspace_reset():
+    workspace_reset()
     return dumps({})
 
 if __name__ == "__main__":
-    APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080),debug=True)
+    APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080), debug=True)
