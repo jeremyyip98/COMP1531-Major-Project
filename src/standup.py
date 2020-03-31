@@ -16,6 +16,7 @@ def send_standup_queue(token, channel_id):
     standup_queue = database.get_standup_queue()
     compiled_mesage = convert_standup_queue(standup_queue)
     message_send(token, channel_id, compiled_mesage)
+    database.restore_standup_queue()
 
 def standup_start(token, channel_id, length):
     database.check_token(token)
