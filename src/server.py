@@ -92,7 +92,7 @@ def http_create():
     payload = request.get_json()
     details = channels.channels_create(
         payload['token'],
-        payload['channel_name'],
+        payload['name'],
         payload['is_public']
     )
     return dumps({'channel_id' : details})

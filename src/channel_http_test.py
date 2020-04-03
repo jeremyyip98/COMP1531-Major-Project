@@ -38,7 +38,7 @@ def test_channels_createt_payload():
     create_user1()
     payload = requests.post(f"{BASE_URL}/channels/create", json={
         'token' : user1['token'],
-        'channel_name' : 'My Channel',
+        'name' : 'My Channel',
         'is_public' : True,
     })
     assert payload.json() == {'channel_id' : 1}
@@ -47,7 +47,7 @@ def test_channels_createf_payload():
     create_user2()
     payload = requests.post(f"{BASE_URL}/channels/create", json={
         'token' : user2['token'],
-        'channel_name' : 'False Channel',
+        'name' : 'False Channel',
         'is_public' : False,
     })
     assert payload.json() == {'channel_id': 2}
