@@ -76,7 +76,7 @@ def check_joined_channel(token, channel_id):
 
     # channels_list() return a list of all channels (a list of dictionaries)
     # that the authorised user is part of, hence loop through the dictionaries
-    for dict_item in channels_list(token):
+    for dict_item in channels_list(token)['channels']:
         if dict_item['channel_id'] == channel_id:   # If the given channel_id exists
             joined = True
             break
@@ -269,7 +269,7 @@ def message_sendlater(token, channel_id, message, time_sent):
     timestamp = now.replace(tzinfo=timezone.utc).timestamp()
 
     # if channel_id is not a valid channel
-    if not any(dict['channel_id'] == channel_id for dict in channels_listall(token)):
+    if not any(dict['channel_id'] == channel_id for dict in channels_listall(token)['channels']):
         raise InputError('Channel ID has to be a valid channel')
     if len(message) > 1000:
         raise InputError('Message must be less than or equal 1000 characters')

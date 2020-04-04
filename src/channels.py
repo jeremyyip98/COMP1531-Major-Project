@@ -25,14 +25,14 @@ def channels_create(token, name, is_public):
     re_channel_id = generate_channel_id()
     new_channel = {
         'channel_id' : re_channel_id,
-        'channel_name' : name,
+        'name' : name,
         'is_public' : is_public,
         'owner_members' : [user],
         'all_members' : [user],
         'is_in_standup' : False
     }
-    list_of_channels['channels'].append(new_channel)
-    return re_channel_id
+    list_of_channels.append(new_channel)
+    return {'channel_id' : re_channel_id}
 def channels_list(token):
     """Gets a token and returns a list of channel the user is in"""
     is_valid = search_database(token)
@@ -43,17 +43,17 @@ def channels_list(token):
     #get the user's id
     user = get_u_id(token)
     #iterate through the list of channels
-    for chan in list_of_channels['channels']:
+    for chan in list_of_channels:
         #iterate through list of members
         for mem in chan['all_members']:
             #if user are in the channel append to list
             if mem == user:
                 add = {
                     'channel_id' : chan['channel_id'],
-                    'channel_name' : chan['channel_name']
+                    'name' : chan['name']
                 }
                 authed_channel.append(add)
-    return authed_channel
+    return {'channels' : authed_channel}
 def channels_listall(token):
     """Gets a token and returns a list of channel that exist"""
     #check for access error
@@ -62,10 +62,10 @@ def channels_listall(token):
         raise AccessError(description='Invalid Token')
     #no access error means they are user and returns all channels
     authed_channel = []
-    for chan in list_of_channels['channels']:
+    for chan in list_of_channels:
         add = {
             'channel_id' : chan['channel_id'],
-            'channel_name' : chan['channel_name']
+            'name' : chan['name']
         }
         authed_channel.append(add)
-    return authed_channel
+    return {'channels' : authed_channel}

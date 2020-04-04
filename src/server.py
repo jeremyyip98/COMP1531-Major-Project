@@ -59,10 +59,10 @@ def http_invite():
     
 @APP.route("/channel/details", methods=['GET'])
 def http_details():
+    channel_id = int(request.args.get('channel_id'))
     details = channel.channel_details(
         request.args.get('token'),
-        request.args.get('channel_id'))
-        
+        channel_id)    
     return dumps(details)
     
 @APP.route("/channel/messages", methods=['GET'])
@@ -78,13 +78,13 @@ def http_messages():
 def http_list():
     token = request.args.get('token')
     details = channels.channels_list(token)
-    return dumps({'channels' : details})
+    return dumps(details)
 
 @APP.route("/channels/listall", methods=['GET'])
 def http_listall():
     token = request.args.get('token')
     details = channels.channels_listall(token)
-    return dumps({'channels' : details})
+    return dumps(details)
 
 
 @APP.route("/channels/create", methods=['POST'])
@@ -93,26 +93,24 @@ def http_create():
     details = channels.channels_create(
         payload['token'],
         payload['name'],
-        payload['is_public']
-    )
-    return dumps({'channel_id' : details})
+        payload['is_public'])
+    return dumps(details)
 
 @APP.route("/channel/leave", methods=['POST'])
 def http_leave():
     payload = request.get_json()
     channel.channel_leave(
         payload['token'],
-        payload['channel_id']
-    )
+        payload['channel_id'])
     return dumps({})
 
 @APP.route("/channel/join", methods=['POST'])
 def http_join():
     payload = request.get_json()
+    payload['channel_id'] = int(payload['channel_id'])
     channel.channel_join(
         payload['token'],
-        payload['channel_id']
-    )
+        payload['channel_id'])
     return dumps({})
 
 @APP.route("/channel/addowner", methods=['POST'])
@@ -121,8 +119,7 @@ def http_addowner():
     channel.channel_addowner(
         payload['token'],
         payload['channel_id'],
-        payload['u_id']
-    )
+        payload['u_id'])
     return dumps({})
 
 @APP.route("/channel/removeowner", methods=['POST'])
@@ -130,8 +127,7 @@ def http_removeowner():
     payload = request.get_json()
     channel.channel_leave(
         payload['token'],
-        payload['channel_id']
-    )
+        payload['channel_id'])
     return dumps({})
 
 @APP.route("/auth/register", methods=['POST'])

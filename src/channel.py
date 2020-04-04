@@ -14,28 +14,32 @@ def channel_join(token, channel_id):
         raise AccessError(description='Invalid Token')
     user_id = get_u_id(token)
     user = search_database(token)
+    if not any(d['channel_id'] == channel_id for d in list_of_channels):
+        raise InputError(description="Channel ID is not a valid channel join")
     #iterate though the channels
-    for chan in list_of_channels['channels']:
+    for chan in list_of_channels:
         if chan['channel_id'] == channel_id:
             #if the user is already in the channel raises input error
             for usr in chan['all_members']:
                 if usr == user_id:
                     raise InputError(description="Already in Channel")
             #checks if it's public and user is owner
-            if not chan['is_public'] and user['permission_id'] == 2:
+            if chan['is_public'] is False and user['permission_id'] == 2:
                 raise AccessError(description='Not an owner and Private Channel')
             else:
                 chan['all_members'].append(user_id)
                 return
-    raise InputError(description="Channel ID is not a valid channel")
+
 def channel_leave(token, channel_id):
     """a user leaves the channel including owner"""
     is_valid = search_database(token)
     if is_valid is False:
         raise AccessError(description='Invalid Token')
     user_id = get_u_id(token)
+    if not any(d['channel_id'] == channel_id for d in list_of_channels):
+        raise InputError(description="Channel ID is not a valid channel leave")
     #iterate through channel
-    for chan in list_of_channels['channels']:
+    for chan in list_of_channels:
         #found a channel with the id
         if chan['channel_id'] == channel_id:
             for usr in chan['all_members']:
@@ -49,14 +53,15 @@ def channel_leave(token, channel_id):
                             chan['owner_members'].remove(user_id)
                     return
             raise AccessError(description='Not a member of the Channel')
-    raise InputError(description="Channel ID is not a valid channel")
 def channel_addowner(token, channel_id, u_id):
     """Another owner adds a member as owner"""
     is_valid = search_database(token)
     if is_valid is False:
         raise AccessError(description='Invalid Token')
     user = get_formatted_user(token)
-    for chan in list_of_channels['channels']:
+    if not any(d['channel_id'] == channel_id for d in list_of_channels):
+        raise InputError(description="Channel ID is not a valid channel add")
+    for chan in list_of_channels:
         #found channel
         if chan['channel_id'] == channel_id:
             #checking if the user given is already a owner or if the user adding is not an owner
@@ -71,7 +76,6 @@ def channel_addowner(token, channel_id, u_id):
             else:
                 chan['owner_members'].append(u_id)
                 return
-    raise InputError(description='Channel ID is not a valid channel')
 def channel_removeowner(token, channel_id, u_id):
     """Another owner removes and owner from the channel but the member is stil in the channel"""
     is_valid = search_database(token)
@@ -79,7 +83,9 @@ def channel_removeowner(token, channel_id, u_id):
         raise AccessError(description='Invalid Token')
     #set user as is_valid returns user info if token is valid
     user = is_valid
-    for chan in list_of_channels['channels']:
+    if not any(d['channel_id'] == channel_id for d in list_of_channels):
+        raise InputError(description="Channel ID is not a valid channel rm")
+    for chan in list_of_channels:
         if chan['channel_id'] == channel_id:
             if u_id not in chan['owner_members']:
                 raise InputError(description='No Owner found in Channel')
@@ -91,7 +97,6 @@ def channel_removeowner(token, channel_id, u_id):
             else:
                 chan['owner_members'].remove(u_id)
                 return
-    raise InputError(description='Channel ID is not a valid channel')
 
 """
 UNSW COMP1531 Iteration 2
@@ -115,7 +120,7 @@ def channel_invite(token, channel_id, u_id):
     
     found_authorised_user = False
     found_channel = False
-    for channel in list_of_channels['channels']:
+    for channel in list_of_channels:
         # found the right channel and add user to channel
         if channel['channel_id'] == channel_id:
             found_channel = True
@@ -148,7 +153,7 @@ def channel_details(token, channel_id):
     
     details = {}
     
-    for channel in list_of_channels['channels']:
+    for channel in list_of_channels:
         # found the right channel
         if channel['channel_id'] == channel_id:
             # found the channel
@@ -161,7 +166,7 @@ def channel_details(token, channel_id):
                     found_authorised_user = True
 
             # setting details to have the details of this channel
-            details['name'] = channel['channel_name']
+            details['name'] = channel['name']
             
             # creating a list of dicts for 'owner_members' and 'all_members'
             owner_list = []
@@ -244,7 +249,7 @@ def channel_messages(token, channel_id, start):
                 # adds the message dict to messages list
                 messages.append(msg_dict)
     
-    for channel in list_of_channels['channels']:
+    for channel in list_of_channels:
         # found the right channel
         if channel['channel_id'] == channel_id:
             # found the channel

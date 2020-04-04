@@ -28,7 +28,7 @@ def test_send_exceed_characters():
     results = register_valid_user()
 
     # Create a channel and store the channel ID
-    channel_info = channels_create(results['token'], 'Cool Kids', False)
+    channel_info = channels_create(results['token'], 'Cool Kids', False)['channel_id']
     with pytest.raises(InputError):
         # Send a message with more than 1000 characters
         message_send(results['token'], channel_info, 'a' * 1001)
@@ -44,7 +44,7 @@ def test__send_not_joined_channel():
     not_joined = register_another_valid_user()
 
     # Create a channel and store the channel ID
-    channel_info = channels_create(joined['token'], 'Cool Kids', False)
+    channel_info = channels_create(joined['token'], 'Cool Kids', False)['channel_id']
 
     with pytest.raises(AccessError):
         # Send a message that the authorised user has not joined that channel
@@ -58,7 +58,7 @@ def test_send_correct_channel():
     results = register_valid_user()
 
     # Create a channel and store the channel ID
-    channel_info = channels_create(results['token'], 'Cool Kids', False)
+    channel_info = channels_create(results['token'], 'Cool Kids', False)['channel_id']
 
     # Send a message
     message_id = message_send(results['token'], channel_info, 'abc')
@@ -81,7 +81,7 @@ def test_send_invalid_token():
     results = register_valid_user()
 
     # Create a channel and store the channel ID
-    channel_info = channels_create(results['token'], 'Cool Kids', False)
+    channel_info = channels_create(results['token'], 'Cool Kids', False)['channel_id']
     with pytest.raises(AccessError):
         message_send('hopefullythisisnotavalidtoken', channel_info, 'abc')
 
@@ -95,7 +95,7 @@ def test_remove_not_exists():
     results = register_valid_user()
 
     # Create a channel and store the channel ID
-    channel_info = channels_create(results['token'], 'Cool Kids', False)
+    channel_info = channels_create(results['token'], 'Cool Kids', False)['channel_id']
 
     # Send a message to the stored channel ID and store the message ID
     message_info = message_send(results['token'], channel_info, 'abc')
@@ -118,7 +118,7 @@ def test_remove_invalid_user():
     not_owner = register_another_valid_user()
 
     # Create a channel and store the channel ID
-    channel_info = channels_create(results['token'], 'Cool Kids', False)
+    channel_info = channels_create(results['token'], 'Cool Kids', False)['channel_id']
 
     # Add another user to the channel
     channel_join(not_owner['token'], channel_info)
@@ -143,7 +143,7 @@ def test_remove_confirm():
     results = register_valid_user()
 
     # Create a channel and store the channel ID
-    channel_info = channels_create(results['token'], 'Cool Kids', False)
+    channel_info = channels_create(results['token'], 'Cool Kids', False)['channel_id']
 
     # Send a message to the stored channel ID
     message_send(results['token'], channel_info, 'abc')
@@ -171,7 +171,7 @@ def test_remove_invalid_token():
     results = register_valid_user()
 
     # Create a channel and store the channel ID
-    channel_info = channels_create(results['token'], 'Cool Kids', False)
+    channel_info = channels_create(results['token'], 'Cool Kids', False)['channel_id']
 
     # Send a message to the stored channel ID and store the message ID
     message_info = message_send(results['token'], channel_info, 'abc')
@@ -192,7 +192,7 @@ def test_edit_invalid_user():
     not_owner = register_another_valid_user()
 
     # Create a channel and store the channel ID
-    channel_info = channels_create(results['token'], 'Cool Kids', False)
+    channel_info = channels_create(results['token'], 'Cool Kids', False)['channel_id']
 
     # Add another user to the channel
     channel_join(not_owner['token'], channel_info)
@@ -218,7 +218,7 @@ def test_edit_confirm():
     results = register_valid_user()
 
     # Create a channel and store the channel ID
-    channel_info = channels_create(results['token'], 'Cool Kids', False)
+    channel_info = channels_create(results['token'], 'Cool Kids', False)['channel_id']
 
     # Send a message to the stored channel ID and store the message ID
     message_info = message_send(results['token'], channel_info, 'abc')
@@ -242,7 +242,7 @@ def test_edit_invalid_token():
     results = register_valid_user()
 
     # Create a channel and store the channel ID
-    channel_info = channels_create(results['token'], 'Cool Kids', False)
+    channel_info = channels_create(results['token'], 'Cool Kids', False)['channel_id']
 
     # Send a message to the stored channel ID and store the message ID
     message_info = message_send(results['token'], channel_info, 'abc')

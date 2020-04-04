@@ -65,7 +65,7 @@ def join_channel(user, channel_id):
         'channel_id' : channel_id
     })
     channel_list = get_list_of_channels()
-    for channel in channel_list['channels']:
+    for channel in channel_list:
         if channel['channel_id'] == channel_id:
             assert user['u_id'] in channel['all_members']
     
@@ -86,7 +86,7 @@ def test_invite_payload():
     })
     
     channel_list = get_list_of_channels()
-    for channel in channel_list['channels']:
+    for channel in channel_list:
         if channel['channel_id'] == channel_id:
             assert user2['u_id'] in channel['all_members']
     

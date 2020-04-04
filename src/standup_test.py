@@ -14,7 +14,7 @@ def test_standup_start_error():
     """Test the input error and access error"""
     # make user
     user1 = register_valid_user()
-    channel = channels_create(user1['token'], 'Channel', True)
+    channel = channels_create(user1['token'], 'Channel', True)['channel_id']
     #test invalid token
     with pytest.raises(AccessError) as err:
         standup_start('hopefullyinvalidtoken', 1, 10)
@@ -30,7 +30,7 @@ def test_standup_start_error():
 
 def test_standup_start_normal():
     user1 = register_valid_user()
-    channel = channels_create(user1['token'], 'Channel', True)
+    channel = channels_create(user1['token'], 'Channel', True)['channel_id']
     result = standup_start(user1['token'], channel, 10)
     current_dt = datetime.now()
     #get date time and then round to 2 dp or it'll be false since from the program running
@@ -41,7 +41,7 @@ def test_standup_start_normal():
 def test_standup_active_error():
     # make user
     user1 = register_valid_user()
-    channel = channels_create(user1['token'], 'Channel', True)
+    channel = channels_create(user1['token'], 'Channel', True)['channel_id']
     #test invalid token
     with pytest.raises(AccessError) as err:
         standup_active('hopefullyinvalidtoken', channel)
@@ -53,7 +53,7 @@ def test_standup_active_error():
 def test_standup_active_normal():
     # make users
     user1 = register_valid_user()
-    channel = channels_create(user1['token'], 'Channel', True)
+    channel = channels_create(user1['token'], 'Channel', True)['channel_id']
     # check active standup when not active
     non_active = standup_active(user1['token'], channel)
     assert non_active['is_active'] is False
@@ -73,7 +73,7 @@ def test_standup_active_normal():
 def test_standup_send_error():
     user1 = register_valid_user()
     user2 = register_another_valid_user()
-    channel = channels_create(user1['token'], 'Channel', True)
+    channel = channels_create(user1['token'], 'Channel', True)['channel_id']
     #test non active standup
     with pytest.raises(InputError) as err:
         standup_send(user1['token'], channel, 'Hello')
@@ -95,7 +95,7 @@ def test_standup_send_error():
 
 def test_standup_send_normal():
     user1 = register_valid_user()
-    channel = channels_create(user1['token'], 'Channel', True)
+    channel = channels_create(user1['token'], 'Channel', True)['channel_id']
     standup_start(user1['token'], channel, 10)
     standup_send(user1['token'], channel, 'Hello')
     result = get_standup_queue()

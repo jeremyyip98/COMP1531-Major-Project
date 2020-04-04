@@ -22,5 +22,5 @@ def channels_create(token, name, is_public):
         'owner_members' : [user],
         'all_members' : [user],
     }
-    list_of_channels['channels'].append(new_channel)
+    list_of_channels.append(new_channel)
     return re_channel_id

@@ -59,7 +59,7 @@ def test_list_payload():
     payload = json.load(urllib.request.urlopen(f"{BASE_URL}/channels/list?{queryString}"))
     assert payload['channels'] == [{
         'channel_id' : 1,
-        'channel_name' : 'My Channel',
+        'name' : 'My Channel',
     }]
 
 def test_listall_payload():
@@ -69,10 +69,10 @@ def test_listall_payload():
     payload = json.load(urllib.request.urlopen(f"{BASE_URL}/channels/listall?{queryString}"))
     assert payload['channels'] == [{
         'channel_id' : 1,
-        'channel_name' : 'My Channel'
+        'name' : 'My Channel'
         }, {
             'channel_id' : 2,
-            'channel_name' : 'False Channel'
+            'name' : 'False Channel'
         }]
     
 def test_join_payload():
@@ -81,7 +81,7 @@ def test_join_payload():
         'channel_id' : 1
     })
     list = get_list_of_channels()
-    for i in list['channels']:
+    for i in list:
         if i['channel_id'] == 1:
             assert user2['u_id'] in i['all_members']
 
@@ -91,7 +91,7 @@ def test_leave_payload():
         'channel_id' : 1
     })
     list = get_list_of_channels()
-    for i in list['channels']:
+    for i in list:
         if i['channel_id'] == 1:
             assert user2['u_id'] not in ['all_members']
 
@@ -102,7 +102,7 @@ def test_addowner_payload():
         'u_id' : user2['u_id']
     })
     list = get_list_of_channels()
-    for i in list['channels']:
+    for i in list:
         if i['channel_id'] == 1:
             assert user2['u_id'] in ['owner_members']
 
@@ -113,7 +113,7 @@ def test_removeowner_payload():
         'u_id' : user2['u_id']
     })
     list = get_list_of_channels()
-    for i in list['channels']:
+    for i in list:
         if i['channel_id'] == 1:
             assert user2['u_id'] not in ['owner_members']
     requests.post(f"{BASE_URL}/workspace/reset", json={})
