@@ -53,24 +53,23 @@ def http_invite():
     payload = request.get_json()
     channel.channel_invite(
         payload['token'],
-        payload['channel_id'],
-        payload['u_id'])
+        int(payload['channel_id']),
+        int(payload['u_id']))
     return dumps({})
     
 @APP.route("/channel/details", methods=['GET'])
 def http_details():
-    channel_id = int(request.args.get('channel_id'))
     details = channel.channel_details(
         request.args.get('token'),
-        channel_id)    
+        int(request.args.get('channel_id')))
     return dumps(details)
     
 @APP.route("/channel/messages", methods=['GET'])
 def http_messages():
     details = channel.channel_messages(
         request.args.get('token'),
-        request.args.get('channel_id'),
-        request.args.get('start'))
+        int(request.args.get('channel_id')),
+        int(request.args.get('start')))
         
     return dumps(details)
 
@@ -101,16 +100,15 @@ def http_leave():
     payload = request.get_json()
     channel.channel_leave(
         payload['token'],
-        payload['channel_id'])
+        int(payload['channel_id']))
     return dumps({})
 
 @APP.route("/channel/join", methods=['POST'])
 def http_join():
     payload = request.get_json()
-    payload['channel_id'] = int(payload['channel_id'])
     channel.channel_join(
         payload['token'],
-        payload['channel_id'])
+        int(payload['channel_id']))
     return dumps({})
 
 @APP.route("/channel/addowner", methods=['POST'])
@@ -118,8 +116,8 @@ def http_addowner():
     payload = request.get_json()
     channel.channel_addowner(
         payload['token'],
-        payload['channel_id'],
-        payload['u_id'])
+        int(payload['channel_id']),
+        int(payload['u_id']))
     return dumps({})
 
 @APP.route("/channel/removeowner", methods=['POST'])
@@ -127,7 +125,7 @@ def http_removeowner():
     payload = request.get_json()
     channel.channel_leave(
         payload['token'],
-        payload['channel_id'])
+        int(payload['channel_id']))
     return dumps({})
 
 @APP.route("/auth/register", methods=['POST'])
@@ -163,7 +161,7 @@ def http_message_send():
     data = request.get_json()
     result = message.message_send(
         data['token'],
-        data['channel_id'],
+        int(data['channel_id']),
         data['message']
     )
     return dumps({
@@ -178,7 +176,7 @@ def http_message_sendlater():
     data = request.get_json()
     result = message.message_sendlater(
         data['token'],
-        data['channel_id'],
+        int(data['channel_id']),
         data['message'],
         data['time_sent']
     )
@@ -193,8 +191,8 @@ def http_message_react():
     data = request.get_json()
     message.message_react(
         data['token'],
-        data['message_id'],
-        data['react_id']
+        int(data['message_id']),
+        int(data['react_id'])
     )
     return dumps({})
 
@@ -205,8 +203,8 @@ def http_message_unreact():
     data = request.get_json()
     message.message_unreact(
         data['token'],
-        data['message_id'],
-        data['react_id']
+        int(data['message_id']),
+        int(data['react_id'])
     )
     return dumps({})
 
@@ -217,7 +215,7 @@ def http_message_pin():
     data = request.get_json()
     message.message_pin(
         data['token'],
-        data['message_id']
+        int(data['message_id'])
     )
     return dumps({})
 
@@ -228,7 +226,7 @@ def http_message_unpin():
     data = request.get_json()
     message.message_unpin(
         data['token'],
-        data['message_id']
+        int(data['message_id'])
     )
     return dumps({})
 
@@ -239,7 +237,7 @@ def http_message_remove():
     data = request.get_json()
     message.message_remove(
         data['token'],
-        data['message_id']
+        int(data['message_id'])
     )
     return dumps({})
 
@@ -251,7 +249,7 @@ def http_message_edit():
     data = request.get_json()
     message.message_edit(
         data['token'],
-        data['message_id'],
+        int(data['message_id']),
         data['message']
     )
     return dumps({})
@@ -271,8 +269,8 @@ def http_user_permission_change():
     data = request.get_json()
     other.admin_userpermission_change(
         data['token'],
-        data['u_id'],
-        data['permission_id']
+        int(data['u_id']),
+        int(data['permission_id'])
     )
     return dumps({})
 
@@ -323,7 +321,7 @@ def http_search():
 def http_standup_start():
     payload = request.get_json()
     token = payload['token']
-    channel_id = payload['channel_id']
+    channel_id = int(payload['channel_id'])
     length = payload['length']
     result = standup_start(token, channel_id, length)
     return dumps(result)
@@ -331,7 +329,7 @@ def http_standup_start():
 @APP.route("/standup/active", methods=["GET"])
 def http_standup_active():
     token = request.args.get('token')
-    channel_id = request.args.get('channel_id')
+    channel_id = int(request.args.get('channel_id'))
     result = standup_active(token, channel_id)
     return dumps(result)
 
@@ -339,7 +337,7 @@ def http_standup_active():
 def http_standup_send():
     payload = request.get_json()
     token = payload['token']
-    channel_id = payload['channel_id']
+    channel_id = int(payload['channel_id'])
     msg = payload['message']
     standup_send(token, channel_id, msg)
     return dumps({})
