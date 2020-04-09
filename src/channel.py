@@ -3,7 +3,7 @@ UNSW COMP1531 Iteration 2
 channel.py
 Written by Jackie Cai z5259449
 """
-from database import channel_ids, list_of_channels, search_database, get_u_id, get_profile, get_channel, get_message, get_formatted_user
+from database import channel_ids, list_of_channels, search_database, get_u_id, get_profile, get_message, get_formatted_user
 from error import AccessError, InputError
 
 def channel_join(token, channel_id):
@@ -214,8 +214,16 @@ def channel_messages(token, channel_id, start):
     end = start
     
     # get_channel to get the message_list inside the channel
-    for chan in get_channel():
+    for chan in list_of_channels:
         if chan['channel_id'] == channel_id:
+            # Found the channel
+            found_channel = True
+            # check if authorised user is in the channel
+            for members in channel['all_members']:
+                if members == authorised_user['u_id']:
+                    # authorised user is in the channel
+                    found_authorised_user = True
+            # Checking messages
             end_of_list = chan['channel_messages'][-1]
             num_total_messages = len(chan['channel_messages'])
             # add from message_list to messages
@@ -232,8 +240,6 @@ def channel_messages(token, channel_id, start):
                     if id_in_list is False:
                         message_ids.append(msg_id)
                         end += 1
-                # incrementing total_message
-                #num_total_messages += 1
     end -= 1
     
     if start > num_total_messages:
@@ -248,18 +254,6 @@ def channel_messages(token, channel_id, start):
             if msg_dict['message_id'] == ids:
                 # adds the message dict to messages list
                 messages.append(msg_dict)
-    
-    for channel in list_of_channels:
-        # found the right channel
-        if channel['channel_id'] == channel_id:
-            # found the channel
-            found_channel = True
-            
-            # check if authorised user is in the channel
-            for members in channel['all_members']:
-                if members == authorised_user['u_id']:
-                    # authorised user is in the channel
-                    found_authorised_user = True
             
     if found_channel is False:
         raise InputError(description='Channel_ID is not a valid channel')

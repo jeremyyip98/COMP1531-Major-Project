@@ -1,7 +1,7 @@
 import json
 import urllib.request
 import requests
-from database import get_message, get_list_of_channels, get_channel
+from database import get_message, get_list_of_channels
 
 PORT = 8080
 BASE_URL = f"http://127.0.0.1:{PORT}"
@@ -148,7 +148,7 @@ def test_message_payload():
     id_list = []
     # Initialise message and channel list
     msg_list = get_message()
-    chan_list = get_channel()
+    chan_list = get_list_of_channels()
     for channel in chan_list:
         if channel['channel_id'] == channel_id:
             for message_id in channel['channel_messages']:
