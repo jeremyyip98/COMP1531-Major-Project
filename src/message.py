@@ -411,7 +411,7 @@ def message_edit(token, message_id, message):
 
     for dict_message in message_list:
         if dict_message['message_id'] == message_id:
-            if not message_id:  # If it's an empty string
+            if message == '':  # If it's an empty string
                 message_remove(token, message_id)
             else:
                 dict_message['message'] = message
