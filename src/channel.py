@@ -236,8 +236,8 @@ def channel_messages(token, channel_id, start):
                 #num_total_messages += 1
     end -= 1
     
-    if start >= num_total_messages:
-        raise InputError('Start is greater than or equal to total messages in the channel')
+    if start > num_total_messages:
+        raise InputError('Start is greater than total messages in the channel')
                     
     # initialise empty messages list
     messages = []
