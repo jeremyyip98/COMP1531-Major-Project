@@ -75,6 +75,7 @@ def test_search_invalid_token():
 def test_search_one_channel():
     # This registers a user, creates a channel and sends the message and returns the message 
     # detail and the channel creators details
+    restore_database()
     message_details, details, channel_id = send_test_message("Test Message", "test_channel_one", False)
     message_send(details["token"], channel_id, "A different message")
     search_results = search(details["token"], "test")

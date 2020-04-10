@@ -4,6 +4,7 @@
 """
 
 import re
+import smtplib
 import hashlib
 import secrets
 from error import InputError, AccessError
@@ -64,7 +65,8 @@ def auth_register(email, password, name_first, name_last):
         'permission_id' : 2,
         'hash' : encrypt(password),
         'token' : token,
-        'handle_str' : make_handle(name_first, name_last)
+        'handle_str' : make_handle(name_first, name_last),
+        'pwd_reset_code' : False
         }
     # Will probably implement jwt
     database.registered_users_store['registered_users'].append(user)
@@ -87,6 +89,8 @@ def auth_login(email, password):
                 raise InputError(description='Incorrect Password')
 
 
+
+
 def auth_logout(token):
     is_valid = database.search_database(token)
     if is_valid == False:
@@ -95,7 +99,31 @@ def auth_logout(token):
         database.search_database(token)['token'] = False
         return True
 
+def auth_reset_password_request(email):
+    if not search_for_email(email):
+        return False
+    code = secrets.token_urlsafe(6)
+    # Send email somehow
+    database.registered_users_store['pwd_reset_code'] = code
 
+def send_reset_email(email):
+    pass
+
+def auth_reset_password_reset(reset_code, password):
+    if len(password) < 6 or len(password) > 50:
+        raise InputError(description='Password must be between 6 and 50 characters')
+    for user in registered_users_store['registered_users']:
+        if user['pwd_reset_code'] == reset_code:
+            user['password'] = encrypt(password)
+        else:
+            raise InputError(description='Reset code is not invalid')
+    
+
+
+
+
+
+    
 
 if __name__ == "__main__":
     pass
