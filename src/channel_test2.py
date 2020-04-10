@@ -26,7 +26,7 @@ def test_invite_invalid_channel_id():
     restore_channel_database()
     #   Create user and channel
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
     
     with pytest.raises(InputError) as e:
         channel_invite(user['token'], channel_id + 1, user['u_id'])
@@ -40,7 +40,7 @@ def test_invite_invalid_u_id():
     restore_channel_database()
     #   Create user and channel
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
     with pytest.raises(InputError) as e:
         channel_invite(user['token'], channel_id, user['u_id'] + 1)
     #   testing same issue with a separate but invalid u_id
@@ -53,7 +53,7 @@ def test_invite_authorised_user_invalid():
     restore_channel_database()
     #   Create user and channel
     user_in_channel = auth_register('name@mail.com', 'password', 'John', 'Doe')
-    channel_id = channels_create(user_in_channel['token'], 'valid_channel', True)
+    channel_id = channels_create(user_in_channel['token'], 'valid_channel', True)['channel_id']
     
     #   Register the two users not in channel
     user_not_in_channel = register_valid_user()
@@ -69,7 +69,7 @@ def test_invite_invalid_token():
     restore_channel_database()
     #   Create user and channel
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
     
     #   Raise AccessError
     with pytest.raises(AccessError) as e:
@@ -83,17 +83,17 @@ def test_channel_invite_normal():
     restore_database()
     restore_channel_database()
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
     
     #   make sure user is part of channel
-    user_channels = channels_list(user['token'])
+    user_channels = channels_list(user['token'])['channels']
     assert user_channels[0]['channel_id'] == channel_id
     
     #   check whether user can now invite user2 to the channel
     user2 = register_another_valid_user()
     channel_invite(user['token'], channel_id, user2['u_id'])
     #   check if user is a member of the channel
-    user2_channels = channels_list(user2['token'])
+    user2_channels = channels_list(user2['token'])['channels']
     assert user2_channels[0]['channel_id'] == channel_id
 
 
@@ -105,7 +105,7 @@ def test_details_not_in_channel():
     restore_channel_database()
     #   create user and channel
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
     
     #   create two users not in channel
     user_not_in_channel = auth_register('name2@mail.com', 'passw0rd', 'Ben', 'Ny')
@@ -123,7 +123,7 @@ def test_details_invalid_channel_id():
     restore_channel_database()
     #   create user and channel
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
 
     #   raise InputError
     with pytest.raises(InputError) as e:
@@ -137,7 +137,7 @@ def test_details_invalid_token():
     restore_channel_database()
     #   Create user and channel
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
     
     #   Raise AccessError
     with pytest.raises(AccessError) as e:
@@ -152,7 +152,7 @@ def test_channel_details_normal():
     restore_channel_database()
     #   create user and channel
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_ud']
     
 #   test for channel with only one member
     #   run channel_details
@@ -193,7 +193,7 @@ def test_no_messages():
     restore_channel_database()
     #   create user and channel
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
     
     #   Raise AccessError
     with pytest.raises(AccessError) as e:
@@ -206,7 +206,7 @@ def test_messages_invalid_chanel_id():
     restore_channel_database()
     #   create user and channel
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
     
     #   send a message - prevents AccessError
     message_send(user['token'], channel_id, "abcde")
@@ -226,7 +226,7 @@ def test_message_out_of_range():
     restore_channel_database()
     #   create user and channel
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
     
     #   send 10 messages to channel
     for i in range(10):
@@ -247,7 +247,7 @@ def test_messages_not_in_channel():
     restore_channel_database()
     #   create user and channel
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
     
     #   create users who are not in the channel
     user_not_in_channel = auth_register('name2@mail.com', 'passw0rd', 'Ben', 'Ny')
@@ -271,7 +271,7 @@ def test_messages_invalid_token():
     restore_channel_database()
     #   Create user and channel
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
     
     #   send a message
     message_send(user['token'], channel_id, "abcde")
@@ -290,7 +290,7 @@ def test_channel_messages_normal():
     restore_channel_database()
     #   Create user and channel
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
     
     #   send 124 messages into channel
     for i in range(124):

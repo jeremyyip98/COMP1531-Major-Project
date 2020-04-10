@@ -7,13 +7,13 @@ import datetime
 import requests
 from database import message_list
 
-PORT = 10013
+PORT = 8080
 BASE_URL = f"http://127.0.0.1:{PORT}"
 
 def test_send_valid():
     """This function testing the /message/send route and return nothing"""
     requests.delete(f"{BASE_URL}/message/reset")
-    
+
     req = requests.post(f"{BASE_URL}/auth/register", json={
         "email" : "test@gmail.com",
         "password" : "password",
@@ -224,7 +224,7 @@ def test_unpin_valid():
         "token" : user['token'],
         "message_id" : 0,
     })
-    
+
     global message_list
     for dict_msg in message_list:
         if dict_msg['message_id'] == payload['message_id']:

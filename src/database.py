@@ -22,20 +22,17 @@ registered_users_store = {
 
 channel_ids = [0]
 
-list_of_channels = {
-                            'channels' :
-                            [
-                              #{
-                              #'channel_id' : channel_id,
-                              #'channel_name' : channel_name
-                              #'is_public' : boolean
-                              #'owner_members' : [u_id] - list of owner u_ids
-                              #'all_members : [u_id] - list of member u_ids
-                              #'is_in_standup: False
-                              #'standup_finish_time: time
-                              # }
-                            ]
-}
+list_of_channels = [#{
+                      #'channel_id' : channel_id,
+                      #'channel_name' : channel_name
+                      #'is_public' : boolean
+                      #'owner_members' : [u_id] (list of owner u_ids)
+                      #'all_members : [u_id] (list of member u_ids)
+                      #'is_in_standup: False
+                      #'standup_finish_time: time
+                      #'channel_messages : [] (list of message_id (int))
+                      # }
+]
 
 def get_data():
     return registered_users_store
@@ -56,7 +53,7 @@ def restore_database():
 def restore_channel_database():
     """reseting the channel database to clear it"""
     global list_of_channels
-    list_of_channels['channels'].clear()
+    list_of_channels.clear()
     global channel_ids
     channel_ids.clear()
     channel_ids.append(0)
@@ -69,14 +66,6 @@ message_list = [
     # time_created (integer (unix timestamp))
     # reacts (list of dictionaries)
     # is_pinned (Boolean)
-    # }
-]
-
-# Extra datatype that is not mentioned in the spec
-channel_list = [
-    # {
-        # channel_id (int)
-        # channel_messages (list of message_id (int))
     # }
 ]
 
@@ -215,7 +204,7 @@ def check_handle_str_already_used(handle_str):
 def turn_on_standup(channel_id, length):
     '''makes a channel into standup mode if it's not already. The standup_finish_time is equal to
     the present time plus the length'''
-    for channel in list_of_channels['channels']:
+    for channel in list_of_channels:
         if channel['channel_id'] == channel_id:
             if not channel['is_in_standup']:
                 channel['is_in_standup'] = True
@@ -229,7 +218,7 @@ def turn_on_standup(channel_id, length):
 
 def turn_off_standup(channel_id):
     '''deactivates stand up mode for a channel and sends the messages in standup queue'''
-    for channel in list_of_channels['channels']:
+    for channel in list_of_channels:
         if channel['channel_id'] == channel_id:
             channel['is_in_standup'] = False
             return
@@ -239,7 +228,7 @@ def turn_off_standup(channel_id):
 
 def check_channel_exists(channel_id):
     '''check if a channel with channel_id exists'''
-    for channel in list_of_channels['channels']:
+    for channel in list_of_channels:
         if channel['channel_id'] == channel_id:
             return True
     return False
@@ -247,7 +236,7 @@ def check_channel_exists(channel_id):
 def check_user_in_channel(token, channel_id):
     '''check if a user (identified by their token) is a member of a channel (identified by channel id)'''
     person = get_u_id(token)
-    for channel in list_of_channels['channels']:
+    for channel in list_of_channels:
         if channel['channel_id'] == channel_id:
             for mem_id in channel['all_members']:
                 if mem_id == person:
@@ -256,7 +245,7 @@ def check_user_in_channel(token, channel_id):
 
 def check_standup_happening(channel_id):
     '''check if a standup is happening in a channel'''
-    for channel in list_of_channels['channels']:
+    for channel in list_of_channels:
         if channel['channel_id'] == channel_id:
             if channel['is_in_standup']:
                 return True
@@ -264,28 +253,13 @@ def check_standup_happening(channel_id):
 
 def get_standup_finish_time(channel_id):
     '''get the finishing time for a standup'''
-    for channel in list_of_channels['channels']:
+    for channel in list_of_channels:
         if channel['channel_id'] == channel_id:
             return channel.get('standup_finish_time')
 
 def get_standup_queue():
     global standup_queue
     return standup_queue
-
-def get_channel():
-    """This function create a relationship between channel and message,
-    and returns a list of dictionaries that contain it"""
-    global channel_list
-    return channel_list
-
-def reset_channel():
-    """This function reset the message and returns nothing"""
-    global channel_list
-    channel_list[:] = [
-        # {
-
-        # }
-    ]
 
 def get_profile_allinfo(u_id):
     '''Gets a user profile via u_id instead of token. Used in the user_profile function'''
