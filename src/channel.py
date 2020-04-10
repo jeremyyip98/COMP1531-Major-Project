@@ -219,7 +219,7 @@ def channel_messages(token, channel_id, start):
             # Found the channel
             found_channel = True
             # check if authorised user is in the channel
-            for members in channel['all_members']:
+            for members in chan['all_members']:
                 if members == authorised_user['u_id']:
                     # authorised user is in the channel
                     found_authorised_user = True

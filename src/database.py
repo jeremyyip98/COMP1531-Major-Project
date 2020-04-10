@@ -30,7 +30,7 @@ list_of_channels = [#{
                       #'all_members : [u_id] (list of member u_ids)
                       #'is_in_standup: False
                       #'standup_finish_time: time
-                      #'channel_messages (list of message_id (int))
+                      #'channel_messages : [] (list of message_id (int))
                       # }
 ]
 
