@@ -159,6 +159,10 @@ def reset_message():
         # }
     ]
 
+def get_message_joined(token):
+    """ Takes in token string and returns all messages in channels that the user has joined """
+    pass
+
 def get_message():
     """This function get the list of dictionary of messages and returns it"""
     global message_list

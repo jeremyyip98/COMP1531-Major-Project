@@ -1,6 +1,6 @@
 """ File includes implementation for search, users_all and admin permission change """
 from database import check_token, get_all_users, get_profile,\
-    search_database, get_message, get_permission, get_profile_allinfo
+    search_database, get_message_joined, get_permission, get_profile_allinfo
 from error import AccessError, InputError
 
 # Probably should need permission to do this!!!
@@ -14,7 +14,7 @@ def search(token, query_str):
     """ Given a query string and token will return a list of messages that contain the term """
     check_token(token)
     query_str_matches = []
-    messages = get_message()
+    messages = get_message_joined()
     for message in messages:
         if query_str in message['message']:
             query_str_matches.append(message)

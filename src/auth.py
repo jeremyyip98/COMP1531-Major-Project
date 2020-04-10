@@ -13,7 +13,10 @@ import database
 PWD_RESET_CODE_LENGTH = 6
 
 def valid_email(email):
-    """ Takes email address string and returns true if it is a valid email
+    """ 
+    Input : email(string)
+    Output : True if email found
+    Takes email address string and returns true if it is a valid email
     by the method in the spec else returns false """
     regex = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
     if re.search(regex, email):
