@@ -29,7 +29,7 @@ def channels_create(token, name, is_public):
         'is_public' : is_public,
         'owner_members' : [user],
         'all_members' : [user],
-        'is_in_standup' : False
+        'is_in_standup' : False,
         'channel_messages' : []
     }
     list_of_channels.append(new_channel)

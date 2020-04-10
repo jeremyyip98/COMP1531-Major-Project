@@ -4,7 +4,7 @@ message.py
 Written by: Yip Jeremy Chung Lum, z5098112
 """
 from datetime import datetime, timezone
-from database import get_u_id, get_permission, message_list, channel_list
+from database import get_u_id, get_permission, message_list, list_of_channels
 from channels import  channels_list, channels_listall
 from channel import channel_details
 from error import InputError, AccessError
@@ -41,28 +41,21 @@ def message_create(channel_id, u_id, message, time):
 def channel_add(channel_id, message_id):
     """This function store a list of dictionaries containing
     the channel_id with it's corresponding message_ids and return nothing"""
-    global channel_list
-    if not channel_list: # If the channel is empty
-        dictionary = {
-            "channel_id" : channel_id,
-            "channel_messages" : [message_id]
-        }
-        channel_list.append(dictionary)
-    else:
-        for dict_channel in channel_list:
-            if dict_channel['channel_id'] == channel_id:
+    global list_of_channels
+    for dict_channel in list_of_channels:
+        if dict_channel['channel_id'] == channel_id:
+            if message_id not in dict_channel['channel_messages']:
                 dict_channel['channel_messages'].append(message_id)
 
 def channel_remove(message_id):
     """This function remove the message_ids from the channel and return nothing"""
     global channel_list
     channel_id = get_channel_id(message_id)
-    if channel_list: # If the channel is not empty
-        for dict_channel in channel_list:
+    if list_of_channels != []: # If the channel is not empty
+        for dict_channel in list_of_channels:
             if dict_channel['channel_id'] == channel_id:
-                for msg_id in dict_channel['channel_messages']:
-                    if msg_id == message_id:
-                        dict_channel['channel_messages'].remove(message_id)
+                if message_id in dict_channel['channel_messages']:
+                    dict_channel['channel_messages'].remove(message_id)
 
 # Helper function for message_send() and message_sendlater()
 def check_joined_channel(token, channel_id):
