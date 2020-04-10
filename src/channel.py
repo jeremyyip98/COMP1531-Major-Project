@@ -219,13 +219,14 @@ def channel_messages(token, channel_id, start):
             # Found the channel
             found_channel = True
             # check if authorised user is in the channel
-            for members in channel['all_members']:
+            for members in chan['all_members']:
                 if members == authorised_user['u_id']:
                     # authorised user is in the channel
                     found_authorised_user = True
-            # Checking messages
-            end_of_list = chan['channel_messages'][-1]
-            num_total_messages = len(chan['channel_messages'])
+            if len(chan['channel_messages']) != 0:
+                # Checking messages
+                end_of_list = chan['channel_messages'][-1]
+                num_total_messages = len(chan['channel_messages'])
             # add from message_list to messages
             for msg_id in chan['channel_messages']:
                 if (end - start > 50):
@@ -240,16 +241,15 @@ def channel_messages(token, channel_id, start):
                     if id_in_list is False:
                         message_ids.append(msg_id)
                         end += 1
-    end -= 1
+            end -= 1
     
     if start > num_total_messages:
         raise InputError('Start is greater than total messages in the channel')
                     
     # initialise empty messages list
     messages = []
-    
-    message_list = get_message()   
-    for ids in message_ids:      
+    message_list = get_message()
+    for ids in message_ids:
         for msg_dict in message_list:
             if msg_dict['message_id'] == ids:
                 # adds the message dict to messages list

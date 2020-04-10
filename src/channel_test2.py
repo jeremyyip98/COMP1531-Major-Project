@@ -152,7 +152,7 @@ def test_channel_details_normal():
     restore_channel_database()
     #   create user and channel
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_ud']
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
     
 #   test for channel with only one member
     #   run channel_details
@@ -294,19 +294,19 @@ def test_channel_messages_normal():
     
     #   send 124 messages into channel
     for i in range(124):
-        message_send(user['token'], channel_id, 'abcde')
+        message_send(user['token'], channel_id, f'abcde{i}')
     
     #   check if channel_messages are correct in these channel as well as 'start' and 'end' points
     message0 = channel_messages(user['token'], channel_id, 0)
     for i in range(50):
         
-        assert message0['messages'][i]['message'] == 'abcde'
+        assert message0['messages'][i]['message'] == f'abcde{i}'
     assert message0['start'] == 0
     assert message0['end'] == 50
         
     message1 = channel_messages(user['token'], channel_id, 50)
     for i in range(50):
-        assert message1['messages'][i]['message'] == 'abcde'
+        assert message1['messages'][i]['message'] == f'abcde{i+50}'
     assert message1['start'] == 50
     assert message1['end'] == 100
 
