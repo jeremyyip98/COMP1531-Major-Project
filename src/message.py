@@ -4,7 +4,7 @@ message.py
 Written by: Yip Jeremy Chung Lum, z5098112
 """
 from datetime import datetime, timezone
-from database import get_u_id, get_permission, message_list, channel_list
+from database import get_u_id, get_permission, message_list
 from channels import  channels_list, channels_listall
 from channel import channel_details
 from error import InputError, AccessError
