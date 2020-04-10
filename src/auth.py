@@ -10,6 +10,8 @@ import secrets
 from error import InputError, AccessError
 import database
 
+PWD_RESET_CODE_LENGTH = 6
+
 def valid_email(email):
     """ Takes email address string and returns true if it is a valid email
     by the method in the spec else returns false """
@@ -102,11 +104,14 @@ def auth_logout(token):
 def auth_reset_password_request(email):
     if not search_for_email(email):
         return False
-    code = secrets.token_urlsafe(6)
-    # Send email somehow
+    # Check that its unique
+    code = secrets.token_urlsafe(PWD_RESET_CODE_LENGTH)
+    while any(d['pwd_reset_code'] == code for d in database.registered_users_store['registered_users']):
+        code = secrets.token_urlsafe(PWD_RESET_CODE_LENGTH)
+    send_reset_email(email, code)
     database.registered_users_store['pwd_reset_code'] = code
 
-def send_reset_email(email):
+def send_reset_email(email, code):
     pass
 
 def auth_reset_password_reset(reset_code, password):
