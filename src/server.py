@@ -13,7 +13,7 @@ import channel
 import channels
 import message
 import other
-from database import reset_message, restore_database
+from database import reset_message, restore_database, restore_channel_database
 from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle
 from standup import standup_start, standup_active, standup_send
 from workspace_reset import workspace_reset
@@ -259,6 +259,7 @@ def http_message_edit():
 def reset_store():
     """This function reset the list and returns nothing"""
     reset_message()
+    restore_channel_database()
     restore_database()
     return dumps({})
 
