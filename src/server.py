@@ -46,8 +46,12 @@ def echo():
         'data': data
     })
 
-#
-    
+@APP.route("/profile_pictures/<str:filename>")
+def show_profile_img(filename):
+    return send_from_directory(app.config['profile_pictures'],
+                               filename, as_attachment=True)
+
+
 @APP.route("/channel/invite", methods=['POST'])
 def http_invite():
     payload = request.get_json()

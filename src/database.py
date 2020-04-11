@@ -123,12 +123,15 @@ def search_database(token):
         { 
             'u_id' : 0,
             'email' : example_email,
-            'name_first' : Firs,
+            'name_first' : First,
             'name_last' : Last,
             'hash' : encrypted password,
             'token' : token,
-            'premission : 1,
-            'handle_str' :firstlast             
+            'premission : 1 or 2,
+            'handle_str' :firstlast  
+            'pwd_reset_code' : False or the requested code
+            'img_url' : 'default_img' or the name of uploaded image
+
 
         }
         If token is not found in the datastore registered to any user
@@ -166,7 +169,8 @@ def get_profile(u_id):
                 "email" : user['email'],    
                 "name_first" : user['name_first'],  
                 "name_last" : user['name_last'],
-                "handle_str" : user['handle_str']
+                "handle_str" : user['handle_str'],
+                "img_url" : user['img_url']
             }
             return formatted_user
     raise InputError

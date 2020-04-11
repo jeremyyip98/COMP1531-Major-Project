@@ -27,7 +27,12 @@ def valid_email(email):
         return False
 
 def generate_u_id():
-    """ Generates highest u_id + one returns it and appends to u_id list """
+    '''
+    Generates highest u_id + one returns it and appends to u_id list
+
+    Returns:
+        (int): u_id
+    '''
     u_id = max(database.u_ids)
     u_id += 1
     database.u_ids.append(u_id)
@@ -73,7 +78,8 @@ def auth_register(email, password, name_first, name_last):
         'hash' : encrypt(password),
         'token' : token,
         'handle_str' : make_handle(name_first, name_last),
-        'pwd_reset_code' : False
+        'pwd_reset_code' : False,
+        'img_url' : 'default_img'
         }
     # Will probably implement jwt
     database.registered_users_store['registered_users'].append(user)
@@ -143,6 +149,7 @@ def auth_reset_password_reset(reset_code, password):
         raise InputError(description='Password must be between 6 and 50 characters')
     for user in database.registered_users_store['registered_users']:
         if user['pwd_reset_code'] == reset_code:
+
             user['hash'] = encrypt(password)
         else:
             raise InputError(description='Reset code is invalid')

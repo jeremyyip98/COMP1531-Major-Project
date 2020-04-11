@@ -4,7 +4,6 @@ import database
 from error import AccessError, InputError
 from PIL import Image
 from secrets import urlsa
-from random import randint
 
 
 def upload_profile_pic(token, img_url, x_start, y_start, x_end, y_end):
@@ -33,4 +32,4 @@ def upload_profile_pic(token, img_url, x_start, y_start, x_end, y_end):
     new = im.crop(coordinates)    
     new.save(filename, format='jpg')
     # Then needs to host url and link the profile picture to user structure
-    
+
