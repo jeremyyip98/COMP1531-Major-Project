@@ -223,33 +223,35 @@ def channel_messages(token, channel_id, start):
                 if members == authorised_user['u_id']:
                     # authorised user is in the channel
                     found_authorised_user = True
-            # Checking messages
-            end_of_list = chan['channel_messages'][-1]
-            num_total_messages = len(chan['channel_messages'])
+            if len(chan['channel_messages']) != 0:
+                # Checking messages
+                end_of_list = chan['channel_messages'][-1]
+                num_total_messages = len(chan['channel_messages'])
             # add from message_list to messages
-            for msg_id in chan['channel_messages']:
+            for msg_id in chan['channel_messages'][start:]:
                 if (end - start > 50):
                     break
                 elif (end - start <= 50 and msg_id == end_of_list):
                     end = -1
-                else:
-                    id_in_list = False
-                    for ids in message_ids:
-                        if msg_id == ids:
-                            id_in_list = True
-                    if id_in_list is False:
-                        message_ids.append(msg_id)
-                        end += 1
-    end -= 1
+                
+                id_in_list = False
+                for ids in message_ids:
+                    if msg_id == ids:
+                        id_in_list = True
+                if id_in_list is False:
+                    message_ids.append(msg_id)
+                    end += 1
+            end -= 1
     
+    #print(f"Numtotalmsg = {num_total_messages}")
     if start > num_total_messages:
         raise InputError('Start is greater than total messages in the channel')
                     
     # initialise empty messages list
     messages = []
-    
-    message_list = get_message()   
-    for ids in message_ids:      
+    message_list = get_message()
+    #print(f"no. ids = {len(message_ids)}")
+    for ids in message_ids:
         for msg_dict in message_list:
             if msg_dict['message_id'] == ids:
                 # adds the message dict to messages list
