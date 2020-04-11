@@ -48,6 +48,7 @@ def echo():
 
 @APP.route("/profile_pictures/<str:filename>")
 def show_profile_img(filename):
+    """ Not sure if this will work """
     return send_from_directory(app.config['profile_pictures'],
                                filename, as_attachment=True)
 
