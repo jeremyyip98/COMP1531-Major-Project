@@ -49,7 +49,7 @@ def channel_add(channel_id, message_id):
 
 def channel_remove(message_id):
     """This function remove the message_ids from the channel and return nothing"""
-    global channel_list
+    global list_of_channels
     channel_id = get_channel_id(message_id)
     if list_of_channels != []: # If the channel is not empty
         for dict_channel in list_of_channels:
@@ -175,10 +175,10 @@ def react_remove(react_id, u_id, message_id):
 def get_channel_id(message_id):
     """This function given message_id, search through message,
     and return the channel_id corresponding to the message_id"""
-    global channel_list
+    global list_of_channels
     found = False
 
-    for dict_channel in channel_list:
+    for dict_channel in list_of_channels:
         if message_id in dict_channel['channel_messages']:
             channel_id = dict_channel['channel_id']
             found = True
