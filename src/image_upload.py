@@ -1,14 +1,11 @@
 import requests
+import uuid
 import database
 from error import AccessError, InputError
 from PIL import Image
-from random import 
+from secrets import urlsa
+from random import randint
 
-def generate_filename():
-    # Random characters and unique
-    filename = f"profile_pictures/{filename}"
-
-    pass
 
 def upload_profile_pic(token, img_url, x_start, y_start, x_end, y_end):
     database.check_token(token)
@@ -17,7 +14,7 @@ def upload_profile_pic(token, img_url, x_start, y_start, x_end, y_end):
     r = requests.get(img_url, allow_redirects=True)
     if r.status_code != 200:
         raise InputError(description='Image could not be accessed')    
-    filename = generate_filename()
+    filename = f"profile_pictures/{uuid.uuid4().hex}"
     # Should Check folder is there first
     
     open(filename, 'wb').write(r.content)
@@ -33,16 +30,7 @@ def upload_profile_pic(token, img_url, x_start, y_start, x_end, y_end):
         if c < 0:
             raise InputError(description='Crop out of bounds')
     """ Crops the image according to input coordinates """
-    new = im.crop(coordinates)
-    
-    
-    # Saving Processed
+    new = im.crop(coordinates)    
     new.save(filename, format='jpg')
-
-
-
-
-
-    # Process Image
-
-    # Show
+    # Then needs to host url and link the profile picture to user structure
+    
