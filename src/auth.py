@@ -11,6 +11,8 @@ from error import InputError, AccessError
 import database
 
 PWD_RESET_CODE_LENGTH = 6
+SUPPORT_EMAIL = "flying.circus.slackr@gmail.com"
+SUPPORT_EMAIL_PASSWORD = "wF79s@5qbEQp" 
 
 def valid_email(email):
     """ 
@@ -67,7 +69,7 @@ def auth_register(email, password, name_first, name_last):
         'email' : email,
         'name_first' : name_first,
         'name_last' : name_last,
-        'permission_id' : 2,
+        'permission_id' : 1 if u_id == 1 else 2,
         'hash' : encrypt(password),
         'token' : token,
         'handle_str' : make_handle(name_first, name_last),
@@ -108,29 +110,42 @@ def auth_reset_password_request(email):
     if not search_for_email(email):
         return False
     # Check that its unique
+    code = "1234"
+    """
     code = secrets.token_urlsafe(PWD_RESET_CODE_LENGTH)
     while any(d['pwd_reset_code'] == code for d in database.registered_users_store['registered_users']):
         code = secrets.token_urlsafe(PWD_RESET_CODE_LENGTH)
-    send_reset_email(email, code)
-    database.registered_users_store['pwd_reset_code'] = code
+    """
+    for d in database.registered_users_store['registered_users']:
+        if d['email'] == email:
+            d['pwd_reset_code'] = code
+            name = d['name_first']
+    # send_reset_email(email, code, name)
 
-def send_reset_email(email, code):
-    pass
+def send_reset_email(to_email, code, name):
+    SUBJECT = "Slackr - Password Reset"
+    TEXT = f"""Hi {name},
+    Your requested password reset code is "{code}"."""
+    # Prepare actual message
+    message = """From: %s\nTo: %s\nSubject: %s\n\n%s
+    """ % (SUPPORT_EMAIL, to_email, SUBJECT, TEXT)
+    server = smtplib.SMTP("smtp.gmail.com", 587)
+    server.ehlo()
+    server.starttls()
+    server.login(SUPPORT_EMAIL, SUPPORT_EMAIL_PASSWORD)
+    server.sendmail(SUPPORT_EMAIL, to_email, message)   
+    server.close()
+
+
 
 def auth_reset_password_reset(reset_code, password):
     if len(password) < 6 or len(password) > 50:
         raise InputError(description='Password must be between 6 and 50 characters')
-    for user in registered_users_store['registered_users']:
+    for user in database.registered_users_store['registered_users']:
         if user['pwd_reset_code'] == reset_code:
-            user['password'] = encrypt(password)
+            user['hash'] = encrypt(password)
         else:
-            raise InputError(description='Reset code is not invalid')
-    
-
-
-
-
-
+            raise InputError(description='Reset code is invalid')
     
 
 if __name__ == "__main__":
