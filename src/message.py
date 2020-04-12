@@ -49,7 +49,7 @@ def channel_add(channel_id, message_id):
 
 def channel_remove(message_id):
     """This function remove the message_ids from the channel and return nothing"""
-    global channel_list
+    global list_of_channels
     channel_id = get_channel_id(message_id)
     if list_of_channels != []: # If the channel is not empty
         for dict_channel in list_of_channels:
@@ -175,10 +175,10 @@ def react_remove(react_id, u_id, message_id):
 def get_channel_id(message_id):
     """This function given message_id, search through message,
     and return the channel_id corresponding to the message_id"""
-    global channel_list
+    global list_of_channels
     found = False
 
-    for dict_channel in channel_list:
+    for dict_channel in list_of_channels:
         if message_id in dict_channel['channel_messages']:
             channel_id = dict_channel['channel_id']
             found = True
@@ -191,15 +191,17 @@ def get_channel_id(message_id):
 def check_owner(token, message_id):
     """This function check is the authorised user an owner or not,
     return true or false"""
+    global list_of_channels
     is_owner = False
     u_id = get_u_id(token)
     channel_id = get_channel_id(message_id)
-    owners_list = channel_details(token, channel_id)
 
-    for owner_id in owners_list:
-        if owner_id == u_id:
-            is_owner = True
-            break
+    for dict_channel in list_of_channels:
+        if dict_channel['channel_id'] == channel_id:
+            if u_id in dict_channel['owner_members']:
+                is_owner = True
+                break
+
     return is_owner
 
 # Helper function for message_pin() and message_unpin()
@@ -259,10 +261,9 @@ def message_send(token, channel_id, message):
     if joined is False:
         raise AccessError('Authorised user has not joined the channel')
 
-    now = datetime.now()
-    timestamp = now.replace(tzinfo=timezone.utc).timestamp()
+    now = int(datetime.now(tz=timezone.utc).timestamp())
 
-    message = message_create(channel_id, get_u_id(token), message, timestamp)
+    message = message_create(channel_id, get_u_id(token), message, now)
 
     return message[-1]['message_id']
 
@@ -271,8 +272,7 @@ def message_sendlater(token, channel_id, message, time_sent):
     channel_id automatically at a specified time in the future,
     and return the message_id"""
     joined = check_joined_channel(token, channel_id)
-    now = datetime.now()
-    timestamp = now.replace(tzinfo=timezone.utc).timestamp()
+    now = int(datetime.now(tz=timezone.utc).timestamp())
 
     # if channel_id is not a valid channel
     if not any(dict['channel_id'] == channel_id for dict in channels_listall(token)['channels']):
@@ -336,9 +336,11 @@ def message_pin(token, message_id):
         raise InputError('The message is already pinned')
 
     channel_id = get_channel_id(message_id)
-    joined = check_joined_channel(token, channel_id)
-    if joined is False:
-        raise AccessError('Authorised user is not a member of the channel')
+    is_joined = check_joined_channel(token, channel_id)
+    is_owner_channel = check_owner(token, message_id)
+
+    if is_joined is False and is_owner_channel is False:
+        raise AccessError('Authorised user is not a member of the channel nor an owner')
 
     pin_add(message_id)
 
@@ -359,9 +361,11 @@ def message_unpin(token, message_id):
         raise InputError('The message is already unpinned')
 
     channel_id = get_channel_id(message_id)
-    joined = check_joined_channel(token, channel_id)
-    if joined is False:
-        raise AccessError('Authorised user is not a member of the channel')
+    is_joined = check_joined_channel(token, channel_id)
+    is_owner_channel = check_owner(token, message_id)
+
+    if is_joined is False and is_owner_channel is False:
+        raise AccessError('Authorised user is not a member of the channel nor an owner')
 
     pin_remove(message_id)
 
