@@ -69,10 +69,7 @@ message_list = [
     # }
 ]
 
-standup_queue = ['''{
-    'name_first' : 'First',
-    'message' : 'some message',
-}''']
+standup_queue = []
 def restore_standup_queue():
     global standup_queue
     standup_queue.clear()
