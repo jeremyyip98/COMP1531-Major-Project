@@ -10,6 +10,8 @@ from standup import standup_active, standup_send, standup_start, convert_standup
 from workspace_reset import workspace_reset
 from datetime import datetime, timezone
 from database import get_standup_queue
+import time
+
 def test_standup_start_error():
     """Test the input error and access error"""
     # make user
@@ -26,7 +28,9 @@ def test_standup_start_error():
     #test starting another standup
     with pytest.raises(InputError) as err:
         standup_start(user1['token'], channel, 10)
+    time.sleep(11)
     workspace_reset()
+
 
 def test_standup_start_normal():
     user1 = register_valid_user()
@@ -36,6 +40,7 @@ def test_standup_start_normal():
     #get date time and then round to 2 dp or it'll be false since from the program running
     #to the next line is a few milli second and makes it wrong
     assert round(result['time_finish'], 2) == round(current_dt.replace(tzinfo=timezone.utc).timestamp() + 10, 2)
+    time.sleep(11)
     workspace_reset()
 
 def test_standup_active_error():
@@ -48,6 +53,7 @@ def test_standup_active_error():
         # test invalid channel id
     with pytest.raises(InputError) as err:
         standup_active(user1['token'], 100)
+    time.sleep(11)
     workspace_reset()
 
 def test_standup_active_normal():
@@ -68,6 +74,7 @@ def test_standup_active_normal():
     #check time_finish returns the correct result by 2dp since time start to end is too accurate and need to
     #round it down or the milli second the program start running will ruin it
     assert round(active['time_finish'], 2) == round(current_dt.replace(tzinfo=timezone.utc).timestamp() + 10, 2)
+    time.sleep(11)
     workspace_reset()
 
 def test_standup_send_error():
@@ -91,6 +98,7 @@ def test_standup_send_error():
     #test too long
     with pytest.raises(InputError) as err:
         standup_send(user1['token'], channel, 'a' * 1001)
+    time.sleep(11)
     workspace_reset()
 
 def test_standup_send_normal():
@@ -100,3 +108,4 @@ def test_standup_send_normal():
     standup_send(user1['token'], channel, 'Hello')
     result = get_standup_queue()
     assert convert_standup_queue(result) == "First: Hello\n"
+

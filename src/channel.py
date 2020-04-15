@@ -3,7 +3,7 @@ UNSW COMP1531 Iteration 2
 channel.py
 Written by Jackie Cai z5259449
 """
-from database import (list_of_channels, search_database,
+from database import (channel_ids, list_of_channels, search_database,
                       get_u_id, get_profile, get_channel, get_message, get_formatted_user)
 from error import AccessError, InputError
 
@@ -210,52 +210,48 @@ def channel_messages(token, channel_id, start):
     end = start
     
     # get_channel to get the message_list inside the channel
-    for chan in get_channel():
+    for chan in list_of_channels:
         if chan['channel_id'] == channel_id:
-            end_of_list = chan['channel_messages'][-1]
-            num_total_messages = len(chan['channel_messages'])
+            # Found the channel
+            found_channel = True
+            # check if authorised user is in the channel
+            for members in chan['all_members']:
+                if members == authorised_user['u_id']:
+                    # authorised user is in the channel
+                    found_authorised_user = True
+            if len(chan['channel_messages']) != 0:
+                # Checking messages
+                end_of_list = chan['channel_messages'][-1]
+                num_total_messages = len(chan['channel_messages'])
             # add from message_list to messages
-            for msg_id in chan['channel_messages']:
+            for msg_id in chan['channel_messages'][start:]:
                 if (end - start > 50):
                     break
                 elif (end - start <= 50 and msg_id == end_of_list):
                     end = -1
-                else:
-                    id_in_list = False
-                    for ids in message_ids:
-                        if msg_id == ids:
-                            id_in_list = True
-                    if id_in_list is False:
-                        message_ids.append(msg_id)
-                        end += 1
-                # incrementing total_message
-                #num_total_messages += 1
-    end -= 1
+                
+                id_in_list = False
+                for ids in message_ids:
+                    if msg_id == ids:
+                        id_in_list = True
+                if id_in_list is False:
+                    message_ids.append(msg_id)
+                    end += 1
+            end -= 1
     
-    if start >= num_total_messages:
-        raise InputError('Start is greater than or equal to total messages in the channel')
+    #print(f"Numtotalmsg = {num_total_messages}")
+    if start > num_total_messages:
+        raise InputError('Start is greater than total messages in the channel')
                     
     # initialise empty messages list
     messages = []
-    
-    message_list = get_message()   
-    for ids in message_ids:      
+    message_list = get_message()
+    #print(f"no. ids = {len(message_ids)}")
+    for ids in message_ids:
         for msg_dict in message_list:
             if msg_dict['message_id'] == ids:
                 # adds the message dict to messages list
                 messages.append(msg_dict)
-    
-    for channel in list_of_channels:
-        # found the right channel
-        if channel['channel_id'] == channel_id:
-            # found the channel
-            found_channel = True
-            
-            # check if authorised user is in the channel
-            for members in channel['all_members']:
-                if members == authorised_user['u_id']:
-                    # authorised user is in the channel
-                    found_authorised_user = True
             
     if found_channel is False:
         raise InputError(description='Channel_ID is not a valid channel')

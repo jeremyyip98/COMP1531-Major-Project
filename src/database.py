@@ -22,7 +22,17 @@ registered_users_store = {
 
 channel_ids = [0]
 
-list_of_channels = []
+list_of_channels = [#{
+                      #'channel_id' : channel_id,
+                      #'channel_name' : channel_name
+                      #'is_public' : boolean
+                      #'owner_members' : [u_id] (list of owner u_ids)
+                      #'all_members : [u_id] (list of member u_ids)
+                      #'is_in_standup: False
+                      #'standup_finish_time: time
+                      #'channel_messages : [] (list of message_id (int))
+                      # }
+]
 
 def get_data():
     return registered_users_store
@@ -59,18 +69,7 @@ message_list = [
     # }
 ]
 
-# Extra datatype that is not mentioned in the spec
-channel_list = [
-    # {
-        # channel_id (int)
-        # channel_messages (list of message_id (int))
-    # }
-]
-
-standup_queue = ['''{
-    'name_first' : 'First',
-    'message' : 'some message',
-}''']
+standup_queue = []
 def restore_standup_queue():
     global standup_queue
     standup_queue.clear()
@@ -254,21 +253,6 @@ def get_standup_finish_time(channel_id):
 def get_standup_queue():
     global standup_queue
     return standup_queue
-
-def get_channel():
-    """This function create a relationship between channel and message,
-    and returns a list of dictionaries that contain it"""
-    global channel_list
-    return channel_list
-
-def reset_channel():
-    """This function reset the message and returns nothing"""
-    global channel_list
-    channel_list[:] = [
-        # {
-
-        # }
-    ]
 
 def get_profile_allinfo(u_id):
     '''Gets a user profile via u_id instead of token. Used in the user_profile function'''

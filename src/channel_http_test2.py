@@ -1,8 +1,7 @@
 import json
 import urllib.request
 import requests
-import pytest
-from database import message_list, get_list_of_channels
+from database import get_message, get_list_of_channels
 
 PORT = 8080
 BASE_URL = f"http://127.0.0.1:{PORT}"
@@ -18,8 +17,8 @@ def create_user1():
     user1 = requests.post(f"{BASE_URL}/auth/register", json={
         'email': 'mail@mail.com',
         'password' : 'password',
-        'name_first': 'Bob',
-        'name_last': 'Ross'
+        'name_first' : 'first',
+        'name_last' : 'last'
     })
     user1 = user1.json()
     return user1
@@ -29,8 +28,8 @@ def create_user2():
     user2 = requests.post(f"{BASE_URL}/auth/register", json={
         'email': 'mail2@mail.com',
         'password' : 'password',
-        'name_first' : 'Rob',
-        'name_last' : 'Boss'
+        'name_first' : 'first',
+        'name_last' : 'last'
     })
     user2 = user2.json()
     return user2
@@ -44,20 +43,20 @@ def send_message():
         "channel_id" : 0,
         "message" : 'abc'
     })
-    global message_list
-    for dict_msg in message_list:
+    msg_list = get_message()
+    for dict_msg in msg_list:
         if dict_msg['message_id'] == payload['message_id']:
             assert dict_msg['message'] == 'abc'
 
-def create_valid_channel(user):
-    user1 = create_user1()
+def create_valid_channel():
+    create_user1()
     payload = requests.post(f"{BASE_URL}/channels/create", json={
         'token' : user1['token'],
-        'channel_name' : 'My Channel',
+        'name' : 'My Channel',
         'is_public' : True,
     })
-    
-    return payload.json()['channel_id']
+    details = payload.json()
+    return details['channel_id']
     
 def join_channel(user, channel_id):
     requests.post(f"{BASE_URL}/channel/join", json={
@@ -73,10 +72,11 @@ def join_channel(user, channel_id):
 """ HTTP tests """
 
 def test_invite_payload():
+    # Resets the workspace
     requests.post(f"{BASE_URL}/workspace/reset", json={})
-    user1 = create_user1()
-    user2 = create_user2()
-    channel_id = create_valid_channel(user1)
+    create_user1()
+    create_user2()
+    channel_id = create_valid_channel()
     
     # User1 invites user2 to the channel
     payload = requests.post(f"{BASE_URL}/channel/invite", json={
@@ -92,8 +92,9 @@ def test_invite_payload():
     
 def test_details_payload():
     requests.post(f"{BASE_URL}/workspace/reset", json={})
-    user1 = create_user1()
-    channel_id = create_valid_channel(user1)
+    create_user1()
+    create_user2()
+    channel_id = create_valid_channel()
     # add user2 to the channel (user1 is already in the channel since he created it)
     join_channel(user2, channel_id)
     queryString = urllib.parse.urlencode({
@@ -128,8 +129,8 @@ def test_details_payload():
     
 def test_message_payload():
     requests.post(f"{BASE_URL}/workspace/reset", json={})
-    user1 = create_user1
-    channel_id = create_valid_channel(user1)
+    create_user1()
+    channel_id = create_valid_channel()
     
     # sends 10 messages
     for i in range(10):
@@ -145,17 +146,17 @@ def test_message_payload():
     payload = json.load(response)
     
     id_list = []
-    
-    global message_list
-    global channel_list
-    for channel in channel_list:
+    # Initialise message and channel list
+    msg_list = get_message()
+    chan_list = get_list_of_channels()
+    for channel in chan_list:
         if channel['channel_id'] == channel_id:
             for message_id in channel['channel_messages']:
                 id_list.append(message_id)
     
     messages = []
     for ids in id_list:
-        for msg_dict in message_list:
+        for msg_dict in msg_list:
             if msg_dict['message_id'] == ids:
                 messages.append(msg_dict)
     
@@ -177,15 +178,15 @@ def test_message_payload():
     
     response = urllib.request.urlopen(f"{BASE_URL}/channel/messages?{queryString}")
     payload = json.load(response)
-    
-    for channel in channel_list:
+
+    for channel in chan_list:
         if channel['channel_id'] == channel_id:
             for message_id in channel['channel_messages']:
                 id_list.append(message_id)
     
     messages = []
     for ids in id_list:
-        for msg_dict in message_list:
+        for msg_dict in msg_list:
             if msg_dict['message_id'] == ids:
                 messages.append(msg_dict)
     

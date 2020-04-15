@@ -13,7 +13,7 @@ import channel
 import channels
 import message
 import other
-from database import reset_message, reset_channel, restore_database
+from database import reset_message, restore_database, restore_channel_database
 from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle
 from standup import standup_start, standup_active, standup_send
 from workspace_reset import workspace_reset
@@ -263,7 +263,7 @@ def http_message_edit():
 def reset_store():
     """This function reset the list and returns nothing"""
     reset_message()
-    reset_channel()
+    restore_channel_database()
     restore_database()
     return dumps({})
 
@@ -284,7 +284,7 @@ def http_profile():
     u_id = int(request.args.get('u_id'))
     return dumps(user_profile(token, u_id))
 
-@APP.route("/user/profile/setname", methods=["POST"])
+@APP.route("/user/profile/setname", methods=["PUT"])
 def http_setname():
     payload = request.get_json()
     token = payload["token"]
@@ -293,7 +293,7 @@ def http_setname():
     user_profile_setname(token, name_first, name_last)
     return dumps({})
 
-@APP.route("/user/profile/setemail", methods=["POST"])
+@APP.route("/user/profile/setemail", methods=["PUT"])
 def http_setemail():
     payload = request.get_json()
     token = payload["token"]
@@ -301,7 +301,7 @@ def http_setemail():
     user_profile_setemail(token, email)
     return dumps({})
 
-@APP.route("/user/profile/sethandle", methods=["POST"])
+@APP.route("/user/profile/sethandle", methods=["PUT"])
 def http_sethandle():
     payload = request.get_json()
     token = payload["token"]

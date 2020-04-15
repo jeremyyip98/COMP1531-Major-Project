@@ -14,8 +14,9 @@ def convert_standup_queue(s_q):
     '''converts the standup queue in database (which is a list of msg dicts)
     into a single message string'''
     compiled_mesage = ""
-    for msg_dict in s_q:
-        compiled_mesage = compiled_mesage + msg_dict['name_first'] + ": " + msg_dict['message'] + "\n"
+    if s_q:
+        for msg_dict in s_q:
+            compiled_mesage = compiled_mesage + msg_dict['name_first'] + ": " + msg_dict['message'] + "\n"
     return compiled_mesage
 
 def send_standup_queue(token, channel_id):
