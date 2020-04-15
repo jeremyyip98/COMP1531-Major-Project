@@ -24,7 +24,7 @@ def message_create(channel_id, u_id, message, time):
         message_id = most_recent_message['message_id'] + 1
     if message == '/hangman':
         message = hangman.start_game(channel_id)
-    elif message.startswith('/hangman '):
+    elif message.startswith('/guess '):
         message = hangman.make_guess(message[-1], channel_id)
     
     dictionary = {
