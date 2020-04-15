@@ -379,10 +379,10 @@ def http_workspace_reset():
     #pickle_it()
     return dumps({})
     
-@APP.before_first_request
+'''@APP.before_first_request
 def update_server_info():
     UPDATE = Thread(target=database_update)
-    UPDATE.start()
+    UPDATE.start()'''
 
 @APP.after_request
 def pickle_store(response):
@@ -392,4 +392,6 @@ def pickle_store(response):
     return response
 
 if __name__ == "__main__":
+    UPDATE = Thread(target=database_update)
+    UPDATE.start()
     APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8081), debug=True)
