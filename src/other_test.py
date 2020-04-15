@@ -1,18 +1,24 @@
-from other import users_all, admin_userpermission_change, search
-from auth import auth_register
-from helper_functions import register_valid_user, register_another_valid_user, create_admin, create_valid_channel
+'''
+Comp1531 Assignment other_test.py
+'''
+import pytest
+from other import users_all, admin_userpermission_change, search, admin_user_remove
+from helper_functions import (register_valid_user,
+                              register_another_valid_user,
+                              create_admin,
+                              create_valid_channel
+                             )
 from database import restore_database, get_profile_allinfo
 from message import message_send
-import pytest
 from error import InputError, AccessError
 
-# Checks that an invalid token throws Access Error
 def test_users_all_invalid_token():
+    '''Checks that an invalid token throws Access Error'''
     with pytest.raises(AccessError) as e:
         users_all('hopefullythisisnotavalidtoken')
 
-# Testing users all with one user
 def test_users_all_one_user():
+    '''Testing users all with one user'''
     details = register_valid_user()
     users = users_all(details["token"])
     assert users["users"][0]["u_id"] == details["u_id"]
@@ -21,14 +27,15 @@ def test_users_all_one_user():
     assert users["users"][0]["email"] == "test@gmail.com" 
     assert users["users"][0]["handle_str"] == "firstlast" 
 
-# Testing users all with two users
 def test_users_all_two_users():
+    '''Testing users all with two users'''
     details = register_another_valid_user()
     users = users_all(details["token"])
     assert users["users"][0]["name_first"] == "First" 
     assert users["users"][1]["name_first"] == "Anotherfirst"
 
 def test_admin_permission_change_error():
+    '''testing errors that shold pop up'''
     restore_database()
     admin = create_admin()
     user = register_another_valid_user()
@@ -47,6 +54,7 @@ def test_admin_permission_change_error():
     restore_database()
 
 def test_admin_permission_change_normal():
+    '''test the function works properly'''
     admin = create_admin()
     user = register_another_valid_user()
     user = get_profile_allinfo(user['u_id'])
@@ -55,26 +63,42 @@ def test_admin_permission_change_normal():
     assert user['permission_id'] == 1
     restore_database()
 
+def test_admin_user_remove_error():
+    '''test the remove user error should be popping up'''
+    admin = create_admin()
+    user = register_another_valid_user()
+    with pytest.raises(AccessError) as err:
+        #test access error with invalid token
+        admin_user_remove('hopefullyaninvalidtoken', user['u_id'])
+    with pytest.raises(AccessError) as err:
+        #test access error when the user is not an admin
+        admin_user_remove(user['token'], user['u_id'])
+    with pytest.raises(InputError) as err:
+        #test when u_id does not refer to valid user
+        admin_user_remove(admin['token'], 123)
 
+def test_admin_user_remove_normal():
+    '''test remove user works normally'''
+    restore_database()
+    admin = create_admin()
+    user1 = register_another_valid_user()
+    user2 = register_valid_user()
+    
 
-# Helper function which creates a user, channel and then sends a message to it
 def send_test_message(message, channel_name, different_user):
+    '''Helper function which creates a user, channel and then sends a message to it'''
     channel_id, details = create_valid_channel(channel_name, different_user)
     message_details = message_send(details["token"], channel_id, message)
     return message_details, details, channel_id
 
-# Assumes messages are in some sort of order when multiple results
 def test_search_invalid_token():
-    with pytest.raises(AccessError) as e:
-        search('hopefullythisisnotavalidtoken', "irrelevantsearchterm")
-
-def test_search_invalid_token():
+    '''Assumes messages are in some sort of order when multiple results'''
     with pytest.raises(AccessError) as e:
         search('hopefullythisisnotavalidtoken', "irrelevantsearchterm")
 
 def test_search_one_channel():
-    # This registers a user, creates a channel and sends the message and returns the message 
-    # detail and the channel creators details
+    '''This registers a user, creates a channel and sends the message and returns the message 
+     detail and the channel creators details''' 
     message_details, details, channel_id = send_test_message("Test Message", "test_channel_one", False)
     message_send(details["token"], channel_id, "A different message")
     search_results = search(details["token"], "test")
