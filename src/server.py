@@ -152,7 +152,6 @@ def http_login():
 @APP.route("/auth/logout", methods=['POST'])
 def http_logout():
     payload = request.get_json()
-    # have to use utils to change to boolean 
     is_success = {"is_success" : auth.auth_logout(payload['token'])}
     return dumps(is_success)
 
@@ -275,6 +274,16 @@ def http_user_permission_change():
         data['token'],
         int(data['u_id']),
         int(data['permission_id'])
+    )
+    return dumps({})
+
+@APP.route("/admin/user/remove", methods=['DELETE'])
+def http_admin_user_remove():
+    '''Removes a user from Slackr and from any channel they are in'''
+    data = request.get_json()
+    other.admin_user_remove(
+        data['token'],
+        int(data['u_id'])
     )
     return dumps({})
 

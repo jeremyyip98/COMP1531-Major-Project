@@ -2,13 +2,15 @@
 Comp1531 Assignment other_test.py
 '''
 import pytest
+from channels import channels_create
+from channel import channel_invite, channel_details
 from other import users_all, admin_userpermission_change, search, admin_user_remove
 from helper_functions import (register_valid_user,
                               register_another_valid_user,
                               create_admin,
                               create_valid_channel
                              )
-from database import restore_database, get_profile_allinfo
+from database import restore_database, get_profile_allinfo, registered_users_store
 from message import message_send
 from error import InputError, AccessError
 
@@ -33,57 +35,6 @@ def test_users_all_two_users():
     users = users_all(details["token"])
     assert users["users"][0]["name_first"] == "First" 
     assert users["users"][1]["name_first"] == "Anotherfirst"
-
-def test_admin_permission_change_error():
-    '''testing errors that shold pop up'''
-    restore_database()
-    admin = create_admin()
-    user = register_another_valid_user()
-    #test access error when user is not an admin
-    with pytest.raises(AccessError) as err:
-        admin_userpermission_change(user['token'], user['u_id'], 1)
-    #test input error when permssion id is not 1 or 2
-    with pytest.raises(InputError) as err:
-    	admin_userpermission_change(admin['token'], user['u_id'], 3)
-    #test access error with invalid token
-    with pytest.raises(AccessError) as err:
-    	admin_userpermission_change('hopefullyinvlaidtoken', user['u_id'], 1)
-    #test invalid user token
-    with pytest.raises(InputError) as err:
-    	admin_userpermission_change(admin['token'], user['u_id'] + 100, 1)
-    restore_database()
-
-def test_admin_permission_change_normal():
-    '''test the function works properly'''
-    admin = create_admin()
-    user = register_another_valid_user()
-    user = get_profile_allinfo(user['u_id'])
-    assert user['permission_id'] == 2
-    admin_userpermission_change(admin['token'], user['u_id'], 1)
-    assert user['permission_id'] == 1
-    restore_database()
-
-def test_admin_user_remove_error():
-    '''test the remove user error should be popping up'''
-    admin = create_admin()
-    user = register_another_valid_user()
-    with pytest.raises(AccessError) as err:
-        #test access error with invalid token
-        admin_user_remove('hopefullyaninvalidtoken', user['u_id'])
-    with pytest.raises(AccessError) as err:
-        #test access error when the user is not an admin
-        admin_user_remove(user['token'], user['u_id'])
-    with pytest.raises(InputError) as err:
-        #test when u_id does not refer to valid user
-        admin_user_remove(admin['token'], 123)
-
-def test_admin_user_remove_normal():
-    '''test remove user works normally'''
-    restore_database()
-    admin = create_admin()
-    user1 = register_another_valid_user()
-    user2 = register_valid_user()
-    
 
 def send_test_message(message, channel_name, different_user):
     '''Helper function which creates a user, channel and then sends a message to it'''
@@ -149,3 +100,66 @@ def test_search_term_in_channel_not_joined():
     send_test_message("Gobble", "test_channel_two", user_two)
     assert len(search(details["token"], "gobble")["messages"]) == 1
 
+def test_admin_permission_change_error():
+    '''testing errors that shold pop up'''
+    restore_database()
+    admin = create_admin()
+    user = register_another_valid_user()
+    #test access error when user is not an admin
+    with pytest.raises(AccessError) as err:
+        admin_userpermission_change(user['token'], user['u_id'], 1)
+    #test input error when permssion id is not 1 or 2
+    with pytest.raises(InputError) as err:
+    	admin_userpermission_change(admin['token'], user['u_id'], 3)
+    #test access error with invalid token
+    with pytest.raises(AccessError) as err:
+    	admin_userpermission_change('hopefullyinvlaidtoken', user['u_id'], 1)
+    #test invalid user token
+    with pytest.raises(InputError) as err:
+    	admin_userpermission_change(admin['token'], user['u_id'] + 100, 1)
+    restore_database()
+
+def test_admin_permission_change_normal():
+    '''test the function works properly'''
+    admin = create_admin()
+    user = register_another_valid_user()
+    user = get_profile_allinfo(user['u_id'])
+    assert user['permission_id'] == 2
+    admin_userpermission_change(admin['token'], user['u_id'], 1)
+    assert user['permission_id'] == 1
+    restore_database()
+
+def test_admin_user_remove_error():
+    '''test the remove user error should be popping up'''
+    admin = create_admin()
+    user = register_another_valid_user()
+    with pytest.raises(AccessError) as err:
+        #test access error with invalid token
+        admin_user_remove('hopefullyaninvalidtoken', user['u_id'])
+    with pytest.raises(AccessError) as err:
+        #test access error when the user is not an admin
+        admin_user_remove(user['token'], user['u_id'])
+    with pytest.raises(InputError) as err:
+        #test when u_id does not refer to valid user
+        admin_user_remove(admin['token'], 123)
+    restore_database()
+
+def test_admin_user_remove_normal():
+    '''test remove user works normally'''
+    #make users and then make the channels and add some users
+    admin = create_admin()
+    user1 = register_another_valid_user()
+    user2 = register_valid_user()
+    channel = channels_create(user1['token'], 'My Channel', True)
+    channel_invite(user1['token'], channel['channel_id'], user2['u_id'])
+    details = channel_details(user2['token'], channel['channel_id'])
+    #make sure the users are in the database and channels
+    assert len(details['all_members']) == 2
+    assert len(details['owner_members']) == 1
+    assert len(registered_users_store['registered_users']) == 3
+    admin_user_remove(admin['token'], user1['u_id'])
+    details = channel_details(user2['token'], channel['channel_id'])
+    assert len(details['all_members']) == 1
+    assert not details['owner_members']
+    assert len(registered_users_store['registered_users']) == 2
+    restore_database()

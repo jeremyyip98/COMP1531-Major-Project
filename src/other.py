@@ -49,10 +49,14 @@ def admin_user_remove(token, u_id):
     # iterate through the channel and find if the user is in any of them
     for channel in list_of_channels:
         if u_id in channel['all_members']:
-            channel.remove(u_id)
+            channel['all_members'].remove(u_id)
             if u_id in channel['owner_members']:
-                channel.remove(u_id)
+                channel['owner_members'].remove(u_id)
     for user in registered_users_store['registered_users']:
         if user['u_id'] == u_id:
             del user
+    for i in range(len(registered_users_store['registered_users'])):
+        if registered_users_store['registered_users'][i]['u_id'] == u_id:
+            del registered_users_store['registered_users'][i]
+            break
         
