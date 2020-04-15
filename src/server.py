@@ -280,7 +280,7 @@ def http_profile():
     u_id = int(request.args.get('u_id'))
     return dumps(user_profile(token, u_id))
 
-@APP.route("/user/profile/setname", methods=["POST"])
+@APP.route("/user/profile/setname", methods=["PUT"])
 def http_setname():
     payload = request.get_json()
     token = payload["token"]
@@ -289,7 +289,7 @@ def http_setname():
     user_profile_setname(token, name_first, name_last)
     return dumps({})
 
-@APP.route("/user/profile/setemail", methods=["POST"])
+@APP.route("/user/profile/setemail", methods=["PUT"])
 def http_setemail():
     payload = request.get_json()
     token = payload["token"]
@@ -297,7 +297,7 @@ def http_setemail():
     user_profile_setemail(token, email)
     return dumps({})
 
-@APP.route("/user/profile/sethandle", methods=["POST"])
+@APP.route("/user/profile/sethandle", methods=["PUT"])
 def http_sethandle():
     payload = request.get_json()
     token = payload["token"]
