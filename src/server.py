@@ -126,9 +126,10 @@ def http_addowner():
 @APP.route("/channel/removeowner", methods=['POST'])
 def http_removeowner():
     payload = request.get_json()
-    channel.channel_leave(
+    channel.channel_removeowner(
         payload['token'],
-        int(payload['channel_id']))
+        int(payload['channel_id']),
+        int(payload['u_id']))
     return dumps({})
 
 @APP.route("/auth/register", methods=['POST'])

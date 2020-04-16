@@ -2,7 +2,9 @@
 UNSW COMP1531 Iteration 2
 channel.py
 Written by Jackie Cai z5259449
+Written by Aaron Lin z5258280
 """
+#pylint: disable=C0103, W0601, C0303
 from database import (list_of_channels, search_database,
                       get_u_id, get_profile, get_message, get_formatted_user)
 from error import AccessError, InputError
@@ -48,7 +50,7 @@ def channel_leave(token, channel_id):
                 if user_id in chan['owner_members']:
                     chan['owner_members'].remove(user_id)
             elif user_id not in chan['all_members']:
-                raise AccessError(description='Not a member of the Channel')
+                raise AccessError(description='Not a member of the Channel')    
 def channel_addowner(token, channel_id, u_id):
     """Another owner adds a member as owner"""
     is_valid = search_database(token)
@@ -81,28 +83,19 @@ def channel_removeowner(token, channel_id, u_id):
     user = is_valid
     if not any(d['channel_id'] == channel_id for d in list_of_channels):
         raise InputError(description="Channel ID is not a valid channel")
-    for chan in list_of_channels:
-        if chan['channel_id'] == channel_id:
-            if u_id not in chan['owner_members']:
+    for i in range(len(list_of_channels)):
+        if list_of_channels[i]['channel_id'] == channel_id:
+            if u_id not in list_of_channels[i]['owner_members']:
                 raise InputError(description='No Owner found in Channel')
-            if user['permission_id'] == 1:
-                chan['owner_members'].remove(u_id)
-                return
-            if user['u_id'] not in chan['owner_members']:
+            elif user['permission_id'] == 1 and u_id in list_of_channels[i]['owner_members']:
+                list_of_channels[i]['owner_members'].remove(u_id)
+            elif user['u_id'] not in list_of_channels[i]['owner_members']:
                 raise AccessError(description='User is not an Owner of Slackr or Channel')
             else:
-                chan['owner_members'].remove(u_id)
-                return
+                list_of_channels[i]['owner_members'].remove(u_id)
 
-"""
-UNSW COMP1531 Iteration 2
-channel.py
-Written by Aaron Lin z5258280
-"""
-
-# Invites user with u_id to join channel with channel_id
-# Added immediately once invited
 def channel_invite(token, channel_id, u_id):
+    ''' Invites user with u_id to join channel with channel_id Added immediately once invited'''
     # check if the token is valid
     is_valid = search_database(token)
     if is_valid is False:
@@ -171,15 +164,15 @@ def channel_details(token, channel_id):
             # adding into owner_list
             for owner_id in channel['owner_members']:
                 owner_details = get_profile(owner_id)
-                owner_list.append({ 'u_id': owner_id, 
-                                    'name_first': owner_details['name_first'],
-                                    'name_last': owner_details['name_last']
+                owner_list.append({'u_id': owner_id, 
+                                   'name_first': owner_details['name_first'],
+                                   'name_last': owner_details['name_last']
                                  })
             
             # adding into member_list
             for member_id in channel['all_members']:
                 member_details = get_profile(member_id)
-                member_list.append({ 'u_id': member_id, 
+                member_list.append({'u_id': member_id, 
                                     'name_first': member_details['name_first'],
                                     'name_last': member_details['name_last']
                                   })
