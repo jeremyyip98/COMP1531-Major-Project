@@ -30,7 +30,12 @@ def channels_create(token, name, is_public):
         'owner_members' : [user],
         'all_members' : [user],
         'is_in_standup' : False,
-        'channel_messages' : []
+        'standup_finish_time' : None,
+        'channel_messages' : [],
+        'the_word' : "",
+        'current_progress_list' : [],
+        'current_progress_word' : "",
+        'guessed_letters_list' : [],
     }
     list_of_channels.append(new_channel)
     return {'channel_id' : re_channel_id}

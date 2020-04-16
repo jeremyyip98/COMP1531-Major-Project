@@ -8,6 +8,7 @@ from database import get_u_id, get_permission, message_list, list_of_channels
 from channels import  channels_list, channels_listall
 from channel import channel_details
 from error import InputError, AccessError
+import hangman
 
 ##############################################################
 # Helper functions for the functions of HTTP Routes of Message
@@ -21,7 +22,11 @@ def message_create(channel_id, u_id, message, time):
     else:
         most_recent_message = message_list[-1]
         message_id = most_recent_message['message_id'] + 1
-
+    if message == '/hangman':
+        message = hangman.start_game(channel_id)
+    elif message.startswith('/guess '):
+        message = hangman.make_guess(message[-1], channel_id)
+    
     dictionary = {
         "message_id" : message_id,
         "u_id" : u_id,
@@ -264,7 +269,7 @@ def message_send(token, channel_id, message):
     now = int(datetime.now(tz=timezone.utc).timestamp())
 
     message = message_create(channel_id, get_u_id(token), message, now)
-
+    
     return message[-1]['message_id']
 
 def message_sendlater(token, channel_id, message, time_sent):
