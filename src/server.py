@@ -19,6 +19,7 @@ from database import reset_message, restore_database, restore_channel_database
 from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle
 from standup import standup_start, standup_active, standup_send
 from workspace_reset import workspace_reset
+import distutils.util
 
 def defaultHandler(err):
     """A given function by instructors"""
@@ -89,6 +90,8 @@ def http_listall():
 @APP.route("/channels/create", methods=['POST'])
 def http_create():
     payload = request.get_json()
+    # payload['is_public'] = distutils.util.strtobool(payload['is_public'])
+    # thought had to use this?
     details = channels.channels_create(
         payload['token'],
         payload['name'],
@@ -123,9 +126,10 @@ def http_addowner():
 @APP.route("/channel/removeowner", methods=['POST'])
 def http_removeowner():
     payload = request.get_json()
-    channel.channel_leave(
+    channel.channel_removeowner(
         payload['token'],
-        int(payload['channel_id']))
+        int(payload['channel_id']),
+        int(payload['u_id']))
     return dumps({})
 
 @APP.route("/auth/register", methods=['POST'])
@@ -271,6 +275,16 @@ def http_user_permission_change():
         data['token'],
         int(data['u_id']),
         int(data['permission_id'])
+    )
+    return dumps({})
+
+@APP.route("/admin/user/remove", methods=['DELETE'])
+def http_admin_user_remove():
+    '''Removes a user from Slackr and from any channel they are in'''
+    data = request.get_json()
+    other.admin_user_remove(
+        data['token'],
+        int(data['u_id'])
     )
     return dumps({})
 
