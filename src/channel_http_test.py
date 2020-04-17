@@ -8,7 +8,7 @@ import urllib.request
 import json
 import requests
 
-BASE_URL = "http://127.0.0.1:10013"
+BASE_URL = "http://127.0.0.1:8080"
 # Helper Functions
 def create_user1():
     '''Helper function to make user in server'''
@@ -33,15 +33,6 @@ def create_user2():
     })
     user2 = user2.json()
     return user2
-
-def create_valid_channel(user):
-    '''Helper function to make channel in server'''
-    payload = requests.post(f"{BASE_URL}/channels/create", json={
-        'token' : user['token'],
-        'channel_name' : 'My Channel',
-        'is_public' : True,
-    })
-    return payload.json()['channel_id']
 
 def details_get(token, channel_id):
     '''Helper function to get channel details to check in server'''

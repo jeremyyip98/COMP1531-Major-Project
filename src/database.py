@@ -94,7 +94,7 @@ def get_formatted_user(token):
     formatted_user['name_last'] = user['name_last']  
     formatted_user['handle_str'] = user['handle_str']
     formatted_user['permission_id'] = user['permission_id']
-    return formatted_user  
+    return formatted_user
 
 def get_all_users():
     """ Returns the users type from the spec """

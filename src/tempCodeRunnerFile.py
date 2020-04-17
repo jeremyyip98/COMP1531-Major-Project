@@ -1,26 +1,52 @@
-def generate_channel_id():
-    """Makes a channel id and adds it to the databse"""
-    channel_id = max(channel_ids)
-    channel_id += 1
-    channel_ids.append(channel_id)
-    return channel_id
-def channels_create(token, name, is_public):
-    """Makes a channel with a name and sets it as public or not then it makes the
-    person with the token the owner and first member of the channel"""
-    #Check for access error first
-    is_valid = search_database(token)
-    if is_valid is False:
-        raise AccessError(description='Invalid Token')
-    user = get_u_id(token)
-    if len(name) > 20:
-        raise InputError(description='Channel Name Too Long')
-    re_channel_id = generate_channel_id()
-    new_channel = {
-        'channel_id' : re_channel_id,
-        'channel_name' : name,
-        'is_public' : is_public,
-        'owner_members' : [user],
-        'all_members' : [user],
+requests.post(f"{BASE_URL}/workspace/reset", json={})
+    user = register_example_user()
+    admin = register_admin()
+    channel = create_channel(user['token'])
+    u_details = get_user_all(user['token'])
+    #make sure there are two users user and admin
+    assert len(u_details) == 2
+    c_details = channel_details_get(user['token'], channel)
+    # Make sure the channel is made properly and users in channel
+    owner_list = [{
+        'u_id': user['u_id'],
+        'name_first': 'Other',
+        'name_last': 'Last'
+    }]
+    member_list = [{
+        'u_id': user['u_id'],
+        'name_first': 'Other',
+        'name_last': 'Last'
+    }]
+    assert c_details == {
+        'name' : 'test_channel',
+        'owner_members' : owner_list,
+        'all_members' : member_list
     }
-    list_of_channels.append(new_channel)
-    return re_channel_id
+    requests.delete(f"{BASE_URL}/admin/user/remove", json={
+        'token' : admin['token'],
+        'u_id' : user['u_id']
+    })
+    requests.post(f"{BASE_URL}/channel/join", json={
+        'token' : admin['token'],
+        'channel_id' : channel['channel_id']
+    })
+    u_details = get_user_all(user['token'])
+    # one user which is admin
+    assert len(u_details) == 1
+    assert u_details['users'][0]['first_name'] == 'Admin'
+    c_details = channel_details_get(admin['token'], channel)
+    owner_list = [{
+        'u_id': admin['u_id'],
+        'name_first': 'Admin',
+        'name_last': 'Nimda'
+    }]
+    member_list = [{
+        'u_id': admin['u_id'],
+        'name_first': 'Other',
+        'name_last': 'Nimda'
+    }]
+    assert c_details == {
+        'name' : 'test_channel',
+        'owner_members' : owner_list,
+        'all_members' : member_list
+    }

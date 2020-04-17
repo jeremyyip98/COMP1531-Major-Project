@@ -17,6 +17,7 @@ from database import reset_message, restore_database, restore_channel_database
 from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle
 from standup import standup_start, standup_active, standup_send
 from workspace_reset import workspace_reset
+from helper_functions import create_admin
 import distutils.util
 
 def defaultHandler(err):
@@ -76,12 +77,14 @@ def http_messages():
 
 @APP.route("/channels/list", methods=['GET'])
 def http_list():
+    '''HTTP route to list only channels the user can see'''
     token = request.args.get('token')
     details = channels.channels_list(token)
     return dumps(details)
 
 @APP.route("/channels/listall", methods=['GET'])
 def http_listall():
+    '''Http route to list all the channels'''
     token = request.args.get('token')
     details = channels.channels_listall(token)
     return dumps(details)
@@ -89,9 +92,8 @@ def http_listall():
 
 @APP.route("/channels/create", methods=['POST'])
 def http_create():
+    '''HTTP route to create a channel'''
     payload = request.get_json()
-    # payload['is_public'] = distutils.util.strtobool(payload['is_public'])
-    # thought had to use this?
     details = channels.channels_create(
         payload['token'],
         payload['name'],
@@ -100,6 +102,7 @@ def http_create():
 
 @APP.route("/channel/leave", methods=['POST'])
 def http_leave():
+    '''HTTP route to leave a channel'''
     payload = request.get_json()
     channel.channel_leave(
         payload['token'],
@@ -108,6 +111,7 @@ def http_leave():
 
 @APP.route("/channel/join", methods=['POST'])
 def http_join():
+    '''HTTP route for user to join a channel'''
     payload = request.get_json()
     channel.channel_join(
         payload['token'],
@@ -116,6 +120,7 @@ def http_join():
 
 @APP.route("/channel/addowner", methods=['POST'])
 def http_addowner():
+    '''HTTP route for adding owner to a channel'''
     payload = request.get_json()
     channel.channel_addowner(
         payload['token'],
@@ -125,6 +130,7 @@ def http_addowner():
 
 @APP.route("/channel/removeowner", methods=['POST'])
 def http_removeowner():
+    '''HTTP route to remove an owner from a channel'''
     payload = request.get_json()
     channel.channel_removeowner(
         payload['token'],
@@ -287,6 +293,12 @@ def http_admin_user_remove():
         int(data['u_id'])
     )
     return dumps({})
+
+@APP.route("/admin/create", methods=['POST'])
+def http_admin_create():
+    '''Helper function that creates an admin'''
+    admin = create_admin()
+    return dumps(admin)
 
 @APP.route("/user/profile", methods=["GET"])
 def http_profile():

@@ -56,4 +56,3 @@ def admin_user_remove(token, u_id):
         if registered_users_store['registered_users'][i]['u_id'] == u_id:
             del registered_users_store['registered_users'][i]
             break
-        
