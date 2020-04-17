@@ -208,14 +208,3 @@ def test_logout_logged_out_user():
     assert received.json()['is_success'] == False
     assert received.status_code == 200
 
-def test_image_upload():
-    requests.post(f"{BASE_URL}/user/profile/uploadphoto", json={})
-    details = register_example_use().json()
-    received = requests.post(f"{BASE_URL}/auth/logout", json={"token" :details['token'] }).json() 
-    assert received['is_success'] == True
-    received = requests.post(f"{BASE_URL}/auth/logout", json={"token" :details['token'] }) 
-    assert received.json()['is_success'] == False
-    assert received.status_code == 200
-
-
-
