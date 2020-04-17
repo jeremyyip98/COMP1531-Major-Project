@@ -3,7 +3,6 @@ import uuid
 import database
 from error import AccessError, InputError
 from PIL import Image
-from secrets import urlsa
 
 
 def upload_profile_pic(token, img_url, x_start, y_start, x_end, y_end):
@@ -14,15 +13,14 @@ def upload_profile_pic(token, img_url, x_start, y_start, x_end, y_end):
     if r.status_code != 200:
         raise InputError(description='Image could not be accessed')    
     filename = uuid.uuid4().hex
-    path = f"profile_pictures/{filename}"
-    # Should Check folder is there first
-    
+    path = f"profile_pictures/{filename}.jpg"
+    # Should this check for folder
     open(path, 'wb').write(r.content)
     """ Opens the image using pillow """
-    im = Image.open('image')
-    if im.format != 'jpeg':
+    im = Image.open(f"{path}")
+    if im.format != 'JPEG':
         raise InputError(description='Image is not a .jpg')
-    coordinates = (x_start, y_start, x_end, y_end)
+    coordinates = x_start, y_start, x_end, y_end
     width, height = im.size
     if x_start > width or x_end > width or y_start > height or y_end > height:
         raise InputError(description='Crop out of bounds')
@@ -33,4 +31,4 @@ def upload_profile_pic(token, img_url, x_start, y_start, x_end, y_end):
     new = im.crop(coordinates)    
     new.save(path, format='jpeg')
     # Need to Implement this function
-    database.set_img_url(token, filename)
+    database.set_img_url (token, filename)
