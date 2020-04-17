@@ -4,7 +4,7 @@ message.py
 Written by: Yip Jeremy Chung Lum, z5098112
 """
 from datetime import datetime, timezone
-from database import get_u_id, get_permission, get_message, list_of_channels
+from database import get_u_id, get_permission, get_message, get_list_of_channels
 from channels import  channels_list, channels_listall
 #from channel import channel_details
 from error import InputError, AccessError
@@ -46,7 +46,7 @@ def message_create(channel_id, u_id, message, time):
 def channel_add(channel_id, message_id):
     """This function store a list of dictionaries containing
     the channel_id with it's corresponding message_ids and return nothing"""
-    global list_of_channels
+    list_of_channels = get_list_of_channels()
     for dict_channel in list_of_channels:
         if dict_channel['channel_id'] == channel_id:
             if message_id not in dict_channel['channel_messages']:
@@ -54,7 +54,7 @@ def channel_add(channel_id, message_id):
 
 def channel_remove(message_id):
     """This function remove the message_ids from the channel and return nothing"""
-    global list_of_channels
+    list_of_channels = get_list_of_channels()
     channel_id = get_channel_id(message_id)
     if list_of_channels != []: # If the channel is not empty
         for dict_channel in list_of_channels:
@@ -180,7 +180,7 @@ def react_remove(react_id, u_id, message_id):
 def get_channel_id(message_id):
     """This function given message_id, search through message,
     and return the channel_id corresponding to the message_id"""
-    global list_of_channels
+    list_of_channels = get_list_of_channels()
     found = False
 
     for dict_channel in list_of_channels:
@@ -196,7 +196,7 @@ def get_channel_id(message_id):
 def check_owner(token, message_id):
     """This function check is the authorised user an owner or not,
     return true or false"""
-    global list_of_channels
+    list_of_channels = get_list_of_channels()
     is_owner = False
     u_id = get_u_id(token)
     channel_id = get_channel_id(message_id)
