@@ -31,7 +31,7 @@ def valid_email(email):
         return False
 
 def create_admin():
-    user_id = auth_register("test@gmail.com", "Password", "First", "Last")
+    user_id = auth_register("admin@gmail.com", "AdminPass", "Admin", "Nimda")
     user = get_profile_allinfo(user_id['u_id'])
     user['permission_id'] = 1
     return user
