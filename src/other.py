@@ -14,11 +14,12 @@ def search(token, query_str):
     """ Given a query string and token will return a list of messages that contain the term """
     check_token(token)
     query_str_matches = []
-    messages = get_message_joined()
+    messages = get_message_joined(token)
     for message in messages:
         if query_str in message['message']:
             query_str_matches.append(message)
     query_str_matches = sorted(query_str_matches, key=lambda i: i['time_created'], reverse=True)
+    # Check that order is correct
     return {"messages" : query_str_matches}
 
 

@@ -110,17 +110,16 @@ def auth_reset_password_request(email):
     if not search_for_email(email):
         return False
     # Check that its unique
-    code = "1234"
-    """
+    
     code = secrets.token_urlsafe(PWD_RESET_CODE_LENGTH)
     while any(d['pwd_reset_code'] == code for d in database.registered_users_store['registered_users']):
         code = secrets.token_urlsafe(PWD_RESET_CODE_LENGTH)
-    """
+
     for d in database.registered_users_store['registered_users']:
         if d['email'] == email:
             d['pwd_reset_code'] = code
             name = d['name_first']
-    # send_reset_email(email, code, name)
+    send_reset_email(email, code, name)
 
 def send_reset_email(to_email, code, name):
     SUBJECT = "Slackr - Password Reset"
