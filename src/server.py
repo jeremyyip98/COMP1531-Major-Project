@@ -13,6 +13,7 @@ import channel
 import channels
 import message
 import other
+from image_upload import upload_profile_pic
 from database import reset_message, restore_database
 from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle
 from standup import standup_start, standup_active, standup_send
@@ -307,6 +308,19 @@ def http_sethandle():
     token = payload["token"]
     handle_str = payload["handle_str"]
     user_profile_sethandle(token, handle_str)
+    return dumps({})
+
+@APP.route("/user/profile/uploadphoto", methods=["POST"])
+def http_upload_photo():
+    payload = request.get_json()
+    token = payload["token"]
+    img_url = payload["img_url"]
+    x_start = payload["x_start"]
+    y_start = payload["y_start"]
+    x_end = payload["x_end"]
+    y_end = payload["y_end"]  
+    upload_profile_pic(token, img_url, x_start, y_start, x_end, y_end)
+
     return dumps({})
 
 @APP.route("/users/all", methods=['GET'])
