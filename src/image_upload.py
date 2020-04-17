@@ -16,8 +16,8 @@ def upload_profile_pic(token, img_url, x_start, y_start, x_end, y_end):
     r = requests.get(img_url, allow_redirects=True)
     if r.status_code != 200:
         raise InputError(description='Image could not be accessed')    
-    filename = uuid.uuid4().hex
-    path = f"{DIRECTORY}/{filename}.jpg"
+    filename = f"{uuid.uuid4().hex}.jpg"
+    path = f"{DIRECTORY}/{filename}"
     # Should this check for folder
     open(path, 'wb').write(r.content)
     """ Opens the image using pillow """
@@ -34,7 +34,8 @@ def upload_profile_pic(token, img_url, x_start, y_start, x_end, y_end):
     """ Crops the image according to input coordinates """
     new = im.crop(coordinates)    
     new.save(path, format='jpeg')
-    # Need to Implement this function
-    database.set_img_url (token, filename)
-    print(filename)
+    Need to Implement this function
+    database.set_img_url (token, f"imgurl/{filename}")
+   
+    print(path)
 

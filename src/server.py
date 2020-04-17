@@ -49,7 +49,7 @@ def echo():
         'data': data
     })
 
-@APP.route("/profile_pictures/<string:filename>")
+@APP.route("/imgurl/<string:filename>")
 def show_profile_img(filename):
     return send_from_directory(APP.config['UPLOAD_FOLDER'], filename)
 
@@ -320,7 +320,7 @@ def http_upload_photo():
     x_end = int(payload["x_end"])
     y_end = int(payload["y_end"]) 
     upload_profile_pic(token, img_url, x_start, y_start, x_end, y_end)
-
+    print("HERE")
     return dumps({})
 
 @APP.route("/users/all", methods=['GET'])
