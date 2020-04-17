@@ -6,7 +6,7 @@ u_ids = [0]
 registered_users_store = {
                             'registered_users' : 
                                 [
-                                  #  {   
+                                  # {   
                                   # 'u_id' : 0,
                                   # 'email' : example_email,
                                   # 'name_first' : Firs,
@@ -15,9 +15,9 @@ registered_users_store = {
                                   # 'token' : token,
                                   # 'handle_str' :firstlast
                                   # 'permission_id': 1/2             
-                                  #  }    
+                                  # 'img_url' : profile pic path
+                                  # }    
                                 ]
-
                         }
 
 channel_ids = [0]
@@ -174,6 +174,11 @@ def get_profile(u_id):
             }
             return formatted_user
     raise InputError
+
+def set_img_url(token, img_url):
+    for d in registered_users_store['registered_users']:
+        if d['token'] == token:
+            d['img_url'] = img_url
 
 def set_name(token, name_first, name_last):
     '''Changes the first and last name of a user'''
