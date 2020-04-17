@@ -315,10 +315,10 @@ def http_upload_photo():
     payload = request.get_json()
     token = payload["token"]
     img_url = payload["img_url"]
-    x_start = payload["x_start"]
-    y_start = payload["y_start"]
-    x_end = payload["x_end"]
-    y_end = payload["y_end"]  
+    x_start = int(payload["x_start"])
+    y_start = int(payload["y_start"])
+    x_end = int(payload["x_end"])
+    y_end = int(payload["y_end"]) 
     upload_profile_pic(token, img_url, x_start, y_start, x_end, y_end)
 
     return dumps({})
