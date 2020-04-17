@@ -13,6 +13,8 @@ import channel
 import channels
 import message
 import other
+from pickle_it import pickle_it, database_update
+from threading import Thread, Timer
 from database import reset_message, restore_database, restore_channel_database
 from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle
 from standup import standup_start, standup_active, standup_send
@@ -72,7 +74,6 @@ def http_messages():
         request.args.get('token'),
         int(request.args.get('channel_id')),
         int(request.args.get('start')))
-        
     return dumps(details)
 
 @APP.route("/channels/list", methods=['GET'])
@@ -88,7 +89,6 @@ def http_listall():
     token = request.args.get('token')
     details = channels.channels_listall(token)
     return dumps(details)
-
 
 @APP.route("/channels/create", methods=['POST'])
 def http_create():
@@ -107,6 +107,8 @@ def http_leave():
     channel.channel_leave(
         payload['token'],
         int(payload['channel_id']))
+        
+    #pickle_it()
     return dumps({})
 
 @APP.route("/channel/join", methods=['POST'])
@@ -333,6 +335,7 @@ def http_sethandle():
 
 @APP.route("/users/all", methods=['GET'])
 def http_users_all():
+    #database_update()
     token = request.args.get('token')
     return dumps(other.users_all(token))
 
@@ -372,6 +375,20 @@ def http_standup_send():
 def http_workspace_reset():
     workspace_reset()
     return dumps({})
+    
+'''@APP.before_first_request
+def update_server_info():
+    UPDATE = Thread(target=database_update)
+    UPDATE.start()'''
+
+@APP.after_request
+def pickle_store(response):
+    timer = Timer(1.5, pickle_it)
+    timer.daemon = True
+    timer.start()
+    return response
 
 if __name__ == "__main__":
-    APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8080), debug=True)
+    UPDATE = Thread(target=database_update)
+    UPDATE.start()
+    APP.run(port=(int(sys.argv[1]) if len(sys.argv) == 2 else 8081), debug=True)

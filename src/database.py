@@ -205,6 +205,7 @@ def turn_off_standup(channel_id):
     for channel in list_of_channels:
         if channel['channel_id'] == channel_id:
             channel['is_in_standup'] = False
+            channel['standup_finish_time'] = None
             return
 
 
@@ -244,6 +245,7 @@ def get_standup_finish_time(channel_id):
 def get_standup_queue():
     global standup_queue
     return standup_queue
+
 
 def get_profile_allinfo(u_id):
     '''Gets a user profile via u_id instead of token. Used in the user_profile function'''
