@@ -243,16 +243,14 @@ def channel_messages(token, channel_id, start):
                     end += 1
             end -= 1
     
-    #print(f"Numtotalmsg = {num_total_messages}")
     if start > num_total_messages:
         raise InputError('Start is greater than total messages in the channel')
                     
     # initialise empty messages list
     messages = []
-    message_list = get_message()
-    #print(f"no. ids = {len(message_ids)}")
+    msg_list = get_message()
     for ids in message_ids:
-        for msg_dict in message_list:
+        for msg_dict in msg_list:
             if msg_dict['message_id'] == ids:
                 # adds the message dict to messages list
                 messages.append(msg_dict)

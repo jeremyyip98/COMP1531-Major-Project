@@ -294,7 +294,7 @@ def test_channel_messages_normal():
     
     first_id = message_send(user['token'], channel_id, 'abcde-1')
     
-    
+    print("First Message")
     #   check if channel_messages are correct in these channel as well as 'start' and 'end' points
     message = channel_messages(user['token'], channel_id, 0)
     assert message['messages'][0]['message'] == f'abcde-1'
@@ -304,7 +304,7 @@ def test_channel_messages_normal():
     message_send(user['token'], channel_id, 'abcde0')
     message_send(user['token'], channel_id, 'abcde1')
     message_remove(user['token'], first_id)
-    
+    print("Message0")
     #   check if channel_messages are correct in these channel as well as 'start' and 'end' points
     message0 = channel_messages(user['token'], channel_id, 0)
     assert message0['messages'][0]['message'] == f'abcde0'
@@ -315,7 +315,7 @@ def test_channel_messages_normal():
     #   send 124 messages into channel
     for i in range(2,124):
         message_send(user['token'], channel_id, f'abcde{i}')
-    
+    print("Message1")
     #   check if channel_messages are correct in these channel as well as 'start' and 'end' points
     message1 = channel_messages(user['token'], channel_id, 0)
     for i in range(50):
@@ -323,7 +323,8 @@ def test_channel_messages_normal():
         assert message1['messages'][i]['message'] == f'abcde{i}'
     assert message1['start'] == 0
     assert message1['end'] == 50
-        
+    
+    print("Message2")
     message2 = channel_messages(user['token'], channel_id, 50)
     for i in range(50):
         assert message2['messages'][i]['message'] == f'abcde{i+50}'
