@@ -194,7 +194,6 @@ def http_message_react():
         int(data['message_id']),
         int(data['react_id'])
     )
-    #pickle_it()
     return dumps({})
 
 @APP.route("/message/unreact", methods=['POST'])
@@ -277,7 +276,6 @@ def http_user_permission_change():
 
 @APP.route("/user/profile", methods=["GET"])
 def http_profile():
-    #database_update()
     token = request.args.get('token')
     u_id = int(request.args.get('u_id'))
     return dumps(user_profile(token, u_id))
