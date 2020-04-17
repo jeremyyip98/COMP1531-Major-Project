@@ -5,7 +5,7 @@ This file are running the frontend function works all the routes
 """
 import sys
 from json import dumps
-from flask import Flask, request
+from flask import Flask, request, send_from_directory
 from flask_cors import CORS
 from error import InputError
 import auth
@@ -319,6 +319,7 @@ def http_upload_photo():
     y_start = int(payload["y_start"])
     x_end = int(payload["x_end"])
     y_end = int(payload["y_end"]) 
+    """ This possibly should involve threading incase it slows down whole server """
     upload_profile_pic(token, img_url, x_start, y_start, x_end, y_end)
 
     return dumps({})
