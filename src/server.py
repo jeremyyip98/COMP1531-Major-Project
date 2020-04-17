@@ -3,9 +3,10 @@ UNSW COMP1531 Project Iteration 2
 server.py
 This file are running the frontend function works all the routes
 """
+
 import sys
 from json import dumps
-from flask import Flask, request
+from flask import Flask, request, send_from_directory
 from flask_cors import CORS
 from error import InputError
 import auth
@@ -34,6 +35,7 @@ def defaultHandler(err):
 APP = Flask(__name__)
 CORS(APP)
 
+APP.config['UPLOAD_FOLDER'] = "profile_pictures"
 APP.config['TRAP_HTTP_EXCEPTIONS'] = True
 APP.register_error_handler(Exception, defaultHandler)
 
@@ -49,9 +51,7 @@ def echo():
 
 @APP.route("/profile_pictures/<string:filename>")
 def show_profile_img(filename):
-    """ Not sure if this will work """
-    return send_from_directory(app.config['profile_pictures'],
-                               filename, as_attachment=True)
+    return send_from_directory(APP.config['UPLOAD_FOLDER'], filename)
 
 
 @APP.route("/channel/invite", methods=['POST'])
