@@ -26,7 +26,7 @@ def start_game(channel_id):
             for i in range(len(channel['the_word'])):
                 channel['current_progress_list'].append("_")
                 channel['current_progress_word'] = "".join(channel['current_progress_list'])
-    return "A game of hangman has started"
+        return f"A game of hangman has started\n {channel['current_progress_word']}"
 
 def make_guess(guess, channel_id):
     '''guesses a letter'''
@@ -35,8 +35,9 @@ def make_guess(guess, channel_id):
         if channel['channel_id'] == channel_id:
             for letter in channel['guessed_letters_list']:
                 if letter == guess:
-                    return "You have already tried this letter"
+                    return f"You have already tried this letter\n {channel['current_progress_word']}"
             found = False
+            channel['guessed_letters_list'].append(guess)
             for i, letter in enumerate(channel['the_word']):
                 if letter == guess and channel['current_progress_list'][i] != guess:
                     channel['current_progress_list'][i] = letter
@@ -46,5 +47,4 @@ def make_guess(guess, channel_id):
                 return f"Congratulations!, {channel['the_word']} was the word!"
             if found:
                 return channel['current_progress_word']
-            channel['guessed_letters_list'].append(guess)
-            return f"{guess} is not part of the word!"
+            return f"{guess} is not part of the word!\n {channel['current_progress_word']}"
