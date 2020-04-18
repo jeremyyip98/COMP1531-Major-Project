@@ -1,32 +1,28 @@
-"""
-database.py
-This file is the main database for all files
-"""
+'''
+Flying Circus Database
+'''
+#pylint: disable = global-statement, invalid-name, trailing-whitespace
 from datetime import datetime, timezone
 from error import AccessError, InputError
 
 u_ids = [0]
 
-registered_users_store = {
-    'registered_users' :
-    [
-        #  {
-        # 'u_id' : 0,
-        # 'email' : example_email,
-        # 'name_first' : Firs,
-        # 'name_last' : Last,
-        # 'hash' : encrypted password,
-        # 'token' : token,
-        # 'handle_str' :firstlast
-        # 'permission_id': 1/2
-        #  }
-    ]
-}
+registered_users_store = {'registered_users' : [
+    #  {   
+    # 'u_id' : 0,
+    # 'email' : example_email,
+    # 'name_first' : Firs,
+    # 'name_last' : Last,
+    # 'hash' : encrypted password,
+    # 'token' : token,
+    # 'handle_str' :firstlast
+    # 'permission_id': 1/2             
+    #  }    
+]}
 
 channel_ids = [0]
 
-list_of_channels = [
-    #{
+list_of_channels = [#{
     #'channel_id' : channel_id,
     #'channel_name' : channel_name
     #'is_public' : boolean
@@ -39,17 +35,21 @@ list_of_channels = [
 ]
 
 def get_data():
-    """This function return the registered _users"""
+    '''gets the registered user database'''
     return registered_users_store
     
 def get_channel_ids():
+    '''get the channel_ids database'''
     global channel_ids
     return channel_ids
     
 def restore_database():
-    """This funciton restore the database"""
+    '''restore the user database'''
     global registered_users_store
     registered_users_store['registered_users'].clear()
+    global u_ids
+    u_ids.clear()
+    u_ids.append(0)
 
 def restore_channel_database():
     """reseting the channel database to clear it"""
@@ -72,7 +72,7 @@ message_list = [
 
 standup_queue = []
 def restore_standup_queue():
-    """This function restore the standup queue"""
+    '''restore the standup database'''
     global standup_queue
     standup_queue.clear()
 
@@ -89,7 +89,7 @@ def get_u_id(token):
     return search_database(token)['u_id']
 
 def get_permission(token):
-    """This function get the permission id from the database"""
+    '''get the permission_id of a user'''
     return search_database(token)['permission_id']
 
 def get_email(token):
@@ -117,7 +117,6 @@ def get_all_users():
 
 
 def search_database(token):
-
     """ Takes token and returns all information of its registered user in a dictionary.
         Example:
         {
@@ -209,7 +208,7 @@ def turn_on_standup(channel_id, length):
                 channel['standup_finish_time'] = timestamp + length - 36000
                 return
             if channel['is_in_standup']:
-                raise InputError(description='An active standup is currently running in this channel')
+                raise InputError(description='An active standup currently running in this channel')
     raise InputError(description='Not a valid channel ID')
 
 def turn_off_standup(channel_id):
@@ -231,7 +230,7 @@ def check_channel_exists(channel_id):
     return False
 
 def check_user_in_channel(token, channel_id):
-    '''check if a user (identified by their token) is a member of a channel (identified by channel id)'''
+    '''check if a user is a member of a channel'''
     person = get_u_id(token)
     for channel in list_of_channels:
         if channel['channel_id'] == channel_id:
@@ -255,7 +254,7 @@ def get_standup_finish_time(channel_id):
             return channel.get('standup_finish_time')
 
 def get_standup_queue():
-    """This function return the standup queue"""
+    '''gets the standup queue'''
     global standup_queue
     return standup_queue
 
@@ -268,6 +267,12 @@ def get_profile_allinfo(u_id):
     raise InputError
 
 def get_list_of_channels():
-    """This function get the list of channels"""
+    '''gets the channel database'''
     global list_of_channels
     return list_of_channels
+
+def get_registered_users():
+    '''gets the registered user database as a global variable'''
+    global registered_users_store
+    return registered_users_store
+    

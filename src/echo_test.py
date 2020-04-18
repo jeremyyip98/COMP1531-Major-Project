@@ -1,3 +1,4 @@
+#pylint: disable = all
 import json
 import urllib.request
 from urllib.error import HTTPError
