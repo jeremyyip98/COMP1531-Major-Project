@@ -17,6 +17,7 @@ def channel_join(token, channel_id):
         raise AccessError(description='Invalid Token')
     user_id = get_u_id(token)
     user = search_database(token)
+    list_of_channels = get_list_of_channels()
     if not any(d['channel_id'] == channel_id for d in list_of_channels):
         raise InputError(description="Channel ID is not a valid channel")
     #iterate though the channels
@@ -38,6 +39,7 @@ def channel_leave(token, channel_id):
     if is_valid is False:
         raise AccessError(description='Invalid Token')
     user_id = get_u_id(token)
+    list_of_channels = get_list_of_channels()
     if not any(d['channel_id'] == channel_id for d in list_of_channels):
         raise InputError(description="Channel ID is not a valid channel")
     #iterate through channel
@@ -59,6 +61,7 @@ def channel_addowner(token, channel_id, u_id):
     user = get_formatted_user(token)
     if not any(d['channel_id'] == channel_id for d in list_of_channels):
         raise InputError(description="Channel ID is not a valid channel")
+    list_of_channels = get_list_of_channels()
     for chan in list_of_channels:
         #found channel
         if chan['channel_id'] == channel_id:
@@ -81,6 +84,7 @@ def channel_removeowner(token, channel_id, u_id):
         raise AccessError(description='Invalid Token')
     #set user as is_valid returns user info if token is valid
     user = is_valid
+    list_of_channels = get_list_of_channels()
     if not any(d['channel_id'] == channel_id for d in list_of_channels):
         raise InputError(description="Channel ID is not a valid channel")
     for i in range(len(list_of_channels)): 
@@ -109,6 +113,8 @@ def channel_invite(token, channel_id, u_id):
     
     found_authorised_user = False
     found_channel = False
+    list_of_channels = get_list_of_channels()
+    
     for channel in list_of_channels:
         # found the right channel and add user to channel
         if channel['channel_id'] == channel_id:
@@ -141,6 +147,7 @@ def channel_details(token, channel_id):
     found_authorised_user = False
     
     details = {}
+    list_of_channels = get_list_of_channels()
     
     for channel in list_of_channels:
         # found the right channel
@@ -202,6 +209,7 @@ def channel_messages(token, channel_id, start):
     message_ids = []
     end = start
     
+    list_of_channels = get_list_of_channels()
     # get_channel to get the message_list inside the channel
     for chan in list_of_channels:
         if chan['channel_id'] == channel_id:
@@ -232,16 +240,14 @@ def channel_messages(token, channel_id, start):
                     end += 1
             end -= 1
     
-    #print(f"Numtotalmsg = {num_total_messages}")
     if start > num_total_messages:
         raise InputError('Start is greater than total messages in the channel')
                     
     # initialise empty messages list
     messages = []
-    message_list = get_message()
-    #print(f"no. ids = {len(message_ids)}")
+    msg_list = get_message()
     for ids in message_ids:
-        for msg_dict in message_list:
+        for msg_dict in msg_list:
             if msg_dict['message_id'] == ids:
                 # adds the message dict to messages list
                 messages.append(msg_dict)
