@@ -41,7 +41,11 @@ list_of_channels = [
 def get_data():
     """This function return the registered _users"""
     return registered_users_store
-
+    
+def get_channel_ids():
+    global channel_ids
+    return channel_ids
+    
 def restore_database():
     """This funciton restore the database"""
     global registered_users_store

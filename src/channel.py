@@ -128,7 +128,7 @@ def channel_invite(token, channel_id, u_id):
     
     # no channel with channel_id
     if found_channel is False:
-        raise InputError(description='Channel_ID does not refer to valid channel')
+        raise InputError(description='Cannot find the channel with this channel id')
         
     # raise accessError if authorised user is not in channel
     if found_authorised_user is False:
@@ -188,10 +188,10 @@ def channel_details(token, channel_id):
             details['all_members'] = member_list
         
     if found_channel is False:
-        raise InputError(description='Channel_ID is not a valid channel')
+        raise InputError(description='Cannot find the channel with this channel id')
         
     if found_authorised_user is False:
-        raise AccessError(description='Authorised user is not a member of channel with channel_id')
+        raise AccessError(description='You must be a member of the channel to view its details')
         
     return details
     
@@ -254,9 +254,9 @@ def channel_messages(token, channel_id, start):
                 messages.append(msg_dict)
             
     if found_channel is False:
-        raise InputError(description='Channel_ID is not a valid channel')
+        raise InputError(description='Cannot find the channel with this channel id')
         
     if found_authorised_user is False:
-        raise AccessError(description='Authorised user is not a member of channel with channel_id')    
+        raise AccessError(description='You must be a member of the channel to view its details')    
     
     return {'messages': messages, 'start': start, 'end': end}
