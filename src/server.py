@@ -5,6 +5,7 @@ This file are running the frontend function works all the routes
 """
 import sys
 from json import dumps
+from threading import Thread, Timer
 from flask import Flask, request
 from flask_cors import CORS
 from error import InputError
@@ -14,12 +15,10 @@ import channels
 import message
 import other
 from pickle_it import pickle_it, database_update
-from threading import Thread, Timer
 from database import reset_message, restore_database, restore_channel_database
 from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle
 from standup import standup_start, standup_active, standup_send
 from workspace_reset import workspace_reset
-import distutils.util
 
 def defaultHandler(err):
     """A given function by instructors"""
@@ -42,33 +41,35 @@ APP.register_error_handler(Exception, defaultHandler)
 # Example
 @APP.route("/echo", methods=['GET'])
 def echo():
+    """"A route that echo"""
     data = request.args.get('data')
     if data == 'echo':
-   	    raise InputError(description='Cannot echo "echo"')
+        raise InputError(description='Cannot echo "echo"')
     return dumps({
         'data': data
     })
 
-#
-    
 @APP.route("/channel/invite", methods=['POST'])
 def http_invite():
+    """This route invite a person to channel"""
     payload = request.get_json()
     channel.channel_invite(
         payload['token'],
         int(payload['channel_id']),
         int(payload['u_id']))
     return dumps({})
-    
+
 @APP.route("/channel/details", methods=['GET'])
 def http_details():
+    """This route show the details of channel"""
     details = channel.channel_details(
         request.args.get('token'),
         int(request.args.get('channel_id')))
     return dumps(details)
-    
+
 @APP.route("/channel/messages", methods=['GET'])
 def http_messages():
+    """Shows all of the messages from the current channel"""
     details = channel.channel_messages(
         request.args.get('token'),
         int(request.args.get('channel_id')),
@@ -77,18 +78,21 @@ def http_messages():
 
 @APP.route("/channels/list", methods=['GET'])
 def http_list():
+    """Shows the list of channels"""
     token = request.args.get('token')
     details = channels.channels_list(token)
     return dumps(details)
 
 @APP.route("/channels/listall", methods=['GET'])
 def http_listall():
+    """List all of the channels"""
     token = request.args.get('token')
     details = channels.channels_listall(token)
     return dumps(details)
 
 @APP.route("/channels/create", methods=['POST'])
 def http_create():
+    """Create a channel"""
     payload = request.get_json()
     # payload['is_public'] = distutils.util.strtobool(payload['is_public'])
     # thought had to use this?
@@ -100,6 +104,7 @@ def http_create():
 
 @APP.route("/channel/leave", methods=['POST'])
 def http_leave():
+    """Leave a channel"""
     payload = request.get_json()
     channel.channel_leave(
         payload['token'],
@@ -108,6 +113,7 @@ def http_leave():
 
 @APP.route("/channel/join", methods=['POST'])
 def http_join():
+    """Join a channel"""
     payload = request.get_json()
     channel.channel_join(
         payload['token'],
@@ -116,6 +122,7 @@ def http_join():
 
 @APP.route("/channel/addowner", methods=['POST'])
 def http_addowner():
+    """Add an owner to channel"""
     payload = request.get_json()
     channel.channel_addowner(
         payload['token'],
@@ -125,6 +132,7 @@ def http_addowner():
 
 @APP.route("/channel/removeowner", methods=['POST'])
 def http_removeowner():
+    """Remove an onwer in a channel"""
     payload = request.get_json()
     channel.channel_removeowner(
         payload['token'],
@@ -134,6 +142,7 @@ def http_removeowner():
 
 @APP.route("/auth/register", methods=['POST'])
 def http_register():
+    """Register a user"""
     payload = request.get_json()
     details = auth.auth_register(
         payload['email'],
@@ -144,6 +153,7 @@ def http_register():
 
 @APP.route("/auth/login", methods=['POST'])
 def http_login():
+    """Login with the given info"""
     payload = request.get_json()
     details = auth.auth_login(
         payload['email'],
@@ -152,6 +162,7 @@ def http_login():
 
 @APP.route("/auth/logout", methods=['POST'])
 def http_logout():
+    """Logout from the page"""
     payload = request.get_json()
     is_success = {"is_success" : auth.auth_logout(payload['token'])}
     return dumps(is_success)
@@ -290,12 +301,14 @@ def http_admin_user_remove():
 
 @APP.route("/user/profile", methods=["GET"])
 def http_profile():
+    """Shows the user profile"""
     token = request.args.get('token')
     u_id = int(request.args.get('u_id'))
     return dumps(user_profile(token, u_id))
 
 @APP.route("/user/profile/setname", methods=["PUT"])
 def http_setname():
+    """set names in the user profile"""
     payload = request.get_json()
     token = payload["token"]
     name_first = payload["name_first"]
@@ -305,6 +318,7 @@ def http_setname():
 
 @APP.route("/user/profile/setemail", methods=["PUT"])
 def http_setemail():
+    """Set the email in the user profile"""
     payload = request.get_json()
     token = payload["token"]
     email = payload["email"]
@@ -313,6 +327,7 @@ def http_setemail():
 
 @APP.route("/user/profile/sethandle", methods=["PUT"])
 def http_sethandle():
+    """Set the handle in user profile"""
     payload = request.get_json()
     token = payload["token"]
     handle_str = payload["handle_str"]
@@ -321,11 +336,13 @@ def http_sethandle():
 
 @APP.route("/users/all", methods=['GET'])
 def http_users_all():
+    """Show all the users"""
     token = request.args.get('token')
     return dumps(other.users_all(token))
 
 @APP.route("/search", methods=['GET'])
 def http_search():
+    """Search the user with the token"""
     token = request.args.get('token', None)
     print(token)
     query_str = request.args.get('query_str', None)
@@ -333,6 +350,7 @@ def http_search():
 
 @APP.route("/standup/start", methods=["POST"])
 def http_standup_start():
+    """Start the standup"""
     payload = request.get_json()
     token = payload['token']
     channel_id = int(payload['channel_id'])
@@ -342,6 +360,7 @@ def http_standup_start():
 
 @APP.route("/standup/active", methods=["GET"])
 def http_standup_active():
+    """Activate the standup"""
     token = request.args.get('token')
     channel_id = int(request.args.get('channel_id'))
     result = standup_active(token, channel_id)
@@ -349,6 +368,7 @@ def http_standup_active():
 
 @APP.route("/standup/send", methods=["POST"])
 def http_standup_send():
+    """Send a standup"""
     payload = request.get_json()
     token = payload['token']
     channel_id = int(payload['channel_id'])
@@ -358,28 +378,18 @@ def http_standup_send():
 
 @APP.route("/workspace/reset", methods=["POST"])
 def http_workspace_reset():
+    """Reset the workspace"""
     workspace_reset()
     return dumps({})
-    
-'''@APP.before_first_request
-def update_server_info():
-    UPDATE = Thread(target=database_update)
-    UPDATE.start()'''
 
 @APP.after_request
 def pickle_store(response):
+    """Stroe the pickle"""
     timer = Timer(1.5, pickle_it)
     timer.daemon = True
     timer.start()
     return response
 
-'''@APP.before_request
-def update_database():
-    if request.method == "GET":
-        UPDATE = Thread(target=database_update)
-        UPDATE.start()
-        '''
-        
 if __name__ == "__main__":
     UPDATE = Thread(target=database_update)
     UPDATE.start()

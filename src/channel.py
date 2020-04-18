@@ -174,7 +174,7 @@ def channel_details(token, channel_id):
                 owner_list.append({'u_id': owner_id, 
                                    'name_first': owner_details['name_first'],
                                    'name_last': owner_details['name_last']
-                                 })
+                                   })
             
             # adding into member_list
             for member_id in channel['all_members']:
@@ -182,7 +182,7 @@ def channel_details(token, channel_id):
                 member_list.append({'u_id': member_id, 
                                     'name_first': member_details['name_first'],
                                     'name_last': member_details['name_last']
-                                  })
+                                    })
             
             details['owner_members'] = owner_list
             details['all_members'] = member_list
@@ -196,6 +196,7 @@ def channel_details(token, channel_id):
     return details
     
 def channel_messages(token, channel_id, start):
+    """Gives the current channel messages"""
     # check if the token is valid
     is_valid = search_database(token)
     if is_valid is False:

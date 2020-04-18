@@ -3,9 +3,9 @@ COMP1531 Iteration 3
 Hangman
 Jeffrey Yang z5206134
 '''
+from random import randint
 import requests
 from database import list_of_channels
-from random import randint
 
 site = "http://svnweb.freebsd.org/csrg/share/dict/words?view=co&content-type=text/plain"
 response = requests.get(site)
