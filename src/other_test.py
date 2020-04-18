@@ -1,6 +1,7 @@
 '''
 Comp1531 Assignment other_test.py
 '''
+#pylint: disable = mixed-indentation, invalid-name, trailing-whitespace
 import pytest
 from channels import channels_create
 from channel import channel_invite, channel_details

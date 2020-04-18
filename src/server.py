@@ -20,7 +20,6 @@ from user import user_profile, user_profile_setname, user_profile_setemail, user
 from standup import standup_start, standup_active, standup_send
 from workspace_reset import workspace_reset
 from helper_functions import create_admin
-import distutils.util
 
 def defaultHandler(err):
     """A given function by instructors"""
@@ -45,7 +44,7 @@ APP.register_error_handler(Exception, defaultHandler)
 def echo():
     data = request.args.get('data')
     if data == 'echo':
-   	    raise InputError(description='Cannot echo "echo"')
+        raise InputError(description='Cannot echo "echo"')
     return dumps({
         'data': data
     })

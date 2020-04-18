@@ -2,7 +2,9 @@
 from database import check_token, get_all_users, registered_users_store,\
     search_database, get_message, get_permission, get_profile_allinfo, list_of_channels
 from error import AccessError, InputError
-
+#pylint: disable = line-too-long
+#last line to delete user needs list comprehension which is a long line since
+#registered_user_store['registered_user'] is repeated twice which makes a ling line
 # Probably should need permission to do this!!!
 
 def users_all(token):
@@ -52,7 +54,4 @@ def admin_user_remove(token, u_id):
             channel['all_members'].remove(u_id)
             if u_id in channel['owner_members']:
                 channel['owner_members'].remove(u_id)
-    for i in range(len(registered_users_store['registered_users'])):
-        if registered_users_store['registered_users'][i]['u_id'] == u_id:
-            del registered_users_store['registered_users'][i]
-            break
+    registered_users_store['registered_users'] = [i for i in registered_users_store['registered_users'] if not i['u_id'] == u_id]

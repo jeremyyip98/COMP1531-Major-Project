@@ -5,7 +5,6 @@ Test for Other functions like search and admin
 import json
 import urllib
 import requests
-import pytest
 
 PORT = 8080
 BASE_URL = f"http://127.0.0.1:{PORT}"
@@ -192,7 +191,7 @@ def test_admin_user_remove():
         'token' : admin['token'],
         'u_id' : user['u_id']
     })
-    u_details = get_user_all(user['token'])
+    u_detail = get_user_all(admin['token'])
     # one user which is admin
-    assert len(u_details) == 1
-    assert u_details['users'][0]['first_name'] == 'Admin'
+    assert len(u_detail['users']) == 1
+    assert u_detail['users'][0]['name_first'] == 'Admin'

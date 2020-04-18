@@ -4,7 +4,7 @@ channel.py
 Written by Jackie Cai z5259449
 Written by Aaron Lin z5258280
 """
-#pylint: disable=C0103, W0601, C0303
+#pylint: disable=C0103, W0601, C0303, consider-using-enumerate
 from database import (list_of_channels, search_database,
                       get_u_id, get_profile, get_message, get_formatted_user)
 from error import AccessError, InputError
@@ -83,7 +83,7 @@ def channel_removeowner(token, channel_id, u_id):
     user = is_valid
     if not any(d['channel_id'] == channel_id for d in list_of_channels):
         raise InputError(description="Channel ID is not a valid channel")
-    for i in range(len(list_of_channels)):
+    for i in range(len(list_of_channels)): 
         if list_of_channels[i]['channel_id'] == channel_id:
             if u_id not in list_of_channels[i]['owner_members']:
                 raise InputError(description='No Owner found in Channel')
@@ -167,7 +167,7 @@ def channel_details(token, channel_id):
                 owner_list.append({'u_id': owner_id, 
                                    'name_first': owner_details['name_first'],
                                    'name_last': owner_details['name_last']
-                                 })
+                })
             
             # adding into member_list
             for member_id in channel['all_members']:
@@ -189,7 +189,7 @@ def channel_details(token, channel_id):
     return details
     
 def channel_messages(token, channel_id, start):
-    # check if the token is valid
+    '''check if the token is valid'''
     is_valid = search_database(token)
     if is_valid is False:
         raise AccessError(description='Invalid Token')
