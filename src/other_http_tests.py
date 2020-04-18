@@ -249,3 +249,6 @@ def test_admin_user_remove():
         'all_members' : member_list
     }
     requests.post(f"{BASE_URL}/workspace/reset", json={})
+
+register_admin()
+register_example_user()
