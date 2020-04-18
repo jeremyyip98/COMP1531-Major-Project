@@ -4,9 +4,9 @@ message_test.py
 Written by: Yip Jeremy Chung Lum, z5098112
 """
 import pytest
-from database import reset_message, restore_channel_database, restore_database, reset_channel, message_list
+from database import reset_message, restore_channel_database, restore_database, message_list
 from message import message_send, message_remove, message_edit
-from channel import channel_join, channel_addowner, channel_messages
+from channel import channel_join, channel_addowner
 from channels import channels_create
 from helper_functions import register_valid_user, register_another_valid_user
 from error import InputError, AccessError
@@ -16,7 +16,6 @@ def restore_everything():
     reset_message()
     restore_channel_database()
     restore_database()
-    reset_channel()
 
 #########################################################
 # The test functions for the message_send() in message.py
@@ -266,7 +265,7 @@ def test_sending():
     for dict_msg in message_list:
         if dict_msg['message_id'] == message_id:
             assert dict_msg['message'] == 'first message'
-    
+
     message_remove(results['token'], message_id2)
 
     message_id3 = message_send(results['token'], channel_info, 'third message')
@@ -274,7 +273,3 @@ def test_sending():
     for dict_msg in message_list:
         if dict_msg['message_id'] == message_id3:
             assert dict_msg['message'] == 'third message'
-
-        
-
-
