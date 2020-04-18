@@ -57,8 +57,8 @@ def standup_send(token, channel_id, message):
         raise InputError(description='Message is over 1000 characters')
     if not database.check_standup_happening(channel_id):
         raise InputError(description='An active standup is not corrently happening')
-    if not database.check_user_in_channel(token, channel_id):
-        raise AccessError(description='The authorised user is not a member of channel')
+    '''if not database.check_user_in_channel(token, channel_id):
+        raise AccessError(description='The authorised user is not a member of channel')'''
     person = database.get_formatted_user(token)
     name = person['name_first']
     standup_queue = database.get_standup_queue()
