@@ -127,13 +127,14 @@ def test_logout_valid_details():
     details2 = auth_login("test@gmail.com", "Password")
     assert details1 == details1
 
+'''
 def test_password_reset():
-   """ # Code must be changed to always generate code 1234 to use this test
+    # Code must be changed to always generate code 1234 to use this test
     restore_database()
     """ Add your email below to check that the email is sent """
-    your_email = "Your Email"
+    your_email = "smccghy@gmail.com"
     details = auth_register(your_email, "Password", "First", "Last")
     auth_reset_password_request(your_email)
     auth_reset_password_reset("1234", "new_password")
     auth_login(your_email, "new_password")
-"""
+'''
