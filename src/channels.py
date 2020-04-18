@@ -3,11 +3,12 @@ UNSW COMP1531 Iteration 2
 channel.py
 Written by Jackie Cai z5259449
 """
-from database import channel_ids, get_list_of_channels, search_database, get_u_id
+from database import get_channel_ids, get_list_of_channels, search_database, get_u_id
 from error import AccessError, InputError
 
 def generate_channel_id():
     """Makes a channel id and adds it to the databse"""
+    channel_ids = get_channel_ids()
     channel_id = max(channel_ids)
     channel_id += 1
     channel_ids.append(channel_id)
