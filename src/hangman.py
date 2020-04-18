@@ -4,7 +4,7 @@ Hangman
 Jeffrey Yang z5206134
 '''
 import requests
-from database import list_of_channels
+from database import get_list_of_channels
 from random import randint
 
 site = "http://svnweb.freebsd.org/csrg/share/dict/words?view=co&content-type=text/plain"
@@ -21,7 +21,7 @@ stages = ['\n\n\n\n_________\nFive tries left',
 
 def reset_hangman(channel_id):
     '''Resets the state of hangman in a channel.'''
-    global list_of_channels
+    list_of_channels = get_list_of_channels()
     for channel in list_of_channels:
         if channel['channel_id'] == channel_id:
             channel['the_word'] = ""
@@ -33,7 +33,7 @@ def reset_hangman(channel_id):
 def start_game(channel_id):
     '''Starts a game of hangman in a channel. Overrides any existing game.'''
     reset_hangman(channel_id)
-    global list_of_channels
+    list_of_channels = get_list_of_channels()
     for channel in list_of_channels:
         if channel['channel_id'] == channel_id:
             channel['the_word'] = dictionary[randint(0, len(dictionary))].decode("utf-8").lower()
@@ -41,10 +41,11 @@ def start_game(channel_id):
                 channel['current_progress_list'].append("_")
                 channel['current_progress_word'] = "".join(channel['current_progress_list'])
         return f"A game of hangman has started\n {channel['current_progress_word']}"
+    return "Game failed to start"
 
 def make_guess(guess, channel_id):
     '''A user guesses a letter. The response they get is based on the state of the game.'''
-    global list_of_channels
+    list_of_channels = get_list_of_channels()
     for channel in list_of_channels:
         if channel['channel_id'] == channel_id:
             if channel['current_progress_word'] == channel['the_word']:
