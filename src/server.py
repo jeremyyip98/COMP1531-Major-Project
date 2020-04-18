@@ -52,8 +52,6 @@ def echo():
         'data': data
     })
 
-#
-    
 @APP.route("/channel/invite", methods=['POST'])
 def http_invite():
     '''HTTP request for inviting someone to channel'''
@@ -63,7 +61,7 @@ def http_invite():
         int(payload['channel_id']),
         int(payload['u_id']))
     return dumps({})
-    
+
 @APP.route("/channel/details", methods=['GET'])
 def http_details():
     '''HTTP request for getting channel details'''
@@ -72,7 +70,7 @@ def http_details():
         #need the int to convert from string to int
         int(request.args.get('channel_id')))
     return dumps(details)
-    
+
 @APP.route("/channel/messages", methods=['GET'])
 def http_messages():
     '''HTTP request for getting messages of channel'''
@@ -391,11 +389,6 @@ def http_workspace_reset():
     '''HTTP request for reseting all the data in database'''
     workspace_reset()
     return dumps({})
-    
-'''@APP.before_first_request
-def update_server_info():
-    UPDATE = Thread(target=database_update)
-    UPDATE.start()'''
 
 @APP.after_request
 def pickle_store(response):
@@ -405,13 +398,6 @@ def pickle_store(response):
     timer.start()
     return response
 
-'''@APP.before_request
-def update_database():
-    if request.method == "GET":
-        UPDATE = Thread(target=database_update)
-        UPDATE.start()
-        '''
-        
 if __name__ == "__main__":
     UPDATE = Thread(target=database_update)
     UPDATE.start()

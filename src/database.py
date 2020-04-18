@@ -101,9 +101,9 @@ def get_formatted_user(token):
     user = search_database(token)
     formatted_user = {}
     formatted_user['u_id'] = user['u_id']
-    formatted_user['email'] = user['email']    
-    formatted_user['name_first'] = user['name_first']  
-    formatted_user['name_last'] = user['name_last']  
+    formatted_user['email'] = user['email']
+    formatted_user['name_first'] = user['name_first']
+    formatted_user['name_last'] = user['name_last']
     formatted_user['handle_str'] = user['handle_str']
     formatted_user['permission_id'] = user['permission_id']
     return formatted_user
@@ -118,8 +118,8 @@ def get_all_users():
 
 def search_database(token):
     """ Takes token and returns all information of its registered user in a dictionary.
-        Example: 
-        { 
+        Example:
+        {
             'u_id' : 0,
             'email' : example_email,
             'name_first' : Firs,
@@ -127,7 +127,7 @@ def search_database(token):
             'hash' : encrypted password,
             'token' : token,
             'premission : 1,
-            'handle_str' :firstlast             
+            'handle_str' :firstlast
 
         }
         If token is not found in the datastore registered to any user
@@ -137,7 +137,7 @@ def search_database(token):
         if user['token'] == token:
             return user
     return False
-    
+
 def reset_message():
     """This function reset the message and returns nothing"""
     global message_list
@@ -158,8 +158,8 @@ def get_profile(u_id):
         if user['u_id'] == u_id:
             formatted_user = {
                 "u_id" : user['u_id'],
-                "email" : user['email'],    
-                "name_first" : user['name_first'],  
+                "email" : user['email'],
+                "name_first" : user['name_first'],
                 "name_last" : user['name_last'],
                 "handle_str" : user['handle_str']
             }
@@ -195,7 +195,7 @@ def check_handle_str_already_used(handle_str):
         if user['handle_str'] == handle_str:
             return True
     return False
-    
+
 def turn_on_standup(channel_id, length):
     '''makes a channel into standup mode if it's not already. The standup_finish_time is equal to
     the present time plus the length'''

@@ -1,8 +1,12 @@
+"""
+pickle_it.py
+"""
 import pickle
 import database
 from channels import channels_list
 
 def pickle_it():
+    """Main function for pickle"""
     DATA_STRUCTURE = {
         'u_ids' : database.u_ids,
         'channel_ids' : database.channel_ids,
@@ -14,7 +18,7 @@ def pickle_it():
         print("Saving...")
         pickle.dump(DATA_STRUCTURE, FILE)
     FILE.close()
-        
+
 def database_update():
     try:
         FILE = open("pickle_database.p", "rb")

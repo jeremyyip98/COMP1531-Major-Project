@@ -26,7 +26,7 @@ def message_create(channel_id, u_id, message, time):
         message = hangman.start_game(channel_id)
     elif message.startswith('/guess '):
         message = hangman.make_guess(message[-1], channel_id)
-    
+
     dictionary = {
         "message_id" : message_id,
         "u_id" : u_id,
@@ -269,7 +269,7 @@ def message_send(token, channel_id, message):
     now = int(datetime.now(tz=timezone.utc).timestamp())
 
     message = message_create(channel_id, get_u_id(token), message, now)
-    
+
     return message[-1]['message_id']
 
 def message_sendlater(token, channel_id, message, time_sent):
