@@ -6,12 +6,30 @@ from error import AccessError, InputError
 # Probably should need permission to do this!!!
 
 def users_all(token):
-    """ Returns the users dictionry type with details of every registered user """
+
+    '''
+    Returns the users dictionry type with details of every registered user
+
+    Parameter:
+        token (str): authentication string
+
+    Returns:
+        users (users): the dictionary specified in spec
+    '''
     check_token(token)
     return {"users" : get_all_users()}
 
 def search(token, query_str):
-    """ Given a query string and token will return a list of messages that contain the term """
+    ''' 
+    Given a query string and token will return a list of messages that contain the term
+    
+    Parameters:
+        token (str): authentication string
+        query_str (str): term being searched for in messages
+
+    Return:
+        messages: list of matching message dicitonary types 
+    '''
     check_token(token)
     query_str_matches = []
     messages = get_message_joined(token)
@@ -27,6 +45,15 @@ def search(token, query_str):
 
 
 def admin_userpermission_change(token, u_id, permission_id):
+    '''
+    Changes the admin permission level of user with u_id
+
+    Parameters:
+        token (str): authentication string
+        permission_id (int): permission id changing to
+        u_id (int): u_id whose privilege level is changing
+    
+    '''
     is_valid = search_database(token)
     if is_valid is False:
         raise AccessError(description='Invalid Token')
