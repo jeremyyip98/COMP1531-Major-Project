@@ -8,7 +8,7 @@ import urllib.request
 import json
 import requests
 
-BASE_URL = "http://127.0.0.1:10013"
+BASE_URL = "http://127.0.0.1:8085"
 # Helper Functions
 def create_user1():
     '''Helper function to make user in server'''
@@ -34,15 +34,6 @@ def create_user2():
     user2 = user2.json()
     return user2
 
-def create_valid_channel(user):
-    '''Helper function to make channel in server'''
-    payload = requests.post(f"{BASE_URL}/channels/create", json={
-        'token' : user['token'],
-        'channel_name' : 'My Channel',
-        'is_public' : True,
-    })
-    return payload.json()['channel_id']
-
 def details_get(token, channel_id):
     '''Helper function to get channel details to check in server'''
     queryString = urllib.parse.urlencode({
@@ -56,6 +47,7 @@ def details_get(token, channel_id):
 
 def test_channels_createt_payload():
     '''testing create with true public'''
+    requests.post(f"{BASE_URL}/workspace/reset", json={})
     create_user1()
     payload = requests.post(f"{BASE_URL}/channels/create", json={
         'token' : user1['token'],
@@ -120,6 +112,7 @@ def test_join_payload():
         'name_first':'Jim',
         'name_last': 'Slim'
     }]
+    #assert the person has joined the public channel
     assert details == {
         'name' : 'My Channel',
         'owner_members' : owner_list,
@@ -152,6 +145,7 @@ def test_addowner_payload():
         'name_first':'Jim',
         'name_last': 'Slim'
     }]
+    #assert new owner is also there
     assert details == {
         'name' : 'My Channel',
         'owner_members' : owner_list,
@@ -180,6 +174,7 @@ def test_removeowner_payload():
         'name_first':'Jim',
         'name_last': 'Slim'
     }]
+    #assert there is only one owner
     assert details == {
         'name' : 'My Channel',
         'owner_members' : owner_list,
@@ -203,6 +198,7 @@ def test_leave_payload():
         'name_first': 'first',
         'name_last': 'last'
     }]
+    #assert person has left
     assert detail == {
         'name' : 'My Channel',
         'owner_members' : owner_list,
