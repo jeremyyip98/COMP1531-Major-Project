@@ -1,14 +1,19 @@
+"""
+user.py
+"""
 from error import InputError
 import database
 import helper_functions
 
 def user_profile(token, u_id):
+    """Return the user profile"""
     u_id = int(u_id)
     database.check_token(token)
     profile = database.get_profile(u_id)
     return {'user': profile}
 
 def user_profile_setname(token, name_first, name_last):
+    """Set the name in the user profile"""
     database.check_token(token)
     if 1 <= len(name_first) <= 50 and 1 <= len(name_last) <= 50:
         database.set_name(token, name_first, name_last)
@@ -20,6 +25,7 @@ def user_profile_setname(token, name_first, name_last):
     raise InputError(description='First and last name must be between 1 and 50 characters')
 
 def user_profile_setemail(token, email):
+    """set the email in the user profile"""
     database.check_token(token)
     if not helper_functions.valid_email(email):
         raise InputError(description='Invalid email address')
@@ -29,6 +35,7 @@ def user_profile_setemail(token, email):
     return {}
 
 def user_profile_sethandle(token, handle_str):
+    """Set the handle in the user profile"""
     database.check_token(token)
     if database.check_handle_str_already_used(handle_str):
         raise InputError(description='Handle is already being used by another user')
