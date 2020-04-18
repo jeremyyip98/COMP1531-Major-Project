@@ -36,7 +36,7 @@ list_of_channels = [#{
 
 def get_data():
     return registered_users_store
-
+    
 def restore_database():
     global registered_users_store
     registered_users_store['registered_users'].clear()
@@ -257,3 +257,4 @@ def get_profile_allinfo(u_id):
 def get_list_of_channels():
     global list_of_channels
     return list_of_channels
+    

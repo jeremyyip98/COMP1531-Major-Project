@@ -4,9 +4,9 @@ message.py
 Written by: Yip Jeremy Chung Lum, z5098112
 """
 from datetime import datetime, timezone
-from database import get_u_id, get_permission, message_list, list_of_channels
+from database import get_u_id, get_permission, get_message, get_list_of_channels
 from channels import  channels_list, channels_listall
-from channel import channel_details
+#from channel import channel_details
 from error import InputError, AccessError
 import hangman
 
@@ -16,11 +16,11 @@ import hangman
 # Helper function for message_send() and message_sendlater()
 def message_create(channel_id, u_id, message, time):
     """This function create a message and return it"""
-    global message_list
-    if not message_list:    # If messages is empty
+    msg_list = get_message()
+    if not msg_list:    # If messages is empty
         message_id = 0
     else:
-        most_recent_message = message_list[-1]
+        most_recent_message = msg_list[-1]
         message_id = most_recent_message['message_id'] + 1
     if message == '/hangman':
         message = hangman.start_game(channel_id)
@@ -35,18 +35,18 @@ def message_create(channel_id, u_id, message, time):
         "reacts" : [],
         "is_pinned" : False     # When the message is creating, no one should be able to pin it
     }
-    message_list.append(dictionary)
+    msg_list.append(dictionary)
 
     # Add the message to it's corresponding channel
     channel_add(channel_id, message_id)
 
-    return message_list
+    return msg_list
 
 # Helper function for message_create() and get_channel_id()
 def channel_add(channel_id, message_id):
     """This function store a list of dictionaries containing
     the channel_id with it's corresponding message_ids and return nothing"""
-    global list_of_channels
+    list_of_channels = get_list_of_channels()
     for dict_channel in list_of_channels:
         if dict_channel['channel_id'] == channel_id:
             if message_id not in dict_channel['channel_messages']:
@@ -54,7 +54,7 @@ def channel_add(channel_id, message_id):
 
 def channel_remove(message_id):
     """This function remove the message_ids from the channel and return nothing"""
-    global list_of_channels
+    list_of_channels = get_list_of_channels()
     channel_id = get_channel_id(message_id)
     if list_of_channels != []: # If the channel is not empty
         for dict_channel in list_of_channels:
@@ -79,9 +79,9 @@ def check_joined_channel(token, channel_id):
 # Helper function for react_create and react_remove
 def check_same_react_id(message_id, react_id, u_id):
     """This function check has the user already been reacted with the same react_id before"""
-    global message_list
+    msg_list = get_message()
     joined = False
-    for dict_msg in message_list:
+    for dict_msg in msg_list:
         if dict_msg['message_id'] == message_id:
             # Only run when the react is not empty
             if dict_msg['reacts'] != []:
@@ -97,10 +97,10 @@ def check_same_react_id(message_id, react_id, u_id):
 def check_valid_message(u_id, message_id):
     """This function check is the message_id valid or not
     return true or false"""
-    global message_list
+    msg_list = get_message()
     valid_message = False
 
-    for dict_item in message_list:
+    for dict_item in msg_list:
         if dict_item['u_id'] == u_id:
             if dict_item['message_id'] == message_id:
                 valid_message = True
@@ -111,9 +111,9 @@ def check_valid_message(u_id, message_id):
 def check_message_contains_react(message_id, react_id):
     """This function check has message_id already contains an active React
     with ID react_id and return true or false"""
-    global message_list
+    msg_list = get_message()
     joined = False
-    for dict_message in message_list:
+    for dict_message in msg_list:
         if dict_message['message_id'] == message_id:
             if dict_message['reacts'] != []:
                 react = dict_message['reacts']
@@ -126,9 +126,9 @@ def check_message_contains_react(message_id, react_id):
 # Helper function for message_react()
 def react_create(react_id, u_id, message_id):
     """This functions create a react and return nothing"""
-    global message_list
+    msg_list = get_message()
     # Loop through the list until it reaches the correct message
-    for dict_msg in message_list:
+    for dict_msg in msg_list:
         if dict_msg['message_id'] == message_id:
             # Checking if the user has already reacted with the same react_id before
             joined = check_same_react_id(message_id, react_id, u_id)
@@ -152,9 +152,9 @@ def react_create(react_id, u_id, message_id):
 # Helper function for message_unreact()
 def react_remove(react_id, u_id, message_id):
     """This functions remove a react and return nothing"""
-    global message_list
+    msg_list = get_message()
     # Loop through the list until it reaches the correct message
-    for dict_msg in message_list:
+    for dict_msg in msg_list:
         if dict_msg['message_id'] == message_id:
             # Checking if the user has already reacted with the same react_id before
             joined = check_same_react_id(message_id, react_id, u_id)
@@ -180,7 +180,7 @@ def react_remove(react_id, u_id, message_id):
 def get_channel_id(message_id):
     """This function given message_id, search through message,
     and return the channel_id corresponding to the message_id"""
-    global list_of_channels
+    list_of_channels = get_list_of_channels()
     found = False
 
     for dict_channel in list_of_channels:
@@ -196,7 +196,7 @@ def get_channel_id(message_id):
 def check_owner(token, message_id):
     """This function check is the authorised user an owner or not,
     return true or false"""
-    global list_of_channels
+    list_of_channels = get_list_of_channels()
     is_owner = False
     u_id = get_u_id(token)
     channel_id = get_channel_id(message_id)
@@ -213,10 +213,10 @@ def check_owner(token, message_id):
 def check_pinned(message_id):
     """This function check is Message with ID message_id already pinned or not,
     return true or false"""
-    global message_list
+    msg_list = get_message()
     pinned = False
 
-    for dict_message in message_list:
+    for dict_message in msg_list:
         if dict_message['message_id'] == message_id:
             if dict_message['is_pinned'] is True:
                 pinned = True
@@ -225,16 +225,16 @@ def check_pinned(message_id):
 # Helper function for message_pin()
 def pin_add(message_id):
     """This function pin a message and return nothing"""
-    global message_list
-    for dict_message in message_list:
+    msg_list = get_message()
+    for dict_message in msg_list:
         if dict_message['message_id'] == message_id:
             dict_message['is_pinned'] = True
 
 # Helper function for message_unpin()
 def pin_remove(message_id):
     """This function unpin a message and return nothing"""
-    global message_list
-    for dict_message in message_list:
+    msg_list = get_message()
+    for dict_message in msg_list:
         if dict_message['message_id'] == message_id:
             dict_message['is_pinned'] = False
 
@@ -244,9 +244,9 @@ def is_user_sent_message(token, message_id):
     the authorised user making this request, and return true or false"""
     is_user_sent = False
     u_id = get_u_id(token)
-    global message_list
+    msg_list = get_message()
 
-    for dict_message in message_list:
+    for dict_message in msg_list:
         if dict_message['message_id'] == message_id:
             if dict_message['u_id'] == u_id:
                 is_user_sent = True
@@ -378,7 +378,7 @@ def message_remove(token, message_id):
     """This function given a message_id for a message, this message is removed from the channel,
     and return nothing"""
     valid_message = check_valid_message(get_u_id(token), message_id)
-    global message_list
+    msg_list = get_message()
 
     if valid_message is False:
         raise InputError('Message_id no longer exist')
@@ -390,16 +390,16 @@ def message_remove(token, message_id):
     if is_user_sent is False and is_owner_channel is False and is_owner_slackr is False:
         raise AccessError('The authorised user is not the one who sent the message, nor an owner.')
 
-    result = [dict_msg for dict_msg in message_list if not dict_msg['message_id'] == message_id]
+    result = [dict_msg for dict_msg in msg_list if not dict_msg['message_id'] == message_id]
     channel_remove(message_id)
-    message_list = result
+    msg_list = result
 
 def message_edit(token, message_id, message):
     """This function given a message, update it's text with new text.
     If the new message is an empty string, the message is deleted.
     And return nothing"""
     valid_message = check_valid_message(get_u_id(token), message_id)
-    global message_list
+    msg_list = get_message()
 
     if valid_message is False:
         raise InputError('Message_id no longer exist')
@@ -411,7 +411,7 @@ def message_edit(token, message_id, message):
     if is_user_sent is False and is_owner_channel is False and is_owner_slackr is False:
         raise AccessError('The authorised user is not the one who sent the message, nor an owner.')
 
-    for dict_message in message_list:
+    for dict_message in msg_list:
         if dict_message['message_id'] == message_id:
             if message == '':  # If it's an empty string
                 message_remove(token, message_id)
