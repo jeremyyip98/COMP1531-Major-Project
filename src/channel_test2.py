@@ -3,7 +3,7 @@ from auth import auth_register
 from user import user_profile
 from channels import channels_list, channels_listall, channels_create
 from channel import channel_addowner, channel_removeowner, channel_invite, channel_details, channel_join, channel_leave, channel_messages
-from message import message_send
+from message import message_send, message_remove
 from helper_functions import register_valid_user, register_another_valid_user
 from database import restore_channel_database, restore_database, reset_message
 import pytest
@@ -152,7 +152,7 @@ def test_channel_details_normal():
     restore_channel_database()
     #   create user and channel
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_ud']
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
     
 #   test for channel with only one member
     #   run channel_details
@@ -292,21 +292,42 @@ def test_channel_messages_normal():
     user = register_valid_user()
     channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
     
-    #   send 124 messages into channel
-    for i in range(124):
-        message_send(user['token'], channel_id, 'abcde')
+    first_id = message_send(user['token'], channel_id, 'abcde-1')
     
+    print("First Message")
+    #   check if channel_messages are correct in these channel as well as 'start' and 'end' points
+    message = channel_messages(user['token'], channel_id, 0)
+    assert message['messages'][0]['message'] == f'abcde-1'
+    assert message['start'] == 0
+    assert message['end'] == -1
+    
+    message_send(user['token'], channel_id, 'abcde0')
+    message_send(user['token'], channel_id, 'abcde1')
+    message_remove(user['token'], first_id)
+    print("Message0")
     #   check if channel_messages are correct in these channel as well as 'start' and 'end' points
     message0 = channel_messages(user['token'], channel_id, 0)
-    for i in range(50):
-        
-        assert message0['messages'][i]['message'] == 'abcde'
+    assert message0['messages'][0]['message'] == f'abcde0'
+    assert message0['messages'][1]['message'] == f'abcde1'
     assert message0['start'] == 0
-    assert message0['end'] == 50
-        
-    message1 = channel_messages(user['token'], channel_id, 50)
+    assert message0['end'] == -1
+    
+    #   send 124 messages into channel
+    for i in range(2,124):
+        message_send(user['token'], channel_id, f'abcde{i}')
+    print("Message1")
+    #   check if channel_messages are correct in these channel as well as 'start' and 'end' points
+    message1 = channel_messages(user['token'], channel_id, 0)
     for i in range(50):
-        assert message1['messages'][i]['message'] == 'abcde'
-    assert message1['start'] == 50
-    assert message1['end'] == 100
+        print(f"message{i} = {message1['messages'][i]['message']}")
+        assert message1['messages'][i]['message'] == f'abcde{i}'
+    assert message1['start'] == 0
+    assert message1['end'] == 50
+    
+    print("Message2")
+    message2 = channel_messages(user['token'], channel_id, 50)
+    for i in range(50):
+        assert message2['messages'][i]['message'] == f'abcde{i+50}'
+    assert message2['start'] == 50
+    assert message2['end'] == 100
 

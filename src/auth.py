@@ -136,7 +136,6 @@ def auth_reset_password_request(email):
     while any(d['pwd_reset_code'] == code for d in database.registered_users_store['registered_users']):
         code = secrets.token_urlsafe(PWD_RESET_CODE_LENGTH)
 
-    code = '1234'
 
     for d in database.registered_users_store['registered_users']:
         if d['email'] == email:
