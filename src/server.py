@@ -106,8 +106,6 @@ def http_leave():
     channel.channel_leave(
         payload['token'],
         int(payload['channel_id']))
-        
-    #pickle_it()
     return dumps({})
 
 @APP.route("/channel/join", methods=['POST'])
@@ -334,7 +332,6 @@ def http_sethandle():
 
 @APP.route("/users/all", methods=['GET'])
 def http_users_all():
-    #database_update()
     token = request.args.get('token')
     return dumps(other.users_all(token))
 
@@ -387,6 +384,13 @@ def pickle_store(response):
     timer.start()
     return response
 
+'''@APP.before_request
+def update_database():
+    if request.method == "GET":
+        UPDATE = Thread(target=database_update)
+        UPDATE.start()
+        '''
+        
 if __name__ == "__main__":
     UPDATE = Thread(target=database_update)
     UPDATE.start()
