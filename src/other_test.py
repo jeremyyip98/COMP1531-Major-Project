@@ -80,9 +80,10 @@ def test_search_one_channel():
     search_results = search(details["token"], "test")
     print(search_results)
     # Checks that the message containing "test" is found by the search
-    assert search_results["messages"][0]["message_id"] == message_details["message_id"]
+    assert search_results["messages"][0]["message_id"] == message_details
 
 def test_search_two_channels():
+    restore_database()
     # This registers a user, creates a channel and sends the message and returns the message 
     # detail and the channel creators details
     send_test_message("Search term isnt in this message", "test_channel_one", False)
@@ -90,7 +91,7 @@ def test_search_two_channels():
     
     search_results = search(details["token"], "gobble")
     # Checks that the message containing "test" is found by the search
-    assert search_results["messages"][0]["message_id"] == message_details["message_id"]
+    assert search_results["messages"][0]["message_id"] == message_details
 
 # Sends three messages to and creates a channel with channel_name. One message contains the search term
 def send_three_messages(channel_name):
@@ -120,6 +121,7 @@ def test_search_multiple_channels_and_messages():
 # with one users token and asserts that only the message from the channel he has joined is found
 
 def test_search_term_in_channel_not_joined():
+    restore_database()
     user_one = False
     user_two = True
     message_details, details, test = send_test_message("Gobble", "test_channel_one", user_one)

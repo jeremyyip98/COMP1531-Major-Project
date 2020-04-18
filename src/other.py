@@ -15,8 +15,11 @@ def search(token, query_str):
     check_token(token)
     query_str_matches = []
     messages = get_message_joined(token)
+    print(messages)
+    print(query_str)
     for message in messages:
-        if query_str in message['message']:
+        print(message['message'])
+        if query_str.lower() in message['message'].lower():
             query_str_matches.append(message)
     query_str_matches = sorted(query_str_matches, key=lambda i: i['time_created'], reverse=True)
     # Check that order is correct
