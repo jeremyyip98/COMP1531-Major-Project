@@ -112,6 +112,7 @@ def test_join_payload():
         'name_first':'Jim',
         'name_last': 'Slim'
     }]
+    #assert the person has joined the public channel
     assert details == {
         'name' : 'My Channel',
         'owner_members' : owner_list,
@@ -144,6 +145,7 @@ def test_addowner_payload():
         'name_first':'Jim',
         'name_last': 'Slim'
     }]
+    #assert new owner is also there
     assert details == {
         'name' : 'My Channel',
         'owner_members' : owner_list,
@@ -172,6 +174,7 @@ def test_removeowner_payload():
         'name_first':'Jim',
         'name_last': 'Slim'
     }]
+    #assert there is only one owner
     assert details == {
         'name' : 'My Channel',
         'owner_members' : owner_list,
@@ -195,6 +198,7 @@ def test_leave_payload():
         'name_first': 'first',
         'name_last': 'last'
     }]
+    #assert person has left
     assert detail == {
         'name' : 'My Channel',
         'owner_members' : owner_list,

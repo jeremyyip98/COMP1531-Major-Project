@@ -236,6 +236,7 @@ def test_admin_user_remove():
     # one user which is admin
     assert len(u_detail['users']) == 1
     assert u_detail['users'][0]['name_first'] == 'Admin'
+    #make sure the function also deletes from channel
     c_detail = channel_details_get2(admin['token'], 1)
     owner_list = []
     member_list = [{
@@ -249,6 +250,4 @@ def test_admin_user_remove():
         'all_members' : member_list
     }
     requests.post(f"{BASE_URL}/workspace/reset", json={})
-
-register_admin()
-register_example_user()
+    

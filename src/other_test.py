@@ -126,6 +126,7 @@ def test_admin_permission_change_normal():
     admin = create_admin()
     user = register_another_valid_user()
     user = get_profile_allinfo(user['u_id'])
+    #make sure the id is from 2 to 1
     assert user['permission_id'] == 2
     admin_userpermission_change(admin['token'], user['u_id'], 1)
     assert user['permission_id'] == 1
@@ -160,6 +161,7 @@ def test_admin_user_remove_normal():
     assert len(details['owner_members']) == 1
     assert len(registered_users_store['registered_users']) == 3
     admin_user_remove(admin['token'], user1['u_id'])
+    #make sure the person is removed from the channels and user database
     details = channel_details(user2['token'], channel['channel_id'])
     assert len(details['all_members']) == 1
     assert not details['owner_members']
