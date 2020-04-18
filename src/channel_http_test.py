@@ -8,7 +8,7 @@ import urllib.request
 import json
 import requests
 
-BASE_URL = "http://127.0.0.1:8080"
+BASE_URL = "http://127.0.0.1:8084"
 # Helper Functions
 def create_user1():
     '''Helper function to make user in server'''

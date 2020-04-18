@@ -36,7 +36,7 @@ def channels_create(token, name, is_public):
         'current_progress_list' : [],
         'current_progress_word' : "",
         'guessed_letters_list' : [],
-    }
+        }
     list_of_channels.append(new_channel)
     return {'channel_id' : re_channel_id}
 def channels_list(token):

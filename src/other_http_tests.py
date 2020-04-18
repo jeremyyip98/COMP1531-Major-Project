@@ -5,8 +5,9 @@ Test for Other functions like search and admin
 import json
 import urllib
 import requests
+import urllib.request
 
-PORT = 8080
+PORT = 8084
 BASE_URL = f"http://127.0.0.1:{PORT}"
 
 # Helper Functions 
@@ -41,6 +42,16 @@ def channel_details_get(token, channel_id):
     payload = json.load(response)
     return payload
 
+def channel_details_get2(token, channel_id):
+    '''Helper function to get channel details to check in server 2'''
+    queryString = urllib.parse.urlencode({
+        'token' : token,
+        'channel_id' : channel_id,
+    })
+    response = urllib.request.urlopen(f"{BASE_URL}/channel/details?{queryString}")
+    payload = response.json()
+    return payload
+
 def create_channel(token):
     '''Helper function to create a channel'''
     payload = requests.post(f"{BASE_URL}/channels/create", json={
@@ -49,6 +60,14 @@ def create_channel(token):
         'is_public' : True,
     })
     return payload.json()['channel_id']
+
+def create_channel2(token):
+    '''Helper function to create another channel'''
+    requests.post(f"{BASE_URL}/channels/create", json={
+        'token' : token,
+        'channel_name' : 'test_channel',
+        'is_public' : True,
+    })
     
 def send_message(token, message, channel_id):
     '''Helper function sending message to test search'''
@@ -64,7 +83,7 @@ def search_messages(token, query_str):
     queryString = urllib.parse.urlencode({
                 'token' : token,
                 'query_str' : query_str
-                })
+    })
     r = requests.get(f"{BASE_URL}/search?{queryString}")
     return r.json()
 # test Functions
@@ -184,9 +203,31 @@ def test_admin_user_remove():
     requests.post(f"{BASE_URL}/workspace/reset", json={})
     user = register_example_user()
     admin = register_admin()
+    create_channel2(user['token'])
+    c_details = channel_details_get2(user['token'], 1)
     u_details = get_user_all(user['token'])
     #make sure there are two users user and admin
     assert len(u_details['users']) == 2
+    # Make sure the channel is made properly and users in channel
+    owner_list = [{
+        'u_id': user['u_id'],
+        'name_first': 'Other',
+        'name_last': 'Last'
+    }]
+    member_list = [{
+        'u_id': user['u_id'],
+        'name_first': 'Other',
+        'name_last': 'Last'
+    }]
+    assert c_details == {
+        'name' : 'test_channel',
+        'owner_members' : owner_list,
+        'all_members' : member_list
+    }
+    requests.post(f"{BASE_URL}/channel/join", json={
+        'token' : admin['token'],
+        'channel_id' : 1
+    })
     requests.delete(f"{BASE_URL}/admin/user/remove", json={
         'token' : admin['token'],
         'u_id' : user['u_id']
@@ -195,3 +236,19 @@ def test_admin_user_remove():
     # one user which is admin
     assert len(u_detail['users']) == 1
     assert u_detail['users'][0]['name_first'] == 'Admin'
+    c_detail = channel_details_get2(admin['token'], 1)
+    owner_list = [{
+        'u_id': admin['u_id'],
+        'name_first': 'Admin',
+        'name_last': 'Nimda'
+    }]
+    member_list = [{
+        'u_id': admin['u_id'],
+        'name_first': 'Other',
+        'name_last': 'Nimda'
+    }]
+    assert c_detail == {
+        'name' : 'test_channel',
+        'owner_members' : owner_list,
+        'all_members' : member_list
+    }

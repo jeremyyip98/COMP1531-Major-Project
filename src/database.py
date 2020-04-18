@@ -40,6 +40,9 @@ def get_data():
 def restore_database():
     global registered_users_store
     registered_users_store['registered_users'].clear()
+    global u_ids
+    u_ids.clear()
+    u_ids.append(0)
 
 def restore_channel_database():
     """reseting the channel database to clear it"""
