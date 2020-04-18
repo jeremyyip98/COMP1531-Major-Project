@@ -194,7 +194,7 @@ def turn_on_standup(channel_id, length):
                 channel['is_in_standup'] = True
                 current_dt = datetime.now()
                 timestamp = current_dt.replace(tzinfo=timezone.utc).timestamp()
-                channel['standup_finish_time'] = timestamp + length
+                channel['standup_finish_time'] = timestamp + length - 36000
                 return
             if channel['is_in_standup']:
                 raise InputError(description='An active standup is currently running in this channel')
