@@ -5,7 +5,7 @@ Written by Jackie Cai z5259449
 Written by Aaron Lin z5258280
 """
 #pylint: disable=C0103, W0601, C0303, consider-using-enumerate
-from database import (list_of_channels, search_database, get_list_of_channels,
+from database import (search_database, get_list_of_channels,
                       get_u_id, get_profile, get_message, get_formatted_user)
 from error import AccessError, InputError
 
@@ -173,16 +173,14 @@ def channel_details(token, channel_id):
                 owner_details = get_profile(owner_id)
                 owner_list.append({'u_id': owner_id, 
                                    'name_first': owner_details['name_first'],
-                                   'name_last': owner_details['name_last']
-                })
+                                   'name_last': owner_details['name_last']})
             
             # adding into member_list
             for member_id in channel['all_members']:
                 member_details = get_profile(member_id)
                 member_list.append({'u_id': member_id, 
                                     'name_first': member_details['name_first'],
-                                    'name_last': member_details['name_last']
-                                  })
+                                    'name_last': member_details['name_last']})
             
             details['owner_members'] = owner_list
             details['all_members'] = member_list
@@ -226,7 +224,7 @@ def channel_messages(token, channel_id, start):
                 num_total_messages = len(chan['channel_messages'])
             # add from message_list to messages
             for msg_id in chan['channel_messages'][start:]:
-                if (end - start > 50):
+                if end - start > 50:
                     break
                 elif (end - start <= 50 and msg_id == end_of_list):
                     end = -1

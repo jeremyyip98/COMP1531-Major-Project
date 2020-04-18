@@ -3,8 +3,11 @@ UNSW COMP1531 Project Iteration 2
 server.py
 This file are running the frontend function works all the routes
 """
+#pylint: disable= pointless-string-statement, invalid-name, trailing-whitespace
+#some pointless string are put there incase we need it
 import sys
 from json import dumps
+from threading import Thread, Timer
 from flask import Flask, request
 from flask_cors import CORS
 from error import InputError
@@ -14,7 +17,6 @@ import channels
 import message
 import other
 from pickle_it import pickle_it, database_update
-from threading import Thread, Timer
 from database import reset_message, restore_database, restore_channel_database
 from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle
 from standup import standup_start, standup_active, standup_send
@@ -42,6 +44,7 @@ APP.register_error_handler(Exception, defaultHandler)
 # Example
 @APP.route("/echo", methods=['GET'])
 def echo():
+    '''example function by lecturer'''
     data = request.args.get('data')
     if data == 'echo':
         raise InputError(description='Cannot echo "echo"')
@@ -53,6 +56,7 @@ def echo():
     
 @APP.route("/channel/invite", methods=['POST'])
 def http_invite():
+    '''HTTP request for inviting someone to channel'''
     payload = request.get_json()
     channel.channel_invite(
         payload['token'],
@@ -62,13 +66,16 @@ def http_invite():
     
 @APP.route("/channel/details", methods=['GET'])
 def http_details():
+    '''HTTP request for getting channel details'''
     details = channel.channel_details(
         request.args.get('token'),
+        #need the int to convert from string to int
         int(request.args.get('channel_id')))
     return dumps(details)
     
 @APP.route("/channel/messages", methods=['GET'])
 def http_messages():
+    '''HTTP request for getting messages of channel'''
     details = channel.channel_messages(
         request.args.get('token'),
         int(request.args.get('channel_id')),
@@ -139,6 +146,7 @@ def http_removeowner():
 
 @APP.route("/auth/register", methods=['POST'])
 def http_register():
+    '''HTTP request for registering a user'''
     payload = request.get_json()
     details = auth.auth_register(
         payload['email'],
@@ -149,6 +157,7 @@ def http_register():
 
 @APP.route("/auth/login", methods=['POST'])
 def http_login():
+    '''HTTP request for logging in user'''
     payload = request.get_json()
     details = auth.auth_login(
         payload['email'],
@@ -157,6 +166,7 @@ def http_login():
 
 @APP.route("/auth/logout", methods=['POST'])
 def http_logout():
+    '''HTTP request for logging a user out'''
     payload = request.get_json()
     is_success = {"is_success" : auth.auth_logout(payload['token'])}
     return dumps(is_success)
@@ -301,12 +311,14 @@ def http_admin_create():
 
 @APP.route("/user/profile", methods=["GET"])
 def http_profile():
+    '''HTTP request for getting user info''' 
     token = request.args.get('token')
     u_id = int(request.args.get('u_id'))
     return dumps(user_profile(token, u_id))
 
 @APP.route("/user/profile/setname", methods=["PUT"])
 def http_setname():
+    '''HTTP request for changing a users name''' 
     payload = request.get_json()
     token = payload["token"]
     name_first = payload["name_first"]
@@ -316,6 +328,7 @@ def http_setname():
 
 @APP.route("/user/profile/setemail", methods=["PUT"])
 def http_setemail():
+    '''HTTP request for changing a user email'''
     payload = request.get_json()
     token = payload["token"]
     email = payload["email"]
@@ -324,6 +337,7 @@ def http_setemail():
 
 @APP.route("/user/profile/sethandle", methods=["PUT"])
 def http_sethandle():
+    '''HTTP request for changing a users handle name'''
     payload = request.get_json()
     token = payload["token"]
     handle_str = payload["handle_str"]
@@ -332,11 +346,13 @@ def http_sethandle():
 
 @APP.route("/users/all", methods=['GET'])
 def http_users_all():
+    '''A helper function to get data on all user'''
     token = request.args.get('token')
     return dumps(other.users_all(token))
 
 @APP.route("/search", methods=['GET'])
 def http_search():
+    '''HTTP request for searching for information'''
     token = request.args.get('token', None)
     print(token)
     query_str = request.args.get('query_str', None)
@@ -344,6 +360,7 @@ def http_search():
 
 @APP.route("/standup/start", methods=["POST"])
 def http_standup_start():
+    '''HTTP request to start standup'''
     payload = request.get_json()
     token = payload['token']
     channel_id = int(payload['channel_id'])
@@ -353,6 +370,7 @@ def http_standup_start():
 
 @APP.route("/standup/active", methods=["GET"])
 def http_standup_active():
+    '''HTTP request for activating standup'''
     token = request.args.get('token')
     channel_id = int(request.args.get('channel_id'))
     result = standup_active(token, channel_id)
@@ -360,6 +378,7 @@ def http_standup_active():
 
 @APP.route("/standup/send", methods=["POST"])
 def http_standup_send():
+    '''HTTP request for sending message for standup'''
     payload = request.get_json()
     token = payload['token']
     channel_id = int(payload['channel_id'])
@@ -369,6 +388,7 @@ def http_standup_send():
 
 @APP.route("/workspace/reset", methods=["POST"])
 def http_workspace_reset():
+    '''HTTP request for reseting all the data in database'''
     workspace_reset()
     return dumps({})
     
@@ -379,6 +399,7 @@ def update_server_info():
 
 @APP.after_request
 def pickle_store(response):
+    '''HTTP request for pickling data after every request'''
     timer = Timer(1.5, pickle_it)
     timer.daemon = True
     timer.start()

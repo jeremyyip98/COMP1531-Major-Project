@@ -1,7 +1,9 @@
 '''
 Comp1531 Assignment other_test.py
 '''
-#pylint: disable = mixed-indentation, invalid-name, trailing-whitespace
+#pylint: disable = mixed-indentation, invalid-name, trailing-whitespace, unused-variable, line-too-long
+#disable unused since we need that for pytest raise error as
+#disable line too long since some lines are needed to be long to send long messages to assert they are valid
 import pytest
 from channels import channels_create
 from channel import channel_invite, channel_details
@@ -58,8 +60,8 @@ def test_search_one_channel():
     assert search_results["messages"][0]["message_id"] == message_details["message_id"]
 
 def test_search_two_channels():
-    # This registers a user, creates a channel and sends the message and returns the message 
-    # detail and the channel creators details
+    '''This registers a user, creates a channel and sends the message and returns the message 
+    detail and the channel creators details'''
     send_test_message("Search term isnt in this message", "test_channel_one", False)
     message_details, details = send_test_message("Search term is gobble", "test_channel_two", False)[:2]
     
@@ -67,8 +69,8 @@ def test_search_two_channels():
     # Checks that the message containing "test" is found by the search
     assert search_results["messages"][0]["message_id"] == message_details["message_id"]
 
-# Sends three messages to and creates a channel with channel_name. One message contains the search term
 def send_three_messages(channel_name):
+    '''Sends three messages to and creates a channel with channel_name. One message contains the search term'''
     message_details, details, channel_id = send_test_message("Search term is in this message", channel_name, False)
     message_send(details["token"], channel_id, "A different message")
     message_send(details["token"], channel_id, "Another different message")
@@ -78,7 +80,8 @@ def send_three_messages(channel_name):
 # Sends 3 messages where one contains the search term. This is done three time to a new channel each time. 
 # Searh is called and asserts that all three search term containing messages are contined in the search.
 def test_search_multiple_channels_and_messages():
-    
+    '''Sends 3 messages where one contains the search term. This is done three time to a new channel each time. 
+    Searh is called and asserts that all three search term containing messages are contined in the search.'''
     message_details1, details = send_three_messages("test_channel_one")
     message_details2 = send_three_messages("test_channel_two")[0]
     message_details3 = send_three_messages("test_channel_two")[0]
@@ -90,11 +93,9 @@ def test_search_multiple_channels_and_messages():
     assert any(d["message_id"] == message_details2["message_id"] for d in search_results["messages"])
     assert any(d["message_id"] == message_details3["message_id"] for d in search_results["messages"])
 
-
-# Sends one message containing the search term to a channel created by different users each. Searches for the term
-# with one users token and asserts that only the message from the channel he has joined is found
-
 def test_search_term_in_channel_not_joined():
+    '''Sends one message containing the search term to a channel created by different users each. Searches for the term
+    with one users token and asserts that only the message from the channel he has joined is found'''
     user_one = False
     user_two = True
     message_details, details, test = send_test_message("Gobble", "test_channel_one", user_one)

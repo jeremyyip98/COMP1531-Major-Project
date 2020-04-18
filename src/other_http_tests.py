@@ -154,7 +154,7 @@ def test_search_in_multiple_channels():
     # Check empty    
     print(search_messages(token, "Look"))
     channel_id = create_channel(token)
-    message_id = send_message(token, "Look its a message", channel_id)
+    send_message(token, "Look its a message", channel_id)
     send_message(token, "This shouldnt be found", channel_id)   
     received = requests.post(f"{BASE_URL}/auth/register", json={
         "email" : "search_test@gmail.com",
@@ -164,7 +164,7 @@ def test_search_in_multiple_channels():
         }).json()
     token2 = received['token']
     channel_id = create_channel(token2)
-    message_id = send_message(token2, "Look anohter message", channel_id)
+    send_message(token2, "Look anohter message", channel_id)
     send_message(token2, "This shouldnt be found either", channel_id)   
     queryString = urllib.parse.urlencode({
                 'token' : received['token'],
