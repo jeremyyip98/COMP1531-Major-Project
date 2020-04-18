@@ -8,7 +8,7 @@ import urllib.request
 import json
 import requests
 
-BASE_URL = "http://127.0.0.1:8084"
+BASE_URL = "http://127.0.0.1:8085"
 # Helper Functions
 def create_user1():
     '''Helper function to make user in server'''
@@ -47,6 +47,7 @@ def details_get(token, channel_id):
 
 def test_channels_createt_payload():
     '''testing create with true public'''
+    requests.post(f"{BASE_URL}/workspace/reset", json={})
     create_user1()
     payload = requests.post(f"{BASE_URL}/channels/create", json={
         'token' : user1['token'],

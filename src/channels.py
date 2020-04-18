@@ -37,15 +37,10 @@ def channels_create(token, name, is_public):
         'current_progress_list' : [],
         'current_progress_word' : "",
         'guessed_letters_list' : [],
-<<<<<<< HEAD
-        }
-    list_of_channels.append(new_channel)
-=======
         'incorrect_letters_list' : [],
     }
     channel_list = get_list_of_channels()
     channel_list.append(new_channel)
->>>>>>> a105211ff26c6051e1b1b65d7f5d7d4a0cdfb2dc
     return {'channel_id' : re_channel_id}
 def channels_list(token):
     """Gets a token and returns a list of channel the user is in"""

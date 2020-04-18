@@ -8,7 +8,7 @@ Jackie Cai z5259449
 #and trailing whitespace is standard ignore 
 import pytest
 
-from database import restore_channel_database, restore_database
+from database import restore_channel_database, restore_database, get_list_of_channels
 from error import AccessError, InputError
 from auth import auth_register
 from user import user_profile

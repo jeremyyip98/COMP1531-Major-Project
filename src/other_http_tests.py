@@ -5,9 +5,8 @@ Test for Other functions like search and admin
 import json
 import urllib
 import requests
-import urllib.request
 
-PORT = 8084
+PORT = 8085
 BASE_URL = f"http://127.0.0.1:{PORT}"
 
 # Helper Functions 
@@ -49,23 +48,23 @@ def channel_details_get2(token, channel_id):
         'channel_id' : channel_id,
     })
     response = urllib.request.urlopen(f"{BASE_URL}/channel/details?{queryString}")
-    payload = response.json()
+    payload = json.load(response)
     return payload
 
 def create_channel(token):
     '''Helper function to create a channel'''
     payload = requests.post(f"{BASE_URL}/channels/create", json={
         'token' : token,
-        'channel_name' : 'test_channel',
+        'name' : 'test_channel',
         'is_public' : True,
     })
     return payload.json()['channel_id']
 
-def create_channel2(token):
-    '''Helper function to create another channel'''
+def create_channel2(user):
+    '''Helper function to create another channel no return'''
     requests.post(f"{BASE_URL}/channels/create", json={
-        'token' : token,
-        'channel_name' : 'test_channel',
+        'token' :user['token'],
+        'name' : 'test_channel',
         'is_public' : True,
     })
     
@@ -197,15 +196,16 @@ def test_admin_permission_change():
     })
     details = get_user_all(user['token'])
     assert details['users'][0]['permission_id'] == 2
+    requests.post(f"{BASE_URL}/workspace/reset", json={})
 
 def test_admin_user_remove():
     '''Test the user remove http'''
     requests.post(f"{BASE_URL}/workspace/reset", json={})
     user = register_example_user()
     admin = register_admin()
-    create_channel2(user['token'])
-    c_details = channel_details_get2(user['token'], 1)
+    create_channel2(user)
     u_details = get_user_all(user['token'])
+    c_details = channel_details_get2(user['token'], 1)
     #make sure there are two users user and admin
     assert len(u_details['users']) == 2
     # Make sure the channel is made properly and users in channel
@@ -237,14 +237,10 @@ def test_admin_user_remove():
     assert len(u_detail['users']) == 1
     assert u_detail['users'][0]['name_first'] == 'Admin'
     c_detail = channel_details_get2(admin['token'], 1)
-    owner_list = [{
-        'u_id': admin['u_id'],
-        'name_first': 'Admin',
-        'name_last': 'Nimda'
-    }]
+    owner_list = []
     member_list = [{
         'u_id': admin['u_id'],
-        'name_first': 'Other',
+        'name_first': 'Admin',
         'name_last': 'Nimda'
     }]
     assert c_detail == {
@@ -252,3 +248,4 @@ def test_admin_user_remove():
         'owner_members' : owner_list,
         'all_members' : member_list
     }
+    requests.post(f"{BASE_URL}/workspace/reset", json={})

@@ -1,10 +1,8 @@
 """ File includes implementation for search, users_all and admin permission change """
-from database import check_token, get_all_users, registered_users_store,\
-    search_database, get_message, get_permission, get_profile_allinfo, list_of_channels
+from database import check_token, get_all_users, \
+    search_database, get_message, get_permission, get_profile_allinfo,\
+    get_list_of_channels, get_registered_users
 from error import AccessError, InputError
-#pylint: disable = line-too-long
-#last line to delete user needs list comprehension which is a long line since
-#registered_user_store['registered_user'] is repeated twice which makes a ling line
 # Probably should need permission to do this!!!
 
 def users_all(token):
@@ -49,9 +47,14 @@ def admin_user_remove(token, u_id):
     if a_user != 1:
         raise AccessError(description='Not an Owner of Slackr')
     # iterate through the channel and find if the user is in any of them
+    list_of_channels = get_list_of_channels()
+    registered_users_store = get_registered_users()
     for channel in list_of_channels:
         if u_id in channel['all_members']:
             channel['all_members'].remove(u_id)
             if u_id in channel['owner_members']:
                 channel['owner_members'].remove(u_id)
-    registered_users_store['registered_users'] = [i for i in registered_users_store['registered_users'] if not i['u_id'] == u_id]
+    for i in range(len(registered_users_store['registered_users'])):
+        if registered_users_store['registered_users'][i]['u_id'] == u_id:
+            del registered_users_store['registered_users'][i]
+            break

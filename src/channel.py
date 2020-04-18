@@ -5,7 +5,7 @@ Written by Jackie Cai z5259449
 Written by Aaron Lin z5258280
 """
 #pylint: disable=C0103, W0601, C0303, consider-using-enumerate
-from database import (list_of_channels, search_database,
+from database import (list_of_channels, search_database, get_list_of_channels,
                       get_u_id, get_profile, get_message, get_formatted_user)
 from error import AccessError, InputError
 
@@ -59,9 +59,9 @@ def channel_addowner(token, channel_id, u_id):
     if is_valid is False:
         raise AccessError(description='Invalid Token')
     user = get_formatted_user(token)
+    list_of_channels = get_list_of_channels()
     if not any(d['channel_id'] == channel_id for d in list_of_channels):
         raise InputError(description="Channel ID is not a valid channel")
-    list_of_channels = get_list_of_channels()
     for chan in list_of_channels:
         #found channel
         if chan['channel_id'] == channel_id:

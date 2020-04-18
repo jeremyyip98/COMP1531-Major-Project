@@ -264,4 +264,8 @@ def get_profile_allinfo(u_id):
 def get_list_of_channels():
     global list_of_channels
     return list_of_channels
+
+def get_registered_users():
+    global registered_users_store
+    return registered_users_store
     
