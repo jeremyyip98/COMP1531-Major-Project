@@ -152,15 +152,14 @@ def http_logout():
     is_success = {"is_success" : auth.auth_logout(payload['token'])}
     return dumps(is_success)
 
-auth/passwordreset/request
 
-@APP.route("auth/passwordreset/request", methods=['POST'])
+@APP.route("/auth/passwordreset/request", methods=['POST'])
 def httt_request_code():
     payload = request.get_json()
     auth.auth_reset_password_request(payload['email'])
     return dumps({})
 
-@APP.route("auth/passwordreset/reset", methods=['POST'])
+@APP.route("/auth/passwordreset/reset", methods=['POST'])
 def http_reset_password():
     payload = request.get_json()
     auth.auth_reset_password_reset(payload['reset_code'], payload['new_password'])

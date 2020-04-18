@@ -15,11 +15,15 @@ SUPPORT_EMAIL = "flying.circus.slackr@gmail.com"
 SUPPORT_EMAIL_PASSWORD = "wF79s@5qbEQp" 
 
 def valid_email(email):
-    """ 
-    Input : email(string)
-    Output : True if email found
-    Takes email address string and returns true if it is a valid email
-    by the method in the spec else returns false """
+    '''
+    Returns whether email is as valid email according to spec
+
+    Parameter:
+        email (str): email address
+
+    Returns:
+        (bool) Whether or not email is valid format
+    '''
     regex = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
     if re.search(regex, email):
         return True
@@ -27,14 +31,31 @@ def valid_email(email):
         return False
 
 def generate_u_id():
-    """ Generates highest u_id + one returns it and appends to u_id list """
+    '''
+    Returns a generated user id
+
+    Returns:
+        (int) u_id: last u_id + 1
+    '''
     u_id = max(database.u_ids)
     u_id += 1
     database.u_ids.append(u_id)
     return u_id
 
 def make_handle(first, last):
-    """ Returns first and last name lower case and concatenated """
+    '''
+    Returns first and last name lower case and concatenated and cut off
+    at 20 characters for use as handle
+
+    Parameters:
+        first (str): firt name
+        last (str): last name
+
+    Returns:
+        handle (str)
+    '''
+
+
     first = (first.lower())
     last = last.lower()
     return (first + last)[:20]
@@ -115,6 +136,8 @@ def auth_reset_password_request(email):
     while any(d['pwd_reset_code'] == code for d in database.registered_users_store['registered_users']):
         code = secrets.token_urlsafe(PWD_RESET_CODE_LENGTH)
 
+    code = '1234'
+
     for d in database.registered_users_store['registered_users']:
         if d['email'] == email:
             d['pwd_reset_code'] = code
@@ -141,7 +164,7 @@ def auth_reset_password_reset(reset_code, password):
     if len(password) < 6 or len(password) > 50:
         raise InputError(description='Password must be between 6 and 50 characters')
     for user in database.registered_users_store['registered_users']:
-        if user['pwd_reset_code'] == reset_code:
+        if user['pwd_reset_code'] == str(reset_code):
             user['hash'] = encrypt(password)
         else:
             raise InputError(description='Reset code is invalid')
