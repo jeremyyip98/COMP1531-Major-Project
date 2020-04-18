@@ -24,7 +24,6 @@ def channels_create(token, name, is_public):
     if len(name) > 20:
         raise InputError(description='Channel Name Too Long')
     re_channel_id = generate_channel_id()
-    print(f"Created channel with channel id {re_channel_id}")
     new_channel = {
         'channel_id' : re_channel_id,
         'name' : name,
