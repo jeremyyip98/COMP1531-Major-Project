@@ -283,7 +283,7 @@ def http_user_permission_change():
     )
     return dumps({})
 
-@APP.route("/admin/user/remove", methods=['DELETE'])
+@APP.route("/admin/user/remove", methods=['POST'])
 def http_admin_user_remove():
     '''Removes a user from Slackr and from any channel they are in'''
     data = request.get_json()

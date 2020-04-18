@@ -228,7 +228,7 @@ def test_admin_user_remove():
         'token' : admin['token'],
         'channel_id' : 1
     })
-    requests.delete(f"{BASE_URL}/admin/user/remove", json={
+    requests.post(f"{BASE_URL}/admin/user/remove", json={
         'token' : admin['token'],
         'u_id' : user['u_id']
     })
