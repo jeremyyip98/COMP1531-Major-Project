@@ -47,7 +47,6 @@ def upload_profile_pic(token, img_url, x_start, y_start, x_end, y_end):
     """ Crops the image according to input coordinates """
     new = im.crop(coordinates)    
     new.save(path, format='jpeg')
-    Need to Implement this function
     database.set_img_url (token, f"imgurl/{filename}")
    
     print(path)
