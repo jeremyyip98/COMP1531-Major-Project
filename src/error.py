@@ -9,6 +9,6 @@ class AccessError(HTTPException):
     message = 'No message specified'
 
 class InputError(HTTPException):
-    """Return input error"
+    """Return input error"""
     code = 400
     message = 'No message specified'
