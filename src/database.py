@@ -178,7 +178,7 @@ def get_profile(u_id):
 def set_img_url(token, img_url):
     for d in registered_users_store['registered_users']:
         if d['token'] == token:
-            d['img_url'] = img_url
+            d['profile_img_url'] = img_url
             return
 
 def set_name(token, name_first, name_last):
