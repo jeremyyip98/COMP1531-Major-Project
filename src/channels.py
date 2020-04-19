@@ -9,8 +9,10 @@ from error import AccessError, InputError
 def generate_channel_id():
     """Makes a channel id and adds it to the databse"""
     channel_ids = get_channel_ids()
+    #finds the highest channel_ids and increment by 1 making a new channel_ids
     channel_id = max(channel_ids)
     channel_id += 1
+    #adds it to channel_ids to remember previous channel
     channel_ids.append(channel_id)
     return channel_id
 def channels_create(token, name, is_public):
@@ -24,6 +26,7 @@ def channels_create(token, name, is_public):
     if len(name) > 20:
         raise InputError(description='Channel Name Too Long')
     re_channel_id = generate_channel_id()
+    #make new channel with all the info
     new_channel = {
         'channel_id' : re_channel_id,
         'name' : name,

@@ -1,8 +1,8 @@
 """ File includes implementation for search, users_all and admin permission change """
-from database import check_token, get_all_users, registered_users_store,\
-    search_database, get_message, get_permission, get_profile_allinfo, list_of_channels
+from database import check_token, get_all_users, \
+    search_database, get_message, get_permission, get_profile_allinfo,\
+    get_list_of_channels, get_registered_users
 from error import AccessError, InputError
-
 # Probably should need permission to do this!!!
 
 def users_all(token):
@@ -29,7 +29,9 @@ def admin_userpermission_change(token, u_id, permission_id):
         raise AccessError(description='Invalid Token')
     #this functions raises an input error if the u_id does not refer to valid user
     user = get_profile_allinfo(u_id)
+    #get the permission id to check if token is a owner of Slackr
     a_user = get_permission(token)
+    #make sure permission Id is a valid input
     if permission_id not in (1, 2):
         raise InputError(description='Not valid permission id')
     if a_user != 1:
@@ -47,13 +49,17 @@ def admin_user_remove(token, u_id):
     if a_user != 1:
         raise AccessError(description='Not an Owner of Slackr')
     # iterate through the channel and find if the user is in any of them
+    list_of_channels = get_list_of_channels()
+    registered_users_store = get_registered_users()
     for channel in list_of_channels:
+        #if he is remove from the channel
         if u_id in channel['all_members']:
             channel['all_members'].remove(u_id)
             if u_id in channel['owner_members']:
                 channel['owner_members'].remove(u_id)
     for i in range(len(registered_users_store['registered_users'])):
+        #iterate using index as you need to remove the object itself rather
+        #than removing a value
         if registered_users_store['registered_users'][i]['u_id'] == u_id:
             del registered_users_store['registered_users'][i]
             break
-        

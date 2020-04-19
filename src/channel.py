@@ -4,8 +4,8 @@ channel.py
 Written by Jackie Cai z5259449
 Written by Aaron Lin z5258280
 """
-#pylint: disable=C0103, W0601, C0303
-from database import (get_list_of_channels, search_database,
+#pylint: disable=C0103, W0601, C0303, consider-using-enumerate
+from database import (search_database, get_list_of_channels,
                       get_u_id, get_profile, get_message, get_formatted_user)
 from error import AccessError, InputError
 
@@ -17,6 +17,7 @@ def channel_join(token, channel_id):
         raise AccessError(description='Invalid Token')
     user_id = get_u_id(token)
     user = search_database(token)
+    #gets the database for pickling and makes it global
     list_of_channels = get_list_of_channels()
     if not any(d['channel_id'] == channel_id for d in list_of_channels):
         raise InputError(description="Channel ID is not a valid channel")
@@ -26,7 +27,7 @@ def channel_join(token, channel_id):
             #if the user is already in the channel raises input error
             if user_id in chan['all_members']:
                 raise InputError(description="Already in Channel")
-            #checks if it's public and user is owner
+            #checks if it's private and user is owner
             if chan['is_public'] is False and user['permission_id'] == 2:
                 raise AccessError(description='Not an owner and Private Channel')
             else:
@@ -46,6 +47,7 @@ def channel_leave(token, channel_id):
     for chan in list_of_channels:
         #found a channel with the id
         if chan['channel_id'] == channel_id:
+            #check channel if the user is in it
             if user_id in chan['all_members']:
                 chan['all_members'].remove(user_id)
                 #check if the user was an owner
@@ -73,7 +75,7 @@ def channel_addowner(token, channel_id, u_id):
                 chan['owner_members'].append(u_id)
                 return
             if user['u_id'] not in chan['owner_members']:
-                raise AccessError(description='User is not an Owner of Slackr or Channel')
+                raise AccessError(description='User is not an owner of Slackr or Channel')
             else:
                 chan['owner_members'].append(u_id)
                 return
@@ -87,7 +89,7 @@ def channel_removeowner(token, channel_id, u_id):
     list_of_channels = get_list_of_channels()
     if not any(d['channel_id'] == channel_id for d in list_of_channels):
         raise InputError(description="Channel ID is not a valid channel")
-    for i in range(len(list_of_channels)):
+    for i in range(len(list_of_channels)): 
         if list_of_channels[i]['channel_id'] == channel_id:
             if u_id not in list_of_channels[i]['owner_members']:
                 raise InputError(description='No Owner found in Channel')
@@ -224,7 +226,7 @@ def channel_messages(token, channel_id, start):
                 num_total_messages = len(chan['channel_messages'])
             # add from message_list to messages
             for msg_id in chan['channel_messages'][start:]:
-                if (end - start > 50):
+                if end - start > 50:
                     break
                 elif (end - start <= 50 and msg_id == end_of_list):
                     end = -1

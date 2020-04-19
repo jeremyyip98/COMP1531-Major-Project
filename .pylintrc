@@ -1,0 +1,8 @@
+disable=global-statement
+
+# Regexp for a line that is allowed to be longer than the limit.
+ignore-long-lines=^\s*(# )?<?https?://\S+>?$
+
+# Naming constant and variable naming style set to any
+const-naming-style=any
+variable-naming-style=any

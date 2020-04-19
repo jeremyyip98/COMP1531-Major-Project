@@ -1,13 +1,11 @@
 """
-Iteration 2 
+Iteration 2
 Standup functions
 Jeffrey Yang z5206134
 """
-from error import InputError
-import database
 import threading
-import helper_functions
-from error import InputError, AccessError
+import database
+from error import InputError
 from message import message_send
 
 def convert_standup_queue(s_q):
@@ -16,7 +14,7 @@ def convert_standup_queue(s_q):
     compiled_mesage = ""
     if s_q:
         for msg_dict in s_q:
-            compiled_mesage = compiled_mesage + msg_dict['name_first'] + ": " + msg_dict['message'] + "\n"
+            compiled_mesage = compiled_mesage + msg_dict['name_first'] + ": " + msg_dict['message'] + "\n" #pylint: disable=line-too-long
     return compiled_mesage
 
 def send_standup_queue(token, channel_id):
@@ -57,8 +55,6 @@ def standup_send(token, channel_id, message):
         raise InputError(description='Message is over 1000 characters')
     if not database.check_standup_happening(channel_id):
         raise InputError(description='An active standup is not corrently happening')
-    '''if not database.check_user_in_channel(token, channel_id):
-        raise AccessError(description='The authorised user is not a member of channel')'''
     person = database.get_formatted_user(token)
     name = person['name_first']
     standup_queue = database.get_standup_queue()
@@ -66,4 +62,3 @@ def standup_send(token, channel_id, message):
         'name_first' : name,
         'message' : message,
     })
-    # What if standup_queue is longer than 1000 characters?
