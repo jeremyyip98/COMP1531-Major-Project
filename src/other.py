@@ -38,7 +38,6 @@ def search(token, query_str):
     for message in messages:
         print(message['message'])
         if query_str.lower() in message['message'].lower():
-            print("")
             query_str_matches.append(message)
     query_str_matches = sorted(query_str_matches, key=lambda i: i['time_created'], reverse=True)
     # Check that order is correct
