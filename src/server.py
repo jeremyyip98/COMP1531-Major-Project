@@ -3,6 +3,7 @@ UNSW COMP1531 Project Iteration 2
 server.py
 This file are running the frontend function works all the routes
 """
+
 import sys
 from json import dumps
 from flask import Flask, request, send_from_directory
@@ -34,6 +35,7 @@ def defaultHandler(err):
 APP = Flask(__name__)
 CORS(APP)
 
+APP.config['UPLOAD_FOLDER'] = "profile_pictures"
 APP.config['TRAP_HTTP_EXCEPTIONS'] = True
 APP.register_error_handler(Exception, defaultHandler)
 
@@ -47,11 +49,9 @@ def echo():
         'data': data
     })
 
-@APP.route("/profile_pictures/<string:filename>")
+@APP.route("/imgurl/<string:filename>")
 def show_profile_img(filename):
-    """ Not sure if this will work """
-    return send_from_directory(app.config['profile_pictures'],
-                               filename, as_attachment=True)
+    return send_from_directory(APP.config['UPLOAD_FOLDER'], filename)
 
 
 @APP.route("/channel/invite", methods=['POST'])
@@ -321,7 +321,7 @@ def http_upload_photo():
     y_end = int(payload["y_end"]) 
     """ This possibly should involve threading incase it slows down whole server """
     upload_profile_pic(token, img_url, x_start, y_start, x_end, y_end)
-
+    print("HERE")
     return dumps({})
 
 @APP.route("/users/all", methods=['GET'])

@@ -170,7 +170,7 @@ def get_profile(u_id):
                 "name_first" : user['name_first'],  
                 "name_last" : user['name_last'],
                 "handle_str" : user['handle_str'],
-                "img_url" : user['img_url']
+                "profile_img_url" : user['img_url']
             }
             return formatted_user
     raise InputError
@@ -179,6 +179,7 @@ def set_img_url(token, img_url):
     for d in registered_users_store['registered_users']:
         if d['token'] == token:
             d['img_url'] = img_url
+            return
 
 def set_name(token, name_first, name_last):
     '''Changes the first and last name of a user'''
