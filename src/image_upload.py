@@ -24,6 +24,7 @@ def upload_profile_pic(token, img_url, x_start, y_start, x_end, y_end):
     database.check_token(token)
     ###
     database.set_img_url (token, "http://localhost:1111/imgurl/080228e608b14474b599ee9c740acf90.jpg")
+    return
 
     if not os.path.exists(DIRECTORY):
         os.mkdir(DIRECTORY)  
