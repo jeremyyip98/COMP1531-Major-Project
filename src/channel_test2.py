@@ -3,7 +3,7 @@ from auth import auth_register
 from user import user_profile
 from channels import channels_list, channels_listall, channels_create
 from channel import channel_addowner, channel_removeowner, channel_invite, channel_details, channel_join, channel_leave, channel_messages
-from message import message_send
+from message import message_send, message_remove
 from helper_functions import register_valid_user, register_another_valid_user
 from database import restore_channel_database, restore_database, reset_message
 import pytest
@@ -26,7 +26,7 @@ def test_invite_invalid_channel_id():
     restore_channel_database()
     #   Create user and channel
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
     
     with pytest.raises(InputError) as e:
         channel_invite(user['token'], channel_id + 1, user['u_id'])
@@ -40,7 +40,7 @@ def test_invite_invalid_u_id():
     restore_channel_database()
     #   Create user and channel
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
     with pytest.raises(InputError) as e:
         channel_invite(user['token'], channel_id, user['u_id'] + 1)
     #   testing same issue with a separate but invalid u_id
@@ -53,7 +53,7 @@ def test_invite_authorised_user_invalid():
     restore_channel_database()
     #   Create user and channel
     user_in_channel = auth_register('name@mail.com', 'password', 'John', 'Doe')
-    channel_id = channels_create(user_in_channel['token'], 'valid_channel', True)
+    channel_id = channels_create(user_in_channel['token'], 'valid_channel', True)['channel_id']
     
     #   Register the two users not in channel
     user_not_in_channel = register_valid_user()
@@ -69,7 +69,7 @@ def test_invite_invalid_token():
     restore_channel_database()
     #   Create user and channel
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
     
     #   Raise AccessError
     with pytest.raises(AccessError) as e:
@@ -83,18 +83,18 @@ def test_channel_invite_normal():
     restore_database()
     restore_channel_database()
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
     
     #   make sure user is part of channel
-    user_channels = channels_list(user['token'])
-    assert user_channels['channels'][0]['channel_id'] == channel_id
+    user_channels = channels_list(user['token'])['channels']
+    assert user_channels[0]['channel_id'] == channel_id
     
     #   check whether user can now invite user2 to the channel
     user2 = register_another_valid_user()
     channel_invite(user['token'], channel_id, user2['u_id'])
     #   check if user is a member of the channel
-    user2_channels = channels_list(user2['token'])
-    assert user2_channels['channels'][0]['channel_id'] == channel_id
+    user2_channels = channels_list(user2['token'])['channels']
+    assert user2_channels[0]['channel_id'] == channel_id
 
 
 """    ERROR TESTS FOR CHANNEL_DETAILS    """
@@ -105,11 +105,11 @@ def test_details_not_in_channel():
     restore_channel_database()
     #   create user and channel
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
     
     #   create two users not in channel
-    user_not_in_channel_id = auth_register('name2@mail.com', 'passw0rd', 'Ben', 'Ny')
-    user_also_not_in_channel_id = auth_register('name3@mail.com', 'password1', 'Tim', 'He')
+    user_not_in_channel = auth_register('name2@mail.com', 'passw0rd', 'Ben', 'Ny')
+    user_also_not_in_channel = auth_register('name3@mail.com', 'password1', 'Tim', 'He')
     
     #   raises AccessError
     with pytest.raises(AccessError) as e:
@@ -123,7 +123,7 @@ def test_details_invalid_channel_id():
     restore_channel_database()
     #   create user and channel
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
 
     #   raise InputError
     with pytest.raises(InputError) as e:
@@ -137,7 +137,7 @@ def test_details_invalid_token():
     restore_channel_database()
     #   Create user and channel
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
     
     #   Raise AccessError
     with pytest.raises(AccessError) as e:
@@ -152,14 +152,14 @@ def test_channel_details_normal():
     restore_channel_database()
     #   create user and channel
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
     
 #   test for channel with only one member
     #   run channel_details
     details = channel_details(user['token'], channel_id)
     #   make sure channel details is the same as actual details
     assert details['name'] == 'valid_channel'
-    owner = {'u_id': user['u_id'], 'name_first': 'John', 'name_last': 'Doe'}
+    owner = [{'u_id': user['u_id'], 'name_first': 'First', 'name_last': 'Last'}]
     assert details['owner_members'] == owner
     #   same as 'owner_members' as the only member is the owner
     assert details['all_members'] == owner
@@ -175,29 +175,30 @@ def test_channel_details_normal():
     #   make sure channel details is the same as actual details
     assert details['name'] == 'valid_channel'
     #   assuming the first person added becomes the owner
-    owner = {'u_id': user['u_id'], 'name_first': 'John', 'name_last': 'Doe'}
-    assert details['owner_members'] == owner
+    owner = {'u_id': user['u_id'], 'name_first': 'First', 'name_last': 'Last'}
+    owner_list = [owner]
+    assert details['owner_members'] == owner_list
     #   now we have two members but only one owner
-    member1 = {'u_id': user2['u_id'], 'name_first': 'Ben', 'name_last': 'Ny'}
+    member1 = {'u_id': user2['u_id'], 'name_first': 'Anotherfirst', 'name_last': 'Anotherlast'}
     member_list = [owner, member1]
     assert details['all_members'] == member_list
 
 
 """    TEST FOR ERRORS IN CHANNEL_MESSAGES    """
     
-### Test when checking channel with no messages - AccessError
+"""### Test when checking channel with no messages - AccessError
 def test_no_messages():
     reset_message()
     restore_database()
     restore_channel_database()
     #   create user and channel
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
     
     #   Raise AccessError
     with pytest.raises(AccessError) as e:
         channel_messages(user['token'], channel_id, 0)
-
+"""
 ### Test when checking channel with INVALID CHANNEL_ID - InputError
 def test_messages_invalid_chanel_id():
     reset_message()
@@ -205,7 +206,7 @@ def test_messages_invalid_chanel_id():
     restore_channel_database()
     #   create user and channel
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
     
     #   send a message - prevents AccessError
     message_send(user['token'], channel_id, "abcde")
@@ -225,7 +226,7 @@ def test_message_out_of_range():
     restore_channel_database()
     #   create user and channel
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
     
     #   send 10 messages to channel
     for i in range(10):
@@ -246,11 +247,17 @@ def test_messages_not_in_channel():
     restore_channel_database()
     #   create user and channel
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
     
     #   create users who are not in the channel
     user_not_in_channel = auth_register('name2@mail.com', 'passw0rd', 'Ben', 'Ny')
     user_also_not_in_channel = auth_register('name3@mail.com', 'password1', 'Tim', 'He')
+    
+    #   send 10 messages to channel
+    for i in range(10):
+        message_send(user['token'], channel_id, "abcde")
+        
+    total_messages = 10
     
     with pytest.raises(AccessError) as e:
         channel_messages(user_not_in_channel['token'], channel_id, total_messages - 1)
@@ -264,7 +271,7 @@ def test_messages_invalid_token():
     restore_channel_database()
     #   Create user and channel
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
     
     #   send a message
     message_send(user['token'], channel_id, "abcde")
@@ -283,30 +290,44 @@ def test_channel_messages_normal():
     restore_channel_database()
     #   Create user and channel
     user = register_valid_user()
-    channel_id = channels_create(user['token'], 'valid_channel', True)
+    channel_id = channels_create(user['token'], 'valid_channel', True)['channel_id']
     
-    #   send 124 messages into channel
-    for i in range(124):
-        message_send(user['token'], channel_id, f'abcde{i}')
+    first_id = message_send(user['token'], channel_id, 'abcde-1')
     
+    print("First Message")
+    #   check if channel_messages are correct in these channel as well as 'start' and 'end' points
+    message = channel_messages(user['token'], channel_id, 0)
+    assert message['messages'][0]['message'] == f'abcde-1'
+    assert message['start'] == 0
+    assert message['end'] == -1
+    
+    message_send(user['token'], channel_id, 'abcde0')
+    message_send(user['token'], channel_id, 'abcde1')
+    message_remove(user['token'], first_id)
+    print("Message0")
     #   check if channel_messages are correct in these channel as well as 'start' and 'end' points
     message0 = channel_messages(user['token'], channel_id, 0)
-    for i in range(50):
-        assert message0['messages'][i]['message'] == f'abcde{i}'
+    assert message0['messages'][0]['message'] == f'abcde0'
+    assert message0['messages'][1]['message'] == f'abcde1'
     assert message0['start'] == 0
-    assert message0['end'] == 50
-        
-    message1 = channel_messages(user['token'], channel_id, 50)
-    for i in range(50, 100):
-        assert message1['messages'][i]['message'] == f'abcde{i}'
-    assert message0['start'] == 50
-    assert message0['end'] == 100
-    
-    #   check when function reaches end of messages
-    message2 = channel_messages(user['token'], channel_id, 100)
-    for i in range(100, 124):
-        assert message1['messages'][i]['message'] == f'abcde{i}'
-    assert message0['start'] == 100
     assert message0['end'] == -1
     
+    #   send 124 messages into channel
+    for i in range(2,124):
+        message_send(user['token'], channel_id, f'abcde{i}')
+    print("Message1")
+    #   check if channel_messages are correct in these channel as well as 'start' and 'end' points
+    message1 = channel_messages(user['token'], channel_id, 0)
+    for i in range(50):
+        print(f"message{i} = {message1['messages'][i]['message']}")
+        assert message1['messages'][i]['message'] == f'abcde{i}'
+    assert message1['start'] == 0
+    assert message1['end'] == 50
+    
+    print("Message2")
+    message2 = channel_messages(user['token'], channel_id, 50)
+    for i in range(50):
+        assert message2['messages'][i]['message'] == f'abcde{i+50}'
+    assert message2['start'] == 50
+    assert message2['end'] == 100
 

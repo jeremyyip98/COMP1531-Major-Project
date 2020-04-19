@@ -4,9 +4,9 @@ message_test.py
 Written by: Yip Jeremy Chung Lum, z5098112
 """
 import pytest
-from database import reset_message, restore_channel_database, restore_database, reset_channel, message_list
+from database import reset_message, restore_channel_database, restore_database, message_list
 from message import message_send, message_remove, message_edit
-from channel import channel_join, channel_addowner, channel_messages
+from channel import channel_join, channel_addowner
 from channels import channels_create
 from helper_functions import register_valid_user, register_another_valid_user
 from error import InputError, AccessError
@@ -16,7 +16,6 @@ def restore_everything():
     reset_message()
     restore_channel_database()
     restore_database()
-    reset_channel()
 
 #########################################################
 # The test functions for the message_send() in message.py
@@ -28,7 +27,7 @@ def test_send_exceed_characters():
     results = register_valid_user()
 
     # Create a channel and store the channel ID
-    channel_info = channels_create(results['token'], 'Cool Kids', False)
+    channel_info = channels_create(results['token'], 'Cool Kids', False)['channel_id']
     with pytest.raises(InputError):
         # Send a message with more than 1000 characters
         message_send(results['token'], channel_info, 'a' * 1001)
@@ -44,7 +43,7 @@ def test__send_not_joined_channel():
     not_joined = register_another_valid_user()
 
     # Create a channel and store the channel ID
-    channel_info = channels_create(joined['token'], 'Cool Kids', False)
+    channel_info = channels_create(joined['token'], 'Cool Kids', False)['channel_id']
 
     with pytest.raises(AccessError):
         # Send a message that the authorised user has not joined that channel
@@ -58,7 +57,7 @@ def test_send_correct_channel():
     results = register_valid_user()
 
     # Create a channel and store the channel ID
-    channel_info = channels_create(results['token'], 'Cool Kids', False)
+    channel_info = channels_create(results['token'], 'Cool Kids', False)['channel_id']
 
     # Send a message
     message_id = message_send(results['token'], channel_info, 'abc')
@@ -81,7 +80,7 @@ def test_send_invalid_token():
     results = register_valid_user()
 
     # Create a channel and store the channel ID
-    channel_info = channels_create(results['token'], 'Cool Kids', False)
+    channel_info = channels_create(results['token'], 'Cool Kids', False)['channel_id']
     with pytest.raises(AccessError):
         message_send('hopefullythisisnotavalidtoken', channel_info, 'abc')
 
@@ -95,7 +94,7 @@ def test_remove_not_exists():
     results = register_valid_user()
 
     # Create a channel and store the channel ID
-    channel_info = channels_create(results['token'], 'Cool Kids', False)
+    channel_info = channels_create(results['token'], 'Cool Kids', False)['channel_id']
 
     # Send a message to the stored channel ID and store the message ID
     message_info = message_send(results['token'], channel_info, 'abc')
@@ -118,7 +117,7 @@ def test_remove_invalid_user():
     not_owner = register_another_valid_user()
 
     # Create a channel and store the channel ID
-    channel_info = channels_create(results['token'], 'Cool Kids', False)
+    channel_info = channels_create(results['token'], 'Cool Kids', False)['channel_id']
 
     # Add another user to the channel
     channel_join(not_owner['token'], channel_info)
@@ -143,7 +142,7 @@ def test_remove_confirm():
     results = register_valid_user()
 
     # Create a channel and store the channel ID
-    channel_info = channels_create(results['token'], 'Cool Kids', False)
+    channel_info = channels_create(results['token'], 'Cool Kids', False)['channel_id']
 
     # Send a message to the stored channel ID
     message_send(results['token'], channel_info, 'abc')
@@ -171,7 +170,7 @@ def test_remove_invalid_token():
     results = register_valid_user()
 
     # Create a channel and store the channel ID
-    channel_info = channels_create(results['token'], 'Cool Kids', False)
+    channel_info = channels_create(results['token'], 'Cool Kids', False)['channel_id']
 
     # Send a message to the stored channel ID and store the message ID
     message_info = message_send(results['token'], channel_info, 'abc')
@@ -192,7 +191,7 @@ def test_edit_invalid_user():
     not_owner = register_another_valid_user()
 
     # Create a channel and store the channel ID
-    channel_info = channels_create(results['token'], 'Cool Kids', False)
+    channel_info = channels_create(results['token'], 'Cool Kids', False)['channel_id']
 
     # Add another user to the channel
     channel_join(not_owner['token'], channel_info)
@@ -218,7 +217,7 @@ def test_edit_confirm():
     results = register_valid_user()
 
     # Create a channel and store the channel ID
-    channel_info = channels_create(results['token'], 'Cool Kids', False)
+    channel_info = channels_create(results['token'], 'Cool Kids', False)['channel_id']
 
     # Send a message to the stored channel ID and store the message ID
     message_info = message_send(results['token'], channel_info, 'abc')
@@ -242,9 +241,35 @@ def test_edit_invalid_token():
     results = register_valid_user()
 
     # Create a channel and store the channel ID
-    channel_info = channels_create(results['token'], 'Cool Kids', False)
+    channel_info = channels_create(results['token'], 'Cool Kids', False)['channel_id']
 
     # Send a message to the stored channel ID and store the message ID
     message_info = message_send(results['token'], channel_info, 'abc')
     with pytest.raises(AccessError):
         message_edit('hopefullythisisnotavalidtoken', message_info, 'abcdefg')
+
+###################
+# Extra Tests
+###################
+def test_sending():
+    """This funciton test if the message was sent correctly"""
+    restore_everything()
+    global message_list
+    # Generate a token
+    results = register_valid_user()
+
+    channel_info = channels_create(results['token'], 'Cool Kids', False)['channel_id']
+    message_id = message_send(results['token'], channel_info, 'first message')
+    message_id2 = message_send(results['token'], channel_info, 'second message')
+
+    for dict_msg in message_list:
+        if dict_msg['message_id'] == message_id:
+            assert dict_msg['message'] == 'first message'
+
+    message_remove(results['token'], message_id2)
+
+    message_id3 = message_send(results['token'], channel_info, 'third message')
+
+    for dict_msg in message_list:
+        if dict_msg['message_id'] == message_id3:
+            assert dict_msg['message'] == 'third message'

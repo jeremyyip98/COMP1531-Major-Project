@@ -1,58 +1,60 @@
-from error import AccessError, InputError
+'''
+Flying Circus Database
+'''
+#pylint: disable = global-statement, invalid-name, trailing-whitespace
 from datetime import datetime, timezone
+from error import AccessError, InputError
 
 u_ids = [0]
 
-registered_users_store = {
-                            'registered_users' : 
-                                [
-                                  #  {   
-                                  # 'u_id' : 0,
-                                  # 'email' : example_email,
-                                  # 'name_first' : Firs,
-                                  # 'name_last' : Last,
-                                  # 'hash' : encrypted password,
-                                  # 'token' : token,
-                                  # 'handle_str' :firstlast
-                                  # 'permission_id': 1/2             
-                                  #  }    
-                                ]
-
-                        }
+registered_users_store = {'registered_users' : [
+    #  {   
+    # 'u_id' : 0,
+    # 'email' : example_email,
+    # 'name_first' : Firs,
+    # 'name_last' : Last,
+    # 'hash' : encrypted password,
+    # 'token' : token,
+    # 'handle_str' :firstlast
+    # 'permission_id': 1/2             
+    #  }    
+]}
 
 channel_ids = [0]
 
-list_of_channels = {
-                            'channels' :
-                            [
-                              #{
-                              #'channel_id' : channel_id,
-                              #'channel_name' : channel_name
-                              #'is_public' : boolean
-                              #'owner_members' : [u_id] - list of owner u_ids
-                              #'all_members : [u_id] - list of member u_ids
-                              #'is_in_standup: False
-                              #'standup_finish_time: time
-                              # }
-                            ]
-}
+list_of_channels = [#{
+    #'channel_id' : channel_id,
+    #'channel_name' : channel_name
+    #'is_public' : boolean
+    #'owner_members' : [u_id] (list of owner u_ids)
+    #'all_members : [u_id] (list of member u_ids)
+    #'is_in_standup: False
+    #'standup_finish_time: time
+    #'channel_messages : [] (list of message_id (int))
+    # }
+]
 
+def get_data():
+    '''gets the registered user database'''
+    return registered_users_store
+    
+def get_channel_ids():
+    '''get the channel_ids database'''
+    global channel_ids
+    return channel_ids
+    
 def restore_database():
+    '''restore the user database'''
     global registered_users_store
-    registered_users_store.clear()
-    registered_users_store = {
-                            'registered_users' : 
-                                [
-                                  #  {                   
-                                  #  }    
-                                ]
-
-                        }
+    registered_users_store['registered_users'].clear()
+    global u_ids
+    u_ids.clear()
+    u_ids.append(0)
 
 def restore_channel_database():
     """reseting the channel database to clear it"""
     global list_of_channels
-    list_of_channels['channels'].clear()
+    list_of_channels.clear()
     global channel_ids
     channel_ids.clear()
     channel_ids.append(0)
@@ -68,32 +70,26 @@ message_list = [
     # }
 ]
 
-# Extra datatype that is not mentioned in the spec
-channel_list = [
-    # {
-        # channel_id (int)
-        # channel_messages (list of message_id (int))
-    # }
-]
-
-standup_queue = ""
+standup_queue = []
 def restore_standup_queue():
+    '''restore the standup database'''
     global standup_queue
-    standup_queue = ""
+    standup_queue.clear()
 
 def check_token(token):
     """ Takes token raises Access Error if the token is not linked to any user,
         otherwise it returns True """
-    if search_database(token):
-        return True
-    else:
+    if search_database(token) is False:
         raise AccessError
+    else:
+        return True
 
 def get_u_id(token):
     """ Takes token and returns the u_id of user token belongs to"""
     return search_database(token)['u_id']
 
 def get_permission(token):
+    '''get the permission_id of a user'''
     return search_database(token)['permission_id']
 
 def get_email(token):
@@ -105,12 +101,12 @@ def get_formatted_user(token):
     user = search_database(token)
     formatted_user = {}
     formatted_user['u_id'] = user['u_id']
-    formatted_user['email'] = user['email']    
-    formatted_user['name_first'] = user['name_first']  
-    formatted_user['name_last'] = user['name_last']  
+    formatted_user['email'] = user['email']
+    formatted_user['name_first'] = user['name_first']
+    formatted_user['name_last'] = user['name_last']
     formatted_user['handle_str'] = user['handle_str']
     formatted_user['permission_id'] = user['permission_id']
-    return formatted_user  
+    return formatted_user
 
 def get_all_users():
     """ Returns the users type from the spec """
@@ -121,17 +117,17 @@ def get_all_users():
 
 
 def search_database(token):
-
     """ Takes token and returns all information of its registered user in a dictionary.
-        Example: 
-        { 
+        Example:
+        {
             'u_id' : 0,
             'email' : example_email,
             'name_first' : Firs,
             'name_last' : Last,
             'hash' : encrypted password,
             'token' : token,
-            'handle_str' :firstlast             
+            'premission : 1,
+            'handle_str' :firstlast
 
         }
         If token is not found in the datastore registered to any user
@@ -141,7 +137,7 @@ def search_database(token):
         if user['token'] == token:
             return user
     return False
-    
+
 def reset_message():
     """This function reset the message and returns nothing"""
     global message_list
@@ -160,12 +156,13 @@ def get_profile(u_id):
     '''Gets a user profile via u_id instead of token. Used in the user_profile function'''
     for user in registered_users_store['registered_users']:
         if user['u_id'] == u_id:
-            formatted_user = {}
-            formatted_user['u_id'] = user['u_id']
-            formatted_user['email'] = user['email']    
-            formatted_user['name_first'] = user['name_first']  
-            formatted_user['name_last'] = user['name_last']  
-            formatted_user['handle_str'] = user['handle_str']
+            formatted_user = {
+                "u_id" : user['u_id'],
+                "email" : user['email'],
+                "name_first" : user['name_first'],
+                "name_last" : user['name_last'],
+                "handle_str" : user['handle_str']
+            }
             return formatted_user
     raise InputError
 
@@ -198,7 +195,7 @@ def check_handle_str_already_used(handle_str):
         if user['handle_str'] == handle_str:
             return True
     return False
-    
+
 def turn_on_standup(channel_id, length):
     '''makes a channel into standup mode if it's not already. The standup_finish_time is equal to
     the present time plus the length'''
@@ -208,18 +205,21 @@ def turn_on_standup(channel_id, length):
                 channel['is_in_standup'] = True
                 current_dt = datetime.now()
                 timestamp = current_dt.replace(tzinfo=timezone.utc).timestamp()
-                channel['standup_finish_time'] = timestamp + length
+                channel['standup_finish_time'] = timestamp + length - 36000
                 return
             if channel['is_in_standup']:
-                raise InputError(description='An active standup is currently running in this channel')
+                raise InputError(description='An active standup currently running in this channel')
     raise InputError(description='Not a valid channel ID')
 
-def turn_off_standup(token, channel_id):
+def turn_off_standup(channel_id):
     '''deactivates stand up mode for a channel and sends the messages in standup queue'''
     for channel in list_of_channels:
         if channel['channel_id'] == channel_id:
             channel['is_in_standup'] = False
+            channel['standup_finish_time'] = None
             return
+
+
 
 
 def check_channel_exists(channel_id):
@@ -230,7 +230,7 @@ def check_channel_exists(channel_id):
     return False
 
 def check_user_in_channel(token, channel_id):
-    '''check if a user (identified by their token) is a member of a channel (identified by channel id)'''
+    '''check if a user is a member of a channel'''
     person = get_u_id(token)
     for channel in list_of_channels:
         if channel['channel_id'] == channel_id:
@@ -254,23 +254,10 @@ def get_standup_finish_time(channel_id):
             return channel.get('standup_finish_time')
 
 def get_standup_queue():
+    '''gets the standup queue'''
     global standup_queue
     return standup_queue
 
-def get_channel():
-    """This function create a relationship between channel and message,
-    and returns a list of dictionaries that contain it"""
-    global channel_list
-    return channel_list
-
-def reset_channel():
-    """This function reset the message and returns nothing"""
-    global channel_list
-    channel_list[:] = [
-        # {
-
-        # }
-    ]
 
 def get_profile_allinfo(u_id):
     '''Gets a user profile via u_id instead of token. Used in the user_profile function'''
@@ -278,3 +265,14 @@ def get_profile_allinfo(u_id):
         if user['u_id'] == u_id:
             return user
     raise InputError
+
+def get_list_of_channels():
+    '''gets the channel database'''
+    global list_of_channels
+    return list_of_channels
+
+def get_registered_users():
+    '''gets the registered user database as a global variable'''
+    global registered_users_store
+    return registered_users_store
+    
