@@ -8,6 +8,19 @@ from PIL import Image
 DIRECTORY = "profile_pictures"
 
 def upload_profile_pic(token, img_url, x_start, y_start, x_end, y_end):
+    '''
+    Function that enables the uploading of profile pictures.
+    Downloads image at img_url, crops according to coordinates and uploads to 
+    the profile img url store of the user the token belongs to. 
+
+    Parameters:
+        token (str): authenticaton token of the user whose profile will change
+        img_url (str): url pointing to new profile picture 
+        x_start, y_start, x_end, y_end (integers): Coordinates based on the image's 
+            top left corner (0,0) coordinate which must make up a box where the 
+            image will be cropped
+    Returns:
+    '''
     database.check_token(token)
     if not os.path.exists(DIRECTORY):
         os.mkdir(DIRECTORY)  
@@ -18,7 +31,6 @@ def upload_profile_pic(token, img_url, x_start, y_start, x_end, y_end):
         raise InputError(description='Image could not be accessed')    
     filename = uuid.uuid4().hex
     path = f"{DIRECTORY}/{filename}.jpg"
-    # Should this check for folder
     open(path, 'wb').write(r.content)
     """ Opens the image using pillow """
     im = Image.open(f"{path}")
