@@ -59,9 +59,9 @@ def channel_addowner(token, channel_id, u_id):
     if is_valid is False:
         raise AccessError(description='Invalid Token')
     user = get_formatted_user(token)
+    list_of_channels = get_list_of_channels()
     if not any(d['channel_id'] == channel_id for d in list_of_channels):
         raise InputError(description="Channel ID is not a valid channel")
-    list_of_channels = get_list_of_channels()
     for chan in list_of_channels:
         #found channel
         if chan['channel_id'] == channel_id:
@@ -137,8 +137,7 @@ def channel_invite(token, channel_id, u_id):
 def channel_details(token, channel_id):
     """Gives details of channel"""
     # check if the token is valid
-    is_valid = search_database(token)
-    if is_valid is False:
+    if search_database(token) is False:
         raise AccessError(description='Invalid Token')
     
     # authorised user is user who is in the channel and invites another user
@@ -173,16 +172,14 @@ def channel_details(token, channel_id):
                 owner_details = get_profile(owner_id)
                 owner_list.append({'u_id': owner_id, 
                                    'name_first': owner_details['name_first'],
-                                   'name_last': owner_details['name_last']
-                                 })
+                                   'name_last': owner_details['name_last']})
             
             # adding into member_list
             for member_id in channel['all_members']:
                 member_details = get_profile(member_id)
                 member_list.append({'u_id': member_id, 
                                     'name_first': member_details['name_first'],
-                                    'name_last': member_details['name_last']
-                                  })
+                                    'name_last': member_details['name_last']})
             
             details['owner_members'] = owner_list
             details['all_members'] = member_list
@@ -196,6 +193,7 @@ def channel_details(token, channel_id):
     return details
     
 def channel_messages(token, channel_id, start):
+    '''Returns a list of messages to be displayed'''
     # check if the token is valid
     is_valid = search_database(token)
     if is_valid is False:
