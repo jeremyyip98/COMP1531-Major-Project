@@ -200,7 +200,6 @@ def auth_reset_password_request(email):
     while any(d['pwd_reset_code'] == code\
         for d in database.registered_users_store['registered_users']):
         code = secrets.token_urlsafe(PWD_RESET_CODE_LENGTH)
-    code = str(code)
     for user in database.registered_users_store['registered_users']:
         if user['email'] == email:
             user['pwd_reset_code'] = code
@@ -246,8 +245,8 @@ def auth_reset_password_reset(reset_code, password):
     for user in database.registered_users_store['registered_users']:
         if user['pwd_reset_code'] == str(reset_code):
             user['hash'] = encrypt(password)
-        else:
-            raise InputError(description='Reset code is invalid')
+            return
+    raise InputError(description='Reset code is invalid')
 
 
 if __name__ == "__main__":
