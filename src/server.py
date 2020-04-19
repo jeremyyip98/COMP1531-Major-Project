@@ -9,7 +9,7 @@ import sys
 from json import dumps
 from threading import Thread, Timer
 from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle
-from flask import Flask, request
+from flask import Flask, request, send_from_directory
 from flask_cors import CORS
 from error import InputError
 import auth
@@ -17,6 +17,8 @@ import channel
 import channels
 import message
 import other
+from image_upload import upload_profile_pic
+from database import reset_message, restore_database
 from pickle_it import pickle_it, database_update
 from database import reset_message, restore_database, restore_channel_database
 from standup import standup_start, standup_active, standup_send
@@ -38,6 +40,7 @@ def defaultHandler(err):
 APP = Flask(__name__)
 CORS(APP)
 
+APP.config['UPLOAD_FOLDER'] = "profile_pictures"
 APP.config['TRAP_HTTP_EXCEPTIONS'] = True
 APP.register_error_handler(Exception, defaultHandler)
 
@@ -51,6 +54,11 @@ def echo():
     return dumps({
         'data': data
     })
+
+@APP.route("/imgurl/<string:filename>")
+def show_profile_img(filename):
+    return send_from_directory(APP.config['UPLOAD_FOLDER'], filename)
+
 
 @APP.route("/channel/invite", methods=['POST'])
 def http_invite():
@@ -355,6 +363,20 @@ def http_sethandle():
     token = payload["token"]
     handle_str = payload["handle_str"]
     user_profile_sethandle(token, handle_str)
+    return dumps({})
+
+@APP.route("/user/profile/uploadphoto", methods=["POST"])
+def http_upload_photo():
+    payload = request.get_json()
+    token = payload["token"]
+    img_url = payload["img_url"]
+    x_start = int(payload["x_start"])
+    y_start = int(payload["y_start"])
+    x_end = int(payload["x_end"])
+    y_end = int(payload["y_end"]) 
+    """ This possibly should involve threading incase it slows down whole server """
+    upload_profile_pic(token, img_url, x_start, y_start, x_end, y_end)
+    print("HERE")
     return dumps({})
 
 @APP.route("/users/all", methods=['GET'])

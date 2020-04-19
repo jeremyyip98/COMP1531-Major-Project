@@ -7,18 +7,22 @@ from error import AccessError, InputError
 
 u_ids = [0]
 
-registered_users_store = {'registered_users' : [
-    #  {   
-    # 'u_id' : 0,
-    # 'email' : example_email,
-    # 'name_first' : Firs,
-    # 'name_last' : Last,
-    # 'hash' : encrypted password,
-    # 'token' : token,
-    # 'handle_str' :firstlast
-    # 'permission_id': 1/2             
-    #  }    
-]}
+registered_users_store = {
+                            'registered_users' : 
+                                [
+                                  # {   
+                                  # 'u_id' : 0,
+                                  # 'email' : example_email,
+                                  # 'name_first' : Firs,
+                                  # 'name_last' : Last,
+                                  # 'hash' : encrypted password,
+                                  # 'token' : token,
+                                  # 'handle_str' :firstlast
+                                  # 'permission_id': 1/2             
+                                  # 'profile_img_url' : profile pic path
+                                  # }    
+                                ]
+                        }
 
 channel_ids = [0]
 
@@ -125,12 +129,15 @@ def search_database(token):
         {
             'u_id' : 0,
             'email' : example_email,
-            'name_first' : Firs,
+            'name_first' : First,
             'name_last' : Last,
             'hash' : encrypted password,
             'token' : token,
-            'premission : 1,
-            'handle_str' :firstlast
+            'permission : 1 or 2,
+            'handle_str' :firstlast  
+            'pwd_reset_code' : False or the requested code
+            'profile_img_url' : file path of uploaded image
+
 
         }
         If token is not found in the datastore registered to any user
@@ -168,15 +175,23 @@ def get_profile(u_id):
     '''Gets a user profile via u_id instead of token. Used in the user_profile function'''
     for user in registered_users_store['registered_users']:
         if user['u_id'] == u_id:
+            print(user[])
             formatted_user = {
                 "u_id" : user['u_id'],
                 "email" : user['email'],
                 "name_first" : user['name_first'],
                 "name_last" : user['name_last'],
-                "handle_str" : user['handle_str']
+                "handle_str" : user['handle_str'],
+                "profile_img_url" : user['profile_img_url']
             }
             return formatted_user
     raise InputError
+
+def set_img_url(token, img_url):
+    for d in registered_users_store['registered_users']:
+        if d['token'] == token:
+            d['profile_img_url'] = img_url
+            return
 
 def set_name(token, name_first, name_last):
     '''Changes the first and last name of a user'''

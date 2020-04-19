@@ -173,9 +173,11 @@ def channel_details(token, channel_id):
             # adding into owner_list
             for owner_id in channel['owner_members']:
                 owner_details = get_profile(owner_id)
-                owner_list.append({'u_id': owner_id, 
-                                   'name_first': owner_details['name_first'],
-                                   'name_last': owner_details['name_last']})
+                owner_list.append({ 'u_id': owner_id, 
+                                    'name_first': owner_details['name_first'],
+                                    'name_last': owner_details['name_last'],
+                                    'profile_img_url': owner_details['profile_img_url']
+                                 })
             
             # adding into member_list
             for member_id in channel['all_members']:
