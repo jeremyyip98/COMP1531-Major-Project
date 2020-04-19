@@ -136,7 +136,7 @@ def search_database(token):
             'permission : 1 or 2,
             'handle_str' :firstlast  
             'pwd_reset_code' : False or the requested code
-            'profile_img_url' : 'default_img' or the name of uploaded image
+            'profile_img_url' : file path of uploaded image
 
 
         }
@@ -175,6 +175,7 @@ def get_profile(u_id):
     '''Gets a user profile via u_id instead of token. Used in the user_profile function'''
     for user in registered_users_store['registered_users']:
         if user['u_id'] == u_id:
+            print(user[])
             formatted_user = {
                 "u_id" : user['u_id'],
                 "email" : user['email'],
