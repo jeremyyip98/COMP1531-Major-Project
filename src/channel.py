@@ -139,8 +139,7 @@ def channel_invite(token, channel_id, u_id):
 def channel_details(token, channel_id):
     """Gives details of channel"""
     # check if the token is valid
-    is_valid = search_database(token)
-    if is_valid is False:
+    if search_database(token) is False:
         raise AccessError(description='Invalid Token')
     
     # authorised user is user who is in the channel and invites another user
@@ -198,7 +197,8 @@ def channel_details(token, channel_id):
     return details
     
 def channel_messages(token, channel_id, start):
-    '''check if the token is valid'''
+    '''Returns a list of messages to be displayed'''
+    # check if the token is valid
     is_valid = search_database(token)
     if is_valid is False:
         raise AccessError(description='Invalid Token')
