@@ -130,7 +130,7 @@ def auth_register(email, password, name_first, name_last):
         'hash' : encrypt(password),
         'token' : token,
         'handle_str' : make_handle(name_first, name_last),
-        'pwd_reset_code' : False
+        'pwd_reset_code' : False,
         'profile_img_url':'default_img'
         }
     database.registered_users_store['registered_users'].append(user)
