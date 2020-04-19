@@ -34,9 +34,9 @@
 
 - Assume that registering will log you in automatically
 
+- Assuming that searching for messages should ignore lower and upper case
+
 -Assume that  when you remove a user from slackr that person is removed from all channel
-
-
 
 ![alt text](https://m.media-amazon.com/images/M/MV5BOTFmYTc3ZWEtNTYxNi00OTA4LTk2NjEtNTI2MTJlNzkyMDdlXkEyXkFqcGdeQWpybA@@._V1_UX477_CR0,0,477,268_AL_.jpg)
             *Not our image (from https://www.justwatch.com/de/Serie/Monty-Pythons-Flying-Circus)*   

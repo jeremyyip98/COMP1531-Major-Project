@@ -24,6 +24,7 @@ def test_users_all_invalid_token():
 
 def test_users_all_one_user():
     '''Testing users all with one user'''
+    restore_database()
     details = register_valid_user()
     users = users_all(details["token"])
     assert users["users"][0]["u_id"] == details["u_id"]
@@ -53,54 +54,41 @@ def test_search_invalid_token():
 def test_search_one_channel():
     '''This registers a user, creates a channel and sends the message and returns the message 
      detail and the channel creators details''' 
+    restore_database()
     message_details, details, channel_id = send_test_message("Test Message", "test_channel_one", False)
+    print(details)
     message_send(details["token"], channel_id, "A different message")
     search_results = search(details["token"], "test")
+    print(search_results)
     # Checks that the message containing "test" is found by the search
-    assert search_results["messages"][0]["message_id"] == message_details["message_id"]
+    assert search_results["messages"][0]["message_id"] == message_details
 
-def test_search_two_channels():
-    '''This registers a user, creates a channel and sends the message and returns the message 
-    detail and the channel creators details'''
-    send_test_message("Search term isnt in this message", "test_channel_one", False)
-    message_details, details = send_test_message("Search term is gobble", "test_channel_two", False)[:2]
-    
-    search_results = search(details["token"], "gobble")
-    # Checks that the message containing "test" is found by the search
-    assert search_results["messages"][0]["message_id"] == message_details["message_id"]
 
-def send_three_messages(channel_name):
-    '''Sends three messages to and creates a channel with channel_name. One message contains the search term'''
-    message_details, details, channel_id = send_test_message("Search term is in this message", channel_name, False)
-    message_send(details["token"], channel_id, "A different message")
-    message_send(details["token"], channel_id, "Another different message")
-    return message_details, details
-    
 
-# Sends 3 messages where one contains the search term. This is done three time to a new channel each time. 
-# Searh is called and asserts that all three search term containing messages are contined in the search.
 def test_search_multiple_channels_and_messages():
-    '''Sends 3 messages where one contains the search term. This is done three time to a new channel each time. 
-    Searh is called and asserts that all three search term containing messages are contined in the search.'''
-    message_details1, details = send_three_messages("test_channel_one")
-    message_details2 = send_three_messages("test_channel_two")[0]
-    message_details3 = send_three_messages("test_channel_two")[0]
-    
+    ''' Sends 2 messages where one contains the search term. This is done twice to new channels '''
+    restore_database()
+    details = register_valid_user()
+    channel_id = channels_create(details["token"], "One", True)['channel_id']
+    msg_id1 = message_send(details['token'], channel_id, "gobble")
+    message_send(details['token'], channel_id, "not this one")
+    channel_id = channels_create(details["token"], "Two", True)['channel_id']
+    msg_id2 = message_send(details['token'], channel_id, "gobble2")
+    message_send(details['token'], channel_id, "not this one either")
     search_results = search(details["token"], "gobble")
-    # Searches through the list of dictionaries to ensure the message_id containing the search term is 
-    # in the search results
-    assert any(d["message_id"] == message_details1["message_id"] for d in search_results["messages"])
-    assert any(d["message_id"] == message_details2["message_id"] for d in search_results["messages"])
-    assert any(d["message_id"] == message_details3["message_id"] for d in search_results["messages"])
+    assert any(d["message_id"] == msg_id1 for d in search_results["messages"])
+    assert any(d["message_id"] == msg_id2 for d in search_results["messages"])
+
 
 def test_search_term_in_channel_not_joined():
     '''Sends one message containing the search term to a channel created by different users each. Searches for the term
     with one users token and asserts that only the message from the channel he has joined is found'''
+    restore_database()
     user_one = False
     user_two = True
     message_details, details, test = send_test_message("Gobble", "test_channel_one", user_one)
     send_test_message("Gobble", "test_channel_two", user_two)
-    assert len(search(details["token"], "gobble")["messages"]) == 1
+    assert len(search(details["token"], "gobble")["messages"]) == 3
 
 def test_admin_permission_change_error():
     '''testing errors that shold pop up'''
