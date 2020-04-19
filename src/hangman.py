@@ -16,8 +16,8 @@ STAGES = ['\n\n\n\n_________\nFive tries left',
           '|\n|\n|\n|\n|_________\nFour tries left',
           '_______\n|\n|\n|\n|\n|_________\nThree tries left',
           '_______\n|O\n|\n|\n|\n|_________\nTwo tries left',
-          '_______\n|O\n|/|\\n|\n|\n|_________\nOne try left',
-          '_______\n|O\n|/|\\n|\n|/\\n|_________\nGame over!']
+          '_______\n|O\n|/|\\\n|\n|\n|_________\nOne try left',
+          '_______\n|O\n|/|\\\n|\n|/\\\n|_________\nGame over!']
 
 
 def reset_hangman(channel_id):
