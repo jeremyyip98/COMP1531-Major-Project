@@ -12,3 +12,4 @@ class InputError(HTTPException):
     """Return input error"""
     code = 400
     message = 'No message specified'
+    
