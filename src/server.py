@@ -8,6 +8,7 @@ This file are running the frontend function works all the routes
 import sys
 from json import dumps
 from threading import Thread, Timer
+from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle
 from flask import Flask, request, send_from_directory
 from flask_cors import CORS
 from error import InputError
@@ -20,7 +21,6 @@ from image_upload import upload_profile_pic
 from database import reset_message, restore_database
 from pickle_it import pickle_it, database_update
 from database import reset_message, restore_database, restore_channel_database
-from user import user_profile, user_profile_setname, user_profile_setemail, user_profile_sethandle
 from standup import standup_start, standup_active, standup_send
 from workspace_reset import workspace_reset
 from helper_functions import create_admin
@@ -176,6 +176,21 @@ def http_logout():
     payload = request.get_json()
     is_success = {"is_success" : auth.auth_logout(payload['token'])}
     return dumps(is_success)
+
+
+@APP.route("/auth/passwordreset/request", methods=['POST'])
+def httt_request_code():
+    ''' HTTP request for requesting a password reset code '''
+    payload = request.get_json()
+    auth.auth_reset_password_request(payload['email'])
+    return dumps({})
+
+@APP.route("/auth/passwordreset/reset", methods=['POST'])
+def http_reset_password():
+    ''' HTTP request for resetting password with a code '''
+    payload = request.get_json()
+    auth.auth_reset_password_reset(payload['reset_code'], payload['new_password'])
+    return dumps({})
 
 
 # Added code

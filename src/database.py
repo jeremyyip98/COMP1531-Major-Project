@@ -38,6 +38,9 @@ list_of_channels = [#{
     # }
 ]
 
+
+
+
 def get_data():
     '''gets the registered user database'''
     return registered_users_store
@@ -155,8 +158,13 @@ def reset_message():
     ]
 
 def get_message_joined(token):
-    """ Takes in token string and returns all messages in channels that the user has joined """
-    pass
+    message_ids = []
+    u_id = get_u_id(token)
+    for c in list_of_channels:
+        if u_id in c['owner_members'] or u_id in c['all_members']:
+            message_ids += c['channel_messages']
+    return list(filter(lambda m: m['message_id'] in message_ids, message_list))
+
 
 def get_message():
     """This function get the list of dictionary of messages and returns it"""
@@ -199,6 +207,9 @@ def set_handle(token, handle_str):
     '''Changes the handle of a user'''
     user = search_database(token)
     user['handle_str'] = handle_str
+
+def set_img_url(token, img_url):
+    pass
 
 def check_email_already_used(email):
     '''Checks if an email is already being used'''
