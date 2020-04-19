@@ -175,7 +175,6 @@ def get_profile(u_id):
     '''Gets a user profile via u_id instead of token. Used in the user_profile function'''
     for user in registered_users_store['registered_users']:
         if user['u_id'] == u_id:
-            print(user[])
             formatted_user = {
                 "u_id" : user['u_id'],
                 "email" : user['email'],
@@ -209,8 +208,11 @@ def set_handle(token, handle_str):
     user = search_database(token)
     user['handle_str'] = handle_str
 
-def set_img_url(token, img_url):
-    pass
+ddef set_img_url(token, img_url):
+    for d in registered_users_store['registered_users']:
+        if d['token'] == token:
+            d['profile_img_url'] = img_url
+            return
 
 def check_email_already_used(email):
     '''Checks if an email is already being used'''
