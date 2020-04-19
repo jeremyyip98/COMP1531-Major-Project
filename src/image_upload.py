@@ -46,8 +46,8 @@ def upload_profile_pic(token, img_url, x_start, y_start, x_end, y_end):
             raise InputError(description='Crop out of bounds')
     """ Crops the image according to input coordinates """
     new = im.crop(coordinates)    
-    new.save(path, format='jpeg')
-    database.set_img_url (token, f"imgurl/{filename}")
+    new.save(path, format='jpeg')   
+    database.set_img_url (token, f"/imgurl/{filename}")
    
     print(path)
 

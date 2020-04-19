@@ -15,7 +15,7 @@ registered_users_store = {
                                   # 'token' : token,
                                   # 'handle_str' :firstlast
                                   # 'permission_id': 1/2             
-                                  # 'img_url' : profile pic path
+                                  # 'profile_img_url' : profile pic path
                                   # }    
                                 ]
                         }
