@@ -3,10 +3,10 @@ UNSW Comp1531 Iteration 2
 user HTTP test
 Jeffrey Yang z5206134
 """
-import json
+import json #pylint: disable=unused-import
 import urllib
 import requests
-import pytest
+import pytest #pylint: disable=unused-import
 
 PORT = 8080
 BASE_URL = f"http://127.0.0.1:{PORT}"
